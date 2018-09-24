@@ -30,8 +30,6 @@ type
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     AboutAction: TAction;
-    FDConnection: TFDConnection;
-    FDTransaction: TFDTransaction;
     LoadFile1: TMenuItem;
     LoadDir1: TMenuItem;
     LoadFileAction: TAction;
@@ -56,6 +54,7 @@ type
 var
   MainForm: TMainForm;
   Exepath: String;
+  dbname: string;
 
 implementation
 
@@ -100,19 +99,19 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   //
+  DM.FDConnection.Params.Add('Database=' + dbname);
+  DM.FDConnection.Open;
+  //Database := dbname;
+  StatusBar1.Panels[0].Text := dbname;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-  var dbname: string;
+
 begin
   // set up form
   Exepath := ExtractFilePath(Application.ExeName);
   dbname := Exepath + '\db\shrfs.fdb';
   Application.Title := 'Shrfs';
-  FDConnection.Params.Add('Database=' + dbname);
-  FDConnection.Open;
-  //Database := dbname;
-  StatusBar1.Panels[0].Text := dbname;
 end;
 
 procedure TMainForm.LoadDirActionExecute(Sender: TObject);
@@ -133,7 +132,7 @@ begin
     try
       XMLDoc.LoadFromFile(filename);
       doc := XmlDoc.DOMDocument;
-      ParseSessionFile(Doc);
+      ParseInputFile(Doc);
     except
       on e: Exception do
       begin

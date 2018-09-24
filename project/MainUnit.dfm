@@ -105,23 +105,6 @@ object MainForm: TMainForm
     Left = 176
     Top = 48
   end
-  object FDConnection: TFDConnection
-    ConnectionName = 'FDConnection'
-    Params.Strings = (
-      'DriverID=FB'
-      'CharacterSet=UTF8'
-      'User_Name=sysdba'
-      'Password=masterkey')
-    LoginPrompt = False
-    Transaction = FDTransaction
-    Left = 32
-    Top = 120
-  end
-  object FDTransaction: TFDTransaction
-    Connection = FDConnection
-    Left = 92
-    Top = 120
-  end
   object JvOpenDialog1: TJvOpenDialog
     Height = 0
     Width = 0

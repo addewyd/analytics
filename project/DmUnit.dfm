@@ -6,7 +6,7 @@ object DM: TDM
     Left = 232
     Top = 56
     Bitmap = {
-      494C01017E0180011C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001200010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12684,5 +12684,47 @@ object DM: TDM
       8007800380030000801F800380030000801F800380030000801F800380038001
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
+  end
+  object FDQuery: TFDQuery
+    Connection = FDConnection
+    Transaction = FDTransaction
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvParamCreate]
+    ResourceOptions.ParamCreate = False
+    Left = 40
+    Top = 48
+  end
+  object FDUpdateSQL: TFDUpdateSQL
+    Connection = FDConnection
+    ConnectionName = 'FDConnection'
+    Left = 40
+    Top = 104
+  end
+  object FDCommand: TFDCommand
+    Connection = FDConnection
+    Transaction = FDTransaction
+    ResourceOptions.AssignedValues = [rvParamCreate]
+    ResourceOptions.ParamCreate = False
+    Left = 40
+    Top = 168
+  end
+  object FDConnection: TFDConnection
+    ConnectionName = 'FDConnection'
+    Params.Strings = (
+      'DriverID=FB'
+      'CharacterSet=UTF8'
+      'User_Name=sysdba'
+      'Password=masterkey')
+    LoginPrompt = False
+    Transaction = FDTransaction
+    UpdateTransaction = FDTransaction
+    Left = 232
+    Top = 120
+  end
+  object FDTransaction: TFDTransaction
+    Connection = FDConnection
+    Left = 164
+    Top = 128
   end
 end
