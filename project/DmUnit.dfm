@@ -12723,6 +12723,8 @@ object DM: TDM
     Top = 120
   end
   object FDTransaction: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
     Connection = FDConnection
     Left = 164
     Top = 128

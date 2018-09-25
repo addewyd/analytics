@@ -49,10 +49,10 @@ object MainForm: TMainForm
     end
   end
   object logm: TJvMemo
-    Left = 336
+    Left = 8
     Top = 35
-    Width = 273
-    Height = 401
+    Width = 457
+    Height = 502
     Lines.Strings = (
       '')
     ScrollBars = ssVertical

@@ -8,7 +8,11 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.Client, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.UI.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
-  FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait;
+  FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
+  Vcl.Forms,
+  ErrorUnit;
+
+  procedure ErrorMessageBox(f: TForm; msg: String);
 
 type
   TDM = class(TDataModule)
@@ -32,5 +36,18 @@ implementation
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
+
+
+  procedure ErrorMessageBox(f: TForm; msg: String);
+  begin
+
+  ErrorForm := TErrorForm.Create(f);
+          try
+            ErrorForm.Memo1.Lines.Add(msg);
+            ErrorForm.ShowModal;
+          finally
+            ErrorForm.Free;
+          end;
+  end;
 
 end.

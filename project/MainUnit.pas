@@ -77,19 +77,11 @@ end;
 
 procedure TMainForm.ApplicationEventsException(Sender: TObject; E: Exception);
 begin
-try
-          ErrorForm := TErrorForm.Create(self);
-          try
-            ErrorForm.Memo1.Lines.Add(e.Message);
-            ErrorForm.ShowModal;
-          finally
-            ErrorForm.Free;
-            Application.Terminate;
-          end;
-        Except
-        //
-        end;
+  ErrorMessageBox(self, e.Message);
+  Application.Terminate;
 end;
+
+// ........................................................................
 
 procedure TMainForm.CloseActionExecute(Sender: TObject);
 begin
@@ -136,17 +128,7 @@ begin
     except
       on e: Exception do
       begin
-        try
-          ErrorForm := TErrorForm.Create(self);
-          try
-            ErrorForm.Memo1.Lines.Add(e.Message);
-            ErrorForm.ShowModal;
-          finally
-            ErrorForm.Free;
-          end;
-        Except
-        //
-        end;
+        ErrorMessageBox(self, e.Message);
       end;
 
     end;
