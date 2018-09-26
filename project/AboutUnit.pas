@@ -10,6 +10,7 @@ type
   TAboutForm = class(TForm)
     Button1: TButton;
     procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -26,6 +27,11 @@ implementation
 procedure TAboutForm.Button1Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
 end;
 
 end.

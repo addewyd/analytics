@@ -15,6 +15,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   OnActivate = FormActivate
   OnClick = AboutActionExecute
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -39,13 +40,30 @@ object MainForm: TMainForm
     Height = 29
     Caption = 'ToolBar1'
     Images = DM.imlist
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
-    object ToolButton1: TToolButton
+    object ToolButton2: TToolButton
       Left = 0
+      Top = 0
+      Action = ClearDBAction
+    end
+    object ToolButton3: TToolButton
+      Left = 23
+      Top = 0
+      Action = LoadFileAction
+    end
+    object ToolButton4: TToolButton
+      Left = 46
+      Top = 0
+      Action = AboutAction
+    end
+    object ToolButton1: TToolButton
+      Left = 69
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
-      ImageIndex = 141
+      ImageIndex = 130
     end
   end
   object logm: TJvMemo
@@ -76,28 +94,46 @@ object MainForm: TMainForm
     object Options1: TMenuItem
       Caption = 'Options'
     end
+    object Service1: TMenuItem
+      Caption = 'Service'
+      object ClearDB1: TMenuItem
+        Action = ClearDBAction
+      end
+    end
     object About1: TMenuItem
       Action = AboutAction
     end
   end
   object ActionList: TActionList
+    Images = DM.imlist
     Left = 72
     Top = 40
     object CloseAction: TAction
       Caption = 'Quit'
+      ImageIndex = 48
       OnExecute = CloseActionExecute
     end
     object AboutAction: TAction
       Caption = 'About'
+      Hint = 'About'
+      ImageIndex = 28
       OnExecute = AboutActionExecute
     end
     object LoadFileAction: TAction
       Caption = 'Load File'
+      Hint = 'Load file'
+      ImageIndex = 68
       OnExecute = LoadFileActionExecute
     end
     object LoadDirAction: TAction
       Caption = 'Load Dir'
       OnExecute = LoadDirActionExecute
+    end
+    object ClearDBAction: TAction
+      Caption = 'Clear DB'
+      Hint = 'Delete ALL data'
+      ImageIndex = 141
+      OnExecute = ClearDBActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents
@@ -118,5 +154,19 @@ object MainForm: TMainForm
   object XMLDoc: TXMLDocument
     Left = 248
     Top = 136
+  end
+  object JvAppRS: TJvAppRegistryStorage
+    StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
+    StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
+    SubStorages = <>
+    Left = 48
+    Top = 368
+  end
+  object JvFS: TJvFormStorage
+    AppStorage = JvAppRS
+    AppStoragePath = '%FORM_NAME%'
+    StoredValues = <>
+    Left = 48
+    Top = 416
   end
 end

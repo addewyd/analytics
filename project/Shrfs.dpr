@@ -7,7 +7,8 @@ uses
   ForFutureUseUnit in 'ForFutureUseUnit.pas' {ForFutureUseForm},
   DmUnit in 'DmUnit.pas' {DM: TDataModule},
   XmlParseUnit in 'XmlParseUnit.pas',
-  ErrorUnit in 'ErrorUnit.pas' {ErrorForm};
+  ErrorUnit in 'ErrorUnit.pas' {ErrorForm},
+  YNUnit in 'YNUnit.pas' {YNForm};
 
 {$R *.res}
 

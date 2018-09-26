@@ -13,6 +13,7 @@ uses
   ErrorUnit;
 
   procedure ErrorMessageBox(f: TForm; msg: String);
+  function StrToextDef(s: String; d: Extended): Extended;
 
 type
   TDM = class(TDataModule)
@@ -40,14 +41,30 @@ implementation
 
   procedure ErrorMessageBox(f: TForm; msg: String);
   begin
+    ErrorForm := TErrorForm.Create(f);
+    ErrorForm.Memo1.Lines.Add(msg);
+    ErrorForm.ShowModal;
+  end;
 
-  ErrorForm := TErrorForm.Create(f);
-          try
-            ErrorForm.Memo1.Lines.Add(msg);
-            ErrorForm.ShowModal;
-          finally
-            ErrorForm.Free;
-          end;
+// .............................................................................
+
+  function StrToextDef(s: String; d: Extended): Extended;
+  begin
+    Result := d;
+    s := Trim(s);
+    if s = '' then
+    begin
+      exit;
+    end;
+
+    try
+
+      s := StringReplace(s, ',', '.', [rfReplaceAll]);
+      result := StrToFloatDef(s, d);
+    except
+      //
+    end;
+
   end;
 
 end.

@@ -13,7 +13,8 @@ object ErrorForm: TErrorForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poOwnerFormCenter
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -26,10 +27,12 @@ object ErrorForm: TErrorForm
     OnClick = Button1Click
   end
   object Memo1: TMemo
-    Left = 32
-    Top = 16
-    Width = 361
-    Height = 145
+    Left = 0
+    Top = 0
+    Width = 428
+    Height = 217
+    Align = alTop
+    BorderStyle = bsNone
     Lines.Strings = (
       '')
     TabOrder = 1

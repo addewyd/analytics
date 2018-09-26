@@ -12,6 +12,7 @@ type
     Button1: TButton;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -28,6 +29,11 @@ implementation
 procedure TErrorForm.Button1Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TErrorForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  action := caFree;
 end;
 
 end.
