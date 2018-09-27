@@ -15,7 +15,8 @@ uses
   JvExDBGrids, JvDBGrid, FireDAC.Phys.FB, FireDAC.Phys.FBDef, JvBaseDlg,
   JvSelectDirectory, JvDialogs, XmlParseUnit, Xml.xmldom, Xml.XMLIntf,
   Xml.XMLDoc, ErrorUnit, Vcl.StdCtrls, JvExStdCtrls, JvMemo, YNUnit,
-  JvFormPlacement, JvComponentBase, JvAppStorage, JvAppRegistryStorage;
+  JvFormPlacement, JvComponentBase, JvAppStorage, JvAppRegistryStorage,
+  SessionListUnit;
 
 type
   TMainForm = class(TForm)
@@ -35,10 +36,9 @@ type
     LoadDir1: TMenuItem;
     LoadFileAction: TAction;
     LoadDirAction: TAction;
-    JvOpenDialog1: TJvOpenDialog;
+    JvOpenDialog: TJvOpenDialog;
     JvSelectDirectory1: TJvSelectDirectory;
     XMLDoc: TXMLDocument;
-    logm: TJvMemo;
     ClearDBAction: TAction;
     ToolButton2: TToolButton;
     Service1: TMenuItem;
@@ -47,6 +47,12 @@ type
     JvFS: TJvFormStorage;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
+    Sessions1: TMenuItem;
+    SessionsAction: TAction;
+    Sessions2: TMenuItem;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -56,12 +62,17 @@ type
     procedure ApplicationEventsException(Sender: TObject; E: Exception);
     procedure ClearDBActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SessionsActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    function GetMdiForm(formname: string): TForm;
+    function isWinOpen(formname: String): boolean;
+
   end;
 
+Procedure AddToLog(msg: String);
 var
   MainForm: TMainForm;
   Exepath: String;
@@ -71,6 +82,54 @@ var
 implementation
 
 {$R *.dfm}
+
+uses BaseFormUnit1, MlogUnit;
+
+
+// .............................................................................
+
+function TMainForm.isWinOpen(formname: string): boolean;
+var  i: integer;
+begin
+  result := false;
+  for i := 0 to mdiChildCount - 1 do
+  begin
+    if  ((mdichildren[i] as TBaseForm).formname = formname) then
+    begin
+      result := true;
+      break;
+    end;
+  end;
+end;
+
+// .............................................................................
+
+function TMainForm.GetMDIForm(formname: string): TForm;
+var i: integer;
+begin
+  result := nil;
+  for i := 0 to mdiChildCount - 1 do
+  begin
+    if  ((mdichildren[i] as TBaseForm).formname = formname) then
+    begin
+      result := mdichildren[i];
+      break;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
+Procedure AddToLog(msg: String);
+begin
+  if not MainForm.isWinOpen('mlog') then
+    MLogForm := TMlogForm.Create(MainForm, 'mlog');
+
+  MLogForm.mlog.Lines.Add(msg);
+end;
+
+// .............................................................................
 
 procedure TMainForm.AboutActionExecute(Sender: TObject);
 begin
@@ -101,21 +160,27 @@ begin
       begin
         Transaction.StartTransaction;
         try
-          logm.Lines.Clear;
+          //logm.Lines.Clear;
           ExecSQL('delete from orders');
-          logm.Lines.Add('deleted from orders');
+          AddToLog('deleted from orders');
           ExecSQL('delete from outcomesbyretail');
-          logm.Lines.Add('deleted from outcomesbyretail');
+          AddToLog('deleted from outcomesbyretail');
+          ExecSQL('delete from outcomesbyoffice');
+          AddToLog('deleted from outcomesbyoffice');
+          ExecSQL('delete from incomesbydischarge');
+          AddToLog('deleted from incomesbydischarge');
           ExecSQL('delete from wares');
-          logm.Lines.Add('deleted from wares');
+          AddToLog('deleted from wares');
           ExecSQL('delete from tanks');
-          logm.Lines.Add('deleted from tanks');
+          AddToLog('deleted from tanks');
+          ExecSQL('delete from hoses');
+          AddToLog('deleted from hoses');
           ExecSQL('delete from paymentmodes');
-          logm.Lines.Add('deleted from paymentmodes');
+          AddToLog('deleted from paymentmodes');
           ExecSQL('delete from contragents');
-          logm.Lines.Add('deleted from contragents');
+          AddToLog('deleted from contragents');
           ExecSQL('delete from sessions');
-          logm.Lines.Add('deleted from sessions');
+          AddToLog('deleted from sessions');
 
           Transaction.Commit;
         except
@@ -179,9 +244,9 @@ procedure TMainForm.LoadFileActionExecute(Sender: TObject);
       doc: IDOMDocument;
 begin
 //
-  if JvOpenDialog1.Execute() then
+  if JvOpenDialog.Execute() then
   begin
-    filename := JvOpenDialog1.FileName;
+    filename := JvOpenDialog.FileName;
 
     StatusBar1.Panels[1].Text := filename;
     try
@@ -198,6 +263,15 @@ begin
     end;
 
   end;
+end;
+
+procedure TMainForm.SessionsActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('sessions') then
+  begin
+    TSessionListForm.Create(self, 'sessions');
+  end
+  else GetMDIForm('sessions').Show;
 end;
 
 end.

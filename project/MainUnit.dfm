@@ -11,6 +11,7 @@ object MainForm: TMainForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsMDIForm
   Menu = MainMenu
   OldCreateOrder = False
   OnActivate = FormActivate
@@ -43,38 +44,49 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    object ToolButton2: TToolButton
+    object ToolButton3: TToolButton
       Left = 0
       Top = 0
-      Action = ClearDBAction
+      Action = LoadFileAction
     end
-    object ToolButton3: TToolButton
+    object ToolButton5: TToolButton
       Left = 23
       Top = 0
-      Action = LoadFileAction
+      Action = SessionsAction
     end
     object ToolButton4: TToolButton
       Left = 46
       Top = 0
       Action = AboutAction
     end
-    object ToolButton1: TToolButton
+    object ToolButton6: TToolButton
       Left = 69
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton6'
+      ImageIndex = 131
+      Style = tbsSeparator
+    end
+    object ToolButton1: TToolButton
+      Left = 77
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
       ImageIndex = 130
     end
-  end
-  object logm: TJvMemo
-    Left = 8
-    Top = 35
-    Width = 457
-    Height = 502
-    Lines.Strings = (
-      '')
-    ScrollBars = ssVertical
-    TabOrder = 2
+    object ToolButton7: TToolButton
+      Left = 100
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton7'
+      ImageIndex = 131
+      Style = tbsSeparator
+    end
+    object ToolButton2: TToolButton
+      Left = 108
+      Top = 0
+      Action = ClearDBAction
+    end
   end
   object MainMenu: TMainMenu
     Left = 16
@@ -89,6 +101,12 @@ object MainForm: TMainForm
       end
       object Close1: TMenuItem
         Action = CloseAction
+      end
+    end
+    object Sessions1: TMenuItem
+      Caption = 'Sessions'
+      object Sessions2: TMenuItem
+        Action = SessionsAction
       end
     end
     object Options1: TMenuItem
@@ -135,13 +153,20 @@ object MainForm: TMainForm
       ImageIndex = 141
       OnExecute = ClearDBActionExecute
     end
+    object SessionsAction: TAction
+      Caption = 'Sessions'
+      Hint = #1057#1084#1077#1085#1099
+      ImageIndex = 80
+      OnExecute = SessionsActionExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
     Left = 176
     Top = 48
   end
-  object JvOpenDialog1: TJvOpenDialog
+  object JvOpenDialog: TJvOpenDialog
+    Filter = 'session xml|close*.xml'
     Height = 0
     Width = 0
     Left = 48
@@ -158,13 +183,14 @@ object MainForm: TMainForm
   object JvAppRS: TJvAppRegistryStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
     StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
+    Root = 'Software\Shrfs'
     SubStorages = <>
     Left = 48
     Top = 368
   end
   object JvFS: TJvFormStorage
     AppStorage = JvAppRS
-    AppStoragePath = '%FORM_NAME%'
+    AppStoragePath = '%FORM_NAME%\'
     StoredValues = <>
     Left = 48
     Top = 416

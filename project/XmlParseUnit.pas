@@ -4,21 +4,24 @@ interface
 
 uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, System.IOUtils, Data.DB, System.Types,
-  XML.xmldom, XML.XMLIntf, FIREDAC.Stan.Error,
+  XML.xmldom, XML.XMLIntf, FIREDAC.Stan.Error, FireDAC.Phys.IBWrapper,
   XML.XMLDoc, ErrorUnit, DmUnit;
 
 procedure ParseInputFile(Doc: IDOMDocument);
 procedure ParseSessionFile(Doc: IDOMDocument);
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
 procedure LoadTanks(node: IDOMNode; id: integer);
+procedure LoadHoses(node: IDOMNode; id: integer);
 procedure LoadOBR(node: IDOMNode; id: integer);
+procedure LoadIOBR(node: IDOMNode; id: integer);
+procedure LoadIBR(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
 procedure CheckLink(tablename, ecode, ename: string);
 function LoadOrderFile(filename, azs: string): Integer;
 
 implementation
 
-uses MainUnit;
+uses MainUnit, MlogUnit;
 
 procedure CheckLink(tablename, ecode, ename: string);
   var
@@ -76,7 +79,7 @@ begin
       Prepare;
       ExecSQL;
 
-      MainForm.Logm.Lines.Add(format('Added %s in %s', [ename, tablename]));
+      AddToLog(format('Added %s in %s', [ename, tablename]));
 
     end;
 
@@ -111,7 +114,7 @@ begin
   if nL.length > 0 then
   begin
 //    ParseOrderFile(doc);  not now
-    MainForm.logm.Lines.Add('Not now');
+    AddToLog('Not now');
     Exit;
   end;
   raise Exception.Create('Not a session or order file');
@@ -130,6 +133,11 @@ var
   td0, td1, td2: TDateTime;
 begin
 
+  if not MainForm.isWinOpen('mlog') then
+  begin
+    MlogForm := TMlogForm.Create(MainForm, 'mlog');
+  end;
+
   id := -1;
 
   nL := Doc.getElementsByTagName('DataPaket');
@@ -145,7 +153,7 @@ begin
 
   DateTimeToString(d0, 'yyyy-mm-dd hh:nn:ss', td0);
 
-  MainForm.Logm.Lines.Add(d0);
+  AddToLog(d0);
 
   nL := Doc.getElementsByTagName('Sessions');
 
@@ -216,7 +224,7 @@ begin
     if rc > 0 then
     begin
       // ErrorMessageBox(MainForm, Format('session %s %s already added', [azs, s]));
-      MainForm.Logm.Lines.Add(Format('session %s %s already added', [azs, s]));
+      AddToLog(Format('session %s %s already added', [azs, s]));
       Exit;
     end
     else
@@ -274,38 +282,38 @@ begin
 
     end;
 
-    MainForm.Logm.Lines.Add(Format('rc = %d id = %d', [rc, id]));
+    AddToLog(Format('rc = %d id = %d', [rc, id]));
     // ..............................................
 
-    MainForm.Logm.Lines.Add(format('Session %s %s', [s, azs]));
+    AddToLog(format('Session %s %s', [s, azs]));
 
-    MainForm.Logm.Lines.Add(d1 + ' ' + d2);
+    AddToLog(d1 + ' ' + d2);
 
     nL := n.childNodes; // session
 
     (*
-      Tanks
-      Hoses
-      OutcomesByRetail
-      OutcomesByWholesale
-      IncomesByDischarge
-      IncomesByWholesale
-      ItemOutcomesByRetail
-      ItemOutcomesByPaysheet
-      CashFlow
-      OutcomesByCoupon           //?
-      OutcomesByOffice
-      OutcomesByCards
+      Tanks                   +
+      Hoses                   +
+      OutcomesByRetail          +
+      OutcomesByWholesale     -
+      IncomesByDischarge         +
+      IncomesByWholesale      -
+      ItemOutcomesByRetail    -
+      ItemOutcomesByPaysheet  -
+      CashFlow                   +
+      OutcomesByCoupon           +
+      OutcomesByOffice           +
+      OutcomesByCards       -
       HosesLocking
-      TechReturns
-      SurplusPostings
-      LossRetirements
-      TradeDocsInBills
-      TradeDocsOutBills
-      TradeDocsInActs
-      TradeDocsOutActs
-      TradeDocsMoveItems
-      ItemRests
+      TechReturns                +
+      SurplusPostings       -
+      LossRetirements       -
+      TradeDocsInBills      -
+      TradeDocsOutBills     -
+      TradeDocsInActs       -
+      TradeDocsOutActs      -
+      TradeDocsMoveItems    -
+      ItemRests                 +
     *)
 
     (* Of interest:
@@ -323,11 +331,15 @@ begin
 
       n1 := nL.item[i];
       nname := n1.nodeName;
-      MainForm.Logm.Lines.Add(nname); // Session
+      AddToLog(nname); // Session
 
       if nname = 'Tanks' then
       begin
         LoadTanks(n1, id);
+      end
+      else if nname = 'Hoses' then
+      begin
+        LoadHoses(n1, id);
       end
       else if nname = 'OutcomesByRetail' then
       begin
@@ -336,6 +348,14 @@ begin
       else if nname = 'OutcomesByOffice' then
       begin
         LoadOBO(n1, id, azs);
+      end
+      else if nname = 'ItemOutcomesByRetail' then
+      begin
+        LoadIOBR(n1, id);
+      end
+      else if nname = 'IncomesByDischarge' then
+      begin
+        LoadIBR(n1, id);
       end;
 
     end;
@@ -351,6 +371,8 @@ procedure LoadTanks(node: IDOMNode; id: integer);
     n: IDOMNode;
     attrs: IDOMNamedNodeMap;
     tn, dens: string;
+    sstartfv, sendfv, sendt, seh, sem, sew, sdr, sdrl: string;
+    startfv, endfv, endt, eh, em, ew, dr, drl: Extended;
 
 begin
   NL := node.childNodes;
@@ -362,7 +384,28 @@ begin
       attrs := n.attributes;
       tn := attrs.getNamedItem('TankNum').nodeValue;
       dens := attrs.getNamedItem('EndDensity').nodeValue;
-      MainForm.Logm.Lines.Add(tn + ' ' + dens);
+      AddToLog(tn + ' ' + dens);
+
+      with attrs do
+      begin
+        sstartfv := attrs.getNamedItem('StartFuelVolume').nodeValue;
+        sendfv := attrs.getNamedItem('EndFactVolume').nodeValue;
+        sendt := attrs.getNamedItem('EndTemperature').nodeValue;
+        seh := attrs.getNamedItem('EndHeight').nodeValue;
+        sem := attrs.getNamedItem('EndMass').nodeValue;
+        sew := attrs.getNamedItem('EndWater').nodeValue;
+        sdr := attrs.getNamedItem('DeadRest').nodeValue;
+        sdrl := attrs.getNamedItem('DeadRestLiter').nodeValue;
+      end;
+
+      startfv := StrToextDef(sstartfv, 0);
+      endfv := StrToextDef(sendfv, 0);
+      endt := StrToextDef(sendt, 0);
+      eh := StrToextDef(seh, 0);
+      em := StrToextDef(sem, 0);
+      ew := StrToextDef(sew, 0);
+      dr := StrToextDef(sdr, 0);
+      drl := StrToextDef(sdrl, 0);
 
       with DM.FDQuery do
       begin
@@ -396,7 +439,10 @@ begin
 
       with DM.FDQuery do
       begin
-        SQL.Text := 'insert into tanks (session_id, tanknum, enddensity) values (:id, :tn, :dens)';
+        SQL.Text := 'insert into tanks ' +
+          '(session_id, tanknum, enddensity, startfuelvolume, endfactvolume, endtemperature, endheight, endmass, endwater, deadrest, deadrestliter)' +
+          ' values ' +
+          '(:id, :tn, :dens, :startfuelvolume, :endfactvolume, :endtemperature, :endheight, :endmass, :endwater, :deadrest, :deadrestliter)';
         with Params do begin
           Clear;
           with Add do
@@ -417,16 +463,72 @@ begin
             DataType := ftExtended;
             ParamType := ptInput;
           end;
+          with Add do
+          begin
+            Name := 'startfuelvolume';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endfactvolume';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endtemperature';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endheight';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endmass';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endwater';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'deadrest';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'deadrestliter';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
 
         end;
         ParamByName('id').AsInteger := id;
         ParamByName('tn').AsString := tn;
         if dens = '' then
         begin
-          MainForm.logm.Lines.Add('warning: empty density');
+          AddToLog('warning: empty density');
           dens := '0';
         end;
         ParamByName('dens').AsString := dens;
+        ParamByName('startfuelvolume').AsExtended := startfv;
+        ParamByName('endfactvolume').AsExtended := endfv;
+        ParamByName('endtemperature').AsExtended := endt;
+        ParamByName('endheight').AsExtended := eh;
+        ParamByName('endmass').AsExtended := em;
+        ParamByName('endwater').AsExtended := ew;
+        ParamByName('deadrest').AsExtended := dr;
+        ParamByName('deadrestliter').AsExtended := drl;
         Prepare;
         ExecSQL;
 
@@ -435,6 +537,139 @@ begin
     end;
 
 end;
+
+// .............................................................................
+
+procedure LoadHoses(node: IDOMNode; id: integer);
+  var i, len, rc: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+    hn: string;
+    sstartc, sendc, spn, snip, sht: string;
+    startc, endc: Extended;
+
+begin
+  NL := node.childNodes;
+  len := NL.length;
+  for i  := 0 to len - 1 do
+    begin
+      n := NL.item[i];
+
+      attrs := n.attributes;
+      hn := attrs.getNamedItem('HoseNum').nodeValue;
+
+      with attrs do
+      begin
+        sstartc := attrs.getNamedItem('StartCounter').nodeValue;
+        sendc := attrs.getNamedItem('EndCounter').nodeValue;
+        spn := attrs.getNamedItem('PumpNum').nodeValue;
+        snip := attrs.getNamedItem('NumInPump').nodeValue;
+        sht := attrs.getNamedItem('HoseType').nodeValue;
+      end;
+
+      startc := StrToextDef(sstartc, 0);
+      endc := StrToextDef(sendc, 0);
+
+      with DM.FDQuery do
+      begin
+        //FetchOptions.AutoFetchAll := TFDFetchOptions.afAll;
+        SQL.Text := 'select * from hoses where session_id = :id and hosenum = :hn';
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hn';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+
+        end;
+        ParamByName('id').AsInteger := id;
+        ParamByName('hn').AsInteger := StrToIntDef(hn, 1);
+        Prepare;
+        Open;
+        rc := RecordCount;
+
+      end;
+
+      if rc > 0 then Continue;
+
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into hoses ' +
+          '(session_id, hosenum, startcounter, endcounter, pumpnum, numinpump, hosetype)' +
+          ' values ' +
+          '(:id, :hn, :startcounter, :endcounter, :pumpnum, :numinpump, :hosetype)';
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hn';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'startcounter';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'endcounter';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'pumpnum';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'numinpump';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hosetype';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+
+        end;
+        ParamByName('id').AsInteger := id;
+        ParamByName('hn').AsInteger :=StrToIntDef(hn, 1);
+
+        ParamByName('startcounter').AsExtended := startc;
+        ParamByName('endcounter').AsExtended := endc;
+        ParamByName('pumpnum').AsInteger := StrToIntDef(spn, 1);
+        ParamByName('numinpump').AsInteger := StrToIntDef(snip, 1);
+        ParamByName('hosetype').AsString := sht;
+        Prepare;
+        ExecSQL;
+
+      end;
+
+    end;
+
+end;
+
 
 // .............................................................................
 
@@ -651,11 +886,13 @@ begin
 
       end; // query
 
-
     end;
+
+    AddToLog(format('%d records added', [len]));
 
 end;
 
+// .............................................................................
 
 // OutcomesByOffice
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
@@ -663,32 +900,249 @@ procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
     orderpath: String;
     files: TStringDynArray;
     cnt, i, len: Integer;
+    nL: IDOMNodeList;
+    attrs: IDOMNamedNodeMap;
+    fuelcode, fuelname, paymentcode,
+      paymentname: string;
+
+    tanknum, hosename, sDat, sTime,
+      remark: String;
+    sVolume, sAmount, sMass, sOrigprice: String;
+    Volume, Amount, Mass, Origprice: Extended;
+    bHasOrder: boolean;
+    dt: TDateTime;
+    odt: String;
+
 begin
   // load orders first
   orderpath := ExtractFilePath(CurrentFile);
   files := TDirectory.GetFiles(orderpath, 'order*.xml', TSearchOption.soTopDirectoryOnly);
 
   len := Length(files);
-  MainForm.logm.Lines.Add(Format('Order files count: %d',[len]));
+  AddToLog(Format('Order files count: %d',[len]));
   cnt := 0;
   for i := 0 to len - 1 do
   begin
     try
       cnt := cnt + LoadOrderFile(files[i], azs);
     except
-      on e: TFDDBError do
-      begin
+      on e: EIBNativeException do  // not catches!
         raise;
-      end;
       on e: Exception do
+        AddToLog(e.Message + ' ' + e.Classname);
+    end;
+  end;
+  AddToLog(Format('Order files loaded: %d',[cnt]));
+
+  // ..............................................................
+
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+    begin
+      attrs := NL.item[i].attributes;
+
+      fuelcode := attrs.getNamedItem('FuelExtCode').nodeValue;
+      paymentcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
+
+      if Trim(fuelcode) = '' then fuelcode := 'EMPTY';
+      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
+
+      fuelname := attrs.getNamedItem('FuelName').nodeValue;
+      paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
+
+      CheckLink('WARES', fuelcode, fuelname);
+      CheckLink('PAYMENTMODES', paymentcode, paymentname);
+
+      with attrs do begin
+        odt := getNamedItem('Date').nodeValue
+          + ' ' + getNamedItem('Time').nodeValue;
+        dt := VarToDateTime(odt);
+        DateTimeToString(odt, 'yyyy-mm-dd hh:nn:ss', dt);
+
+        tanknum := getNamedItem('TankNum').nodeValue;
+        hosename := getNamedItem('HoseName').nodeValue;
+
+        Remark := getNamedItem('Remark').nodeValue;
+
+        sVolume := getNamedItem('Volume').nodeValue;
+        sAmount := getNamedItem('Amount').nodeValue;
+        sMass := getNamedItem('Mass').nodeValue;
+        sOrigprice := getNamedItem('OrigPrice').nodeValue;
+      end;
+
+      volume := StrToExtdef(sVolume, 0);
+      amount := StrToExtdef(sAmount, 0);
+      mass := StrToExtdef(sMass, 0);
+      origprice := StrToExtdef(sOrigprice, 0);
+
+      bHasOrder := false;
+
+      with DM.FDQuery do
       begin
-        MainForm.logm.Lines.Add(e.Message);
-        // raise?
+        SQL.Text := 'select id, fuelprice, fuelvolume, fuelamount from orders ' +
+          'where azscode=:azscode and odt=:odt';
+        with params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'azscode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'odt';
+            DataType := ftTimeStamp;
+            ParamType := ptInput;
+          end;
+
+        end;
+        ParamByName('azscode').AsString := azs;
+        ParamByName('odt').AsString := odt;
+
+        Prepare;
+        Open;
+        First;
+        if not Eof then
+        begin
+          Volume := FieldByName('fuelvolume').AsExtended;
+          Amount := FieldByName('fuelamount').AsExtended;
+          Origprice := FieldByName('fuelprice').AsExtended;
+
+          bHasOrder := true;
+        end
+        else
+        begin
+          AddToLog(
+            Format('No order for azs %s - %s', [azs, odt])
+          );
+        end;
+      end;
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into OutcomesByOffice ' +
+          '(session_id, odt, tanknum,  hosename,  fuelname, ' +
+              'fuelextcode, paymentmodename, paymentmodeextcode, ' +
+              'volume, amount, mass, ' +
+              'origprice, remark, hasorder)' +
+          ' values ' +
+          '(:session_id, :odt, :tanknum, :hosename, :fuelname, ' +
+            ':fuelextcode,:paymentmodename,:paymentmodeextcode, ' +
+            ':volume,:amount,:mass,:origprice,:remark,:hasorder)';
+        with params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'odt';
+            DataType := ftTimeStamp;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tanknum';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hosename';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'fuelname';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'fuelextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'paymentmodename';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'paymentmodeextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'volume';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'amount';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'mass';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'origprice';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'remark';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hasorder';
+            DataType := ftBoolean;
+            ParamType := ptInput;
+          end;
+
+        end;
+
+        ParamByName('session_id').AsInteger := id;
+        ParamByName('odt').AsString := odt;
+        ParamByName('tanknum').AsString := tanknum;
+        ParamByName('hosename').AsString := hosename;
+        ParamByName('fuelname').AsString := fuelname;
+        ParamByName('paymentmodename').AsString := paymentname;
+        ParamByName('fuelextcode').AsString := fuelcode;
+        ParamByName('paymentmodeextcode').AsString := paymentcode;
+        ParamByName('volume').AsExtended := Volume;
+        ParamByName('amount').AsExtended := amount;
+        ParamByName('mass').AsExtended := mass;
+        ParamByName('origprice').AsExtended := Origprice;
+        ParamByName('remark').AsString := remark;
+        ParamByName('hasorder').AsBoolean := bHasOrder;
+        Prepare;
+        ExecSQL;
+
       end;
 
     end;
-  end;
-  MainForm.logm.Lines.Add(Format('Order files loaded: %d',[cnt]));
+    AddToLog(format('%d records added', [len]));
 
 end;
 
@@ -941,6 +1395,54 @@ begin
 
     end;
     Result := 1;
+end;
+
+// .............................................................................
+
+// IncomesByDischarge
+procedure LoadIBR(node: IDOMNode; id: integer);
+  var i, len, rc: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+    fuelcode, fuelname, partnername, partnercode: string;
+
+    tanknum: String;
+    sVolume, sMass, sPrice: String;
+    Volume, Mass, price: Extended;
+
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+    begin
+      attrs := NL.item[i].attributes;
+
+      fuelcode := attrs.getNamedItem('FuelExtCode').nodeValue;
+      partnercode := attrs.getNamedItem('PartnerExtCode').nodeValue;
+
+      if Trim(fuelcode) = '' then fuelcode := 'EMPTY';
+      if Trim(partnercode) = '' then partnercode := 'EMPTY';
+
+
+      fuelname := attrs.getNamedItem('FuelName').nodeValue;
+      partnername := attrs.getNamedItem('PartnerName').nodeValue;
+
+      CheckLink('WARES', fuelcode, fuelname);
+      CheckLink('CONTRAGENTS', partnercode, partnername);
+
+      tanknum := attrs.getNamedItem('TankNum').nodeValue;
+
+    end;
+end;
+
+// .............................................................................
+
+// ItemOutcomesByRetail
+procedure LoadIOBR(node: IDOMNode; id: integer);
+begin
+  // no data
 end;
 
 end.

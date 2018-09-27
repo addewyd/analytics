@@ -8,7 +8,11 @@ uses
   DmUnit in 'DmUnit.pas' {DM: TDataModule},
   XmlParseUnit in 'XmlParseUnit.pas',
   ErrorUnit in 'ErrorUnit.pas' {ErrorForm},
-  YNUnit in 'YNUnit.pas' {YNForm};
+  YNUnit in 'YNUnit.pas' {YNForm},
+  BaseFormUnit1 in 'BaseFormUnit1.pas' {BaseForm},
+  FormWithGridUnit in 'FormWithGridUnit.pas' {FormWithGrid},
+  SessionListUnit in 'SessionListUnit.pas' {SessionListForm},
+  MlogUnit in 'MlogUnit.pas' {MlogForm};
 
 {$R *.res}
 

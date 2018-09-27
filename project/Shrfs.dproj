@@ -119,6 +119,22 @@
             <Form>YNForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="BaseFormUnit1.pas">
+            <Form>BaseForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="FormWithGridUnit.pas">
+            <Form>FormWithGrid</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SessionListUnit.pas">
+            <Form>SessionListForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="MlogUnit.pas">
+            <Form>MlogForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
