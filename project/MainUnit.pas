@@ -53,6 +53,9 @@ type
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     ToolButton7: TToolButton;
+    StationsAction: TAction;
+    N1: TMenuItem;
+    ToolButton8: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -63,6 +66,7 @@ type
     procedure ClearDBActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SessionsActionExecute(Sender: TObject);
+    procedure StationsActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -83,7 +87,7 @@ implementation
 
 {$R *.dfm}
 
-uses BaseFormUnit1, MlogUnit;
+uses BaseFormUnit1, MlogUnit, StationsUnit;
 
 
 // .............................................................................
@@ -140,7 +144,8 @@ end;
 
 procedure TMainForm.ApplicationEventsException(Sender: TObject; E: Exception);
 begin
-  ErrorMessageBox(self, e.Message);
+  //ErrorMessageBox(self, e.Message);
+  MessageDlg(E.Message, mtError, [mbOk], 0);
   Application.Terminate;
 end;
 
@@ -265,6 +270,8 @@ begin
   end;
 end;
 
+// .............................................................................
+
 procedure TMainForm.SessionsActionExecute(Sender: TObject);
 begin
   if not isWinOpen('sessions') then
@@ -272,6 +279,18 @@ begin
     TSessionListForm.Create(self, 'sessions');
   end
   else GetMDIForm('sessions').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.StationsActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('stations') then
+  begin
+    TStationsForm.Create(self, 'stations');
+  end
+  else GetMDIForm('stations').Show;
+
 end;
 
 end.

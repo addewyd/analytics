@@ -1407,9 +1407,11 @@ procedure LoadIBR(node: IDOMNode; id: integer);
     attrs: IDOMNamedNodeMap;
     fuelcode, fuelname, partnername, partnercode: string;
 
-    tanknum: String;
-    sVolume, sMass, sPrice: String;
-    Volume, Mass, price: Extended;
+    tanknum, odt: String;
+    sDensity, sVolume, sMass, sPrice, sDiscr, sDocTemp: String;
+    Density, Volume, Mass, Price, Discr, DocTemp: Extended;
+    docnumber, doccarnumber: String;
+    dt: TDateTime;
 
 begin
   NL := node.childNodes;
@@ -1433,6 +1435,150 @@ begin
       CheckLink('CONTRAGENTS', partnercode, partnername);
 
       tanknum := attrs.getNamedItem('TankNum').nodeValue;
+      odt := attrs.getNamedItem('DateTime').nodeValue;
+      dt := VarToDateTime(odt);
+      DateTimeToString(odt, 'yyyy-mm-dd hh:nn:ss', dt);
+
+      docnumber := attrs.getNamedItem('DocNumber').nodeValue;
+      doccarnumber := attrs.getNamedItem('DocCarNumber').nodeValue;
+
+      sDensity := attrs.getNamedItem('Density').nodeValue;
+      sMass := attrs.getNamedItem('Mass').nodeValue;
+      sVolume := attrs.getNamedItem('Volume').nodeValue;
+      sDiscr := attrs.getNamedItem('Discrepancy').nodeValue;
+      sPrice := attrs.getNamedItem('Price').nodeValue;
+      sDocTemp := attrs.getNamedItem('DocTemperature').nodeValue;
+
+      Density := StrToextDef(sDensity, 0);
+      Mass := StrToextDef(sMass, 0);
+      Volume := StrToextDef(sVolume, 0);
+      Discr := StrToextDef(sDiscr, 0);
+      Price := StrToextDef(sPrice, 0);
+      DocTemp := StrToextDef(sDocTemp, 0);
+
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into IncomesByDischarge ' +
+          '(session_id, odt, docnumber, doccarnumber, tanknum, fuelname, ' +
+          'fuelextcode, density, mass, volume, discrepancy, price, doctemperature,partnername,partnerextcode)' +
+          ' values ' +
+          '(:session_id, :odt, :docnumber, :doccarnumber, :tanknum, :fuelname, :fuelextcode, :density, :mass, :volume, :discrepancy, :price, :doctemperature, :partnername, :partnerextcode)';
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'odt';
+              DataType := ftTimeStamp;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'docnumber';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'doccarnumber';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'tanknum';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'fuelname';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'fuelextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'density';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'mass';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'volume';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'discrepancy';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'price';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'doctemperature';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnername';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnerextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+        end;
+
+        ParamByName('session_id').AsInteger := id;
+        ParamByName('odt').AsString := odt;
+        ParamByName('docnumber').AsString := docnumber;
+        ParamByName('doccarnumber').AsString := doccarnumber;
+        ParamByName('tanknum').AsString := tanknum;
+        ParamByName('fuelname').AsString := fuelname;
+        ParamByName('fuelextcode').AsString := fuelcode;
+        ParamByName('density').AsExtended := Density;
+        ParamByName('mass').AsExtended := Mass;
+        ParamByName('volume').AsExtended := Volume;
+        ParamByName('discrepancy').AsExtended := Discr;;
+        ParamByName('price').AsExtended := Price;
+        ParamByName('doctemperature').AsExtended := DocTemp;
+        ParamByName('partnername').AsString := partnername;
+        ParamByName('partnerextcode').AsString := partnercode;
+
+        Prepare;
+        ExecSQL;
+
+      end;
+
 
     end;
 end;

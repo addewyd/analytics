@@ -1,8 +1,46 @@
 inherited SessionListForm: TSessionListForm
   Caption = 'Session List'
+  ClientHeight = 364
+  ClientWidth = 551
+  ExplicitWidth = 567
+  ExplicitHeight = 423
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvToolBar1: TJvToolBar
+    Width = 551
+  end
+  inherited JvStatusBar1: TJvStatusBar
+    Top = 345
+    Width = 551
+  end
+  inherited JvDBGrid: TJvDBGrid
+    Width = 551
+    Height = 297
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'azscode'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'sessionnum'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'startdatetime'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'username'
+        Visible = True
+      end>
+  end
   inherited JvDBGridFooter: TJvDBGridFooter
+    Top = 326
+    Width = 551
     ExplicitTop = 243
   end
   inherited ImageList: TImageList
@@ -12690,5 +12728,10 @@ inherited SessionListForm: TSessionListForm
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
     UpdateTransaction = DM.FDTransaction
+    FetchOptions.Unidirectional = False
+    SQL.Strings = (
+      
+        'select azscode, sessionnum, startdatetime, username from session' +
+        's')
   end
 end

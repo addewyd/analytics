@@ -54,13 +54,18 @@ object MainForm: TMainForm
       Top = 0
       Action = SessionsAction
     end
-    object ToolButton4: TToolButton
+    object ToolButton8: TToolButton
       Left = 46
+      Top = 0
+      Action = StationsAction
+    end
+    object ToolButton4: TToolButton
+      Left = 69
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 69
+      Left = 92
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -68,14 +73,14 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 77
+      Left = 100
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
       ImageIndex = 130
     end
     object ToolButton7: TToolButton
-      Left = 100
+      Left = 123
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -83,7 +88,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 108
+      Left = 131
       Top = 0
       Action = ClearDBAction
     end
@@ -117,6 +122,9 @@ object MainForm: TMainForm
       object ClearDB1: TMenuItem
         Action = ClearDBAction
       end
+      object N1: TMenuItem
+        Action = StationsAction
+      end
     end
     object About1: TMenuItem
       Action = AboutAction
@@ -125,7 +133,7 @@ object MainForm: TMainForm
   object ActionList: TActionList
     Images = DM.imlist
     Left = 72
-    Top = 40
+    Top = 48
     object CloseAction: TAction
       Caption = 'Quit'
       ImageIndex = 48
@@ -134,7 +142,7 @@ object MainForm: TMainForm
     object AboutAction: TAction
       Caption = 'About'
       Hint = 'About'
-      ImageIndex = 28
+      ImageIndex = 31
       OnExecute = AboutActionExecute
     end
     object LoadFileAction: TAction
@@ -158,6 +166,11 @@ object MainForm: TMainForm
       Hint = #1057#1084#1077#1085#1099
       ImageIndex = 80
       OnExecute = SessionsActionExecute
+    end
+    object StationsAction: TAction
+      Caption = #1050#1086#1076#1099' '#1040#1047#1057
+      ImageIndex = 320
+      OnExecute = StationsActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

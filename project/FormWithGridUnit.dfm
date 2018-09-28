@@ -12722,7 +12722,6 @@ inherited FormWithGrid: TFormWithGrid
   end
   object FDQuery: TFDQuery
     FetchOptions.AssignedValues = [evUnidirectional]
-    FetchOptions.Unidirectional = True
     Left = 240
     Top = 152
   end

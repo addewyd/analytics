@@ -12,7 +12,8 @@ uses
   BaseFormUnit1 in 'BaseFormUnit1.pas' {BaseForm},
   FormWithGridUnit in 'FormWithGridUnit.pas' {FormWithGrid},
   SessionListUnit in 'SessionListUnit.pas' {SessionListForm},
-  MlogUnit in 'MlogUnit.pas' {MlogForm};
+  MlogUnit in 'MlogUnit.pas' {MlogForm},
+  StationsUnit in 'StationsUnit.pas' {StationsForm};
 
 {$R *.res}
 

@@ -15,6 +15,7 @@ uses
 
 type
   TSessionListForm = class(TFormWithGrid)
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,5 +28,24 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TSessionListForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  with FDQuery do
+  begin
+//    Connection := DM.FDConnection;
+//    Transaction := DM.FDConnection.Transaction;
+    Transaction.StartTransaction;
+    try
+//      SQL.Text := 'select azscode, sessionnum, startdatetime, username from sessions';
+      Open;
+      FetchAll;
+      Transaction.Commit;
+    except
+      Transaction.Rollback;
+    end;
+  end;
+end;
 
 end.
