@@ -15,6 +15,7 @@ procedure LoadHoses(node: IDOMNode; id: integer);
 procedure LoadOBR(node: IDOMNode; id: integer);
 procedure LoadIOBR(node: IDOMNode; id: integer);
 procedure LoadIBR(node: IDOMNode; id: integer);
+procedure LoadCF(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
 procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
 function LoadOrderFile(filename, azs: string): Integer;
@@ -371,6 +372,10 @@ begin
       else if nname = 'ItemOutcomesByRetail' then
       begin
         LoadIOBR(n1, id);
+      end
+      else if nname = 'CashFlow' then
+      begin
+        LoadCF(n1, id);
       end
       else if nname = 'IncomesByDischarge' then
       begin
@@ -1830,7 +1835,7 @@ begin
 
         ParamByName('session_id').AsInteger := id;
         ParamByName('itemname').AsString := itemname;
-        ParamByName('itemextcode').AsString := itemgrpextcode;
+        ParamByName('itemextcode').AsString := itemextcode;
         ParamByName('itemgroup').AsString := itemgroup;
         ParamByName('itemgrpextcode').AsString := itemgrpextcode;
         ParamByName('isservice').AsSmallInt := Isservice;
@@ -1851,13 +1856,114 @@ begin
         ParamByName('pricefasttrade').AsExtended := Pricefasttrade;
         ParamByName('pricein').AsExtended := Pricein;
         ParamByName('priceretail').AsExtended := Priceretail;
-    //    Prepare;
-    //    ExecSQL;
+        Prepare;
+        ExecSQL;
 
       end;
 
     end;
 
+    AddToLog(format('%d records added', [len]));
+
+end;
+
+// .............................................................................
+
+// CashFlow
+procedure LoadCF(node: IDOMNode; id: integer);
+  var i, len, rc: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+    sDocTypeID, DocTypeName, sCashID, CashName, Remark, sAmount: String;
+    DocTypeID, CashID : integer;
+    Amount: Extended;
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+      attrs := NL.item[i].attributes;
+      with attrs do
+      begin
+        sDocTypeID := getNamedItem('DocTypeID').nodeValue;
+        DocTypeName := getNamedItem('DocTypeName').nodeValue;
+        sCashID := getNamedItem('CashID').nodeValue;
+        CashName := getNamedItem('CashName').nodeValue;
+        Remark := getNamedItem('Remark').nodeValue;
+        sAmount := getNamedItem('Amount').nodeValue;
+
+        DocTypeID := StrToIntDef(sDocTypeID, 0);
+        CashID := StrToIntDef(sCashID, 0);
+        Amount := StrToextDef(sAmount, 0);
+
+      end;
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into cashflow ' +
+          '(session_id, doctypeid, doctypename,cashid,cashname,remark,amount)' +
+          ' values ' +
+          '(:session_id, :doctypeid, :doctypename,:cashid,:cashname,:remark,:amount)';
+          with Params do
+          begin
+            Clear;
+            with Add do
+            begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'doctypeid';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'doctypename';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'cashid';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'cashname';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'remark';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'amount';
+              DataType := ftExtended;
+              ParamType := ptInput;
+            end;
+          end;
+          ParamByName('session_id').AsInteger := id;
+          ParamByName('doctypeid').AsInteger := DocTypeID;
+          ParamByName('doctypename').AsString := DocTypeName;
+          ParamByName('cashid').AsInteger := CashID;
+          ParamByName('cashname').AsString := CashName;
+          ParamByName('remark').AsString := Remark;
+          ParamByName('amount').AsExtended := Amount;
+
+          Prepare;
+          ExecSQL;
+        end;
+
+    end;
     AddToLog(format('%d records added', [len]));
 
 end;
