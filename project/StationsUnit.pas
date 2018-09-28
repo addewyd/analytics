@@ -18,6 +18,7 @@ type
     FDUpdSQL: TFDUpdateSQL;
     UpdateAction: TAction;
     ToolButton2: TToolButton;
+    Update1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure UpdateActionExecute(Sender: TObject);
   private

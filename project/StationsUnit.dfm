@@ -3,15 +3,14 @@ inherited StationsForm: TStationsForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    object ToolButton2: TToolButton [0]
-      Left = 0
+    object ToolButton2: TToolButton
+      Left = 23
       Top = 0
       Action = UpdateAction
     end
-    inherited ToolButton1: TToolButton
-      Left = 23
-      ExplicitLeft = 23
-    end
+  end
+  inherited JvStatusBar1: TJvStatusBar
+    ExplicitTop = 243
   end
   inherited JvDBGrid: TJvDBGrid
     Columns = <
@@ -32,7 +31,7 @@ inherited StationsForm: TStationsForm
       end>
   end
   inherited JvDBGridFooter: TJvDBGridFooter
-    ExplicitTop = 243
+    ExplicitTop = 262
   end
   inherited ActionList: TActionList
     object UpdateAction: TAction
@@ -41,9 +40,16 @@ inherited StationsForm: TStationsForm
       OnExecute = UpdateActionExecute
     end
   end
+  inherited MainMenu: TMainMenu
+    inherited File1: TMenuItem
+      object Update1: TMenuItem [0]
+        Action = UpdateAction
+      end
+    end
+  end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180012C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
