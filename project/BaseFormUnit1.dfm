@@ -69,7 +69,7 @@ object BaseForm: TBaseForm
     Left = 128
     Top = 88
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = 'Active window'
       object Close1: TMenuItem
         Action = CloseAction
       end

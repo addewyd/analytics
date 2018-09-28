@@ -20,7 +20,7 @@ uses
 
 type
   TMainForm = class(TForm)
-    MainMenu: TMainMenu;
+    MainMenuM: TMainMenu;
     File1: TMenuItem;
     Options1: TMenuItem;
     About1: TMenuItem;
@@ -170,12 +170,16 @@ begin
           AddToLog('deleted from orders');
           ExecSQL('delete from outcomesbyretail');
           AddToLog('deleted from outcomesbyretail');
+          ExecSQL('delete from itemoutcomesbyretail');
+          AddToLog('deleted from itemoutcomesbyretail');
           ExecSQL('delete from outcomesbyoffice');
           AddToLog('deleted from outcomesbyoffice');
           ExecSQL('delete from incomesbydischarge');
           AddToLog('deleted from incomesbydischarge');
           ExecSQL('delete from wares');
           AddToLog('deleted from wares');
+          ExecSQL('delete from items');
+          AddToLog('deleted from items');
           ExecSQL('delete from tanks');
           AddToLog('deleted from tanks');
           ExecSQL('delete from hoses');

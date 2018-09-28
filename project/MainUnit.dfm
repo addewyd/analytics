@@ -12,7 +12,7 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsMDIForm
-  Menu = MainMenu
+  Menu = MainMenuM
   OldCreateOrder = False
   OnActivate = FormActivate
   OnClick = AboutActionExecute
@@ -93,41 +93,52 @@ object MainForm: TMainForm
       Action = ClearDBAction
     end
   end
-  object MainMenu: TMainMenu
+  object MainMenuM: TMainMenu
     Left = 16
     Top = 40
     object File1: TMenuItem
       Caption = 'File'
+      GroupIndex = 10
       object LoadFile1: TMenuItem
         Action = LoadFileAction
+        GroupIndex = 12
       end
       object LoadDir1: TMenuItem
         Action = LoadDirAction
+        GroupIndex = 14
       end
       object Close1: TMenuItem
         Action = CloseAction
+        GroupIndex = 16
       end
     end
     object Sessions1: TMenuItem
       Caption = 'Sessions'
+      GroupIndex = 20
       object Sessions2: TMenuItem
         Action = SessionsAction
+        GroupIndex = 22
       end
     end
     object Options1: TMenuItem
       Caption = 'Options'
+      GroupIndex = 30
     end
     object Service1: TMenuItem
       Caption = 'Service'
+      GroupIndex = 40
       object ClearDB1: TMenuItem
         Action = ClearDBAction
+        GroupIndex = 42
       end
       object N1: TMenuItem
         Action = StationsAction
+        GroupIndex = 44
       end
     end
     object About1: TMenuItem
       Action = AboutAction
+      GroupIndex = 50
     end
   end
   object ActionList: TActionList

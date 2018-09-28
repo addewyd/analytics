@@ -12,6 +12,10 @@ uses
 type
   TMlogForm = class(TBaseForm)
     mlog: TMemo;
+    ClearAction: TAction;
+    Clear1: TMenuItem;
+    ToolButton2: TToolButton;
+    procedure ClearActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -29,5 +33,11 @@ implementation
     begin
       mlog.Clear;
     end;
+
+procedure TMlogForm.ClearActionExecute(Sender: TObject);
+begin
+  inherited;
+  Clear;
+end;
 
 end.

@@ -16,24 +16,19 @@ procedure LoadOBR(node: IDOMNode; id: integer);
 procedure LoadIOBR(node: IDOMNode; id: integer);
 procedure LoadIBR(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
-procedure CheckLink(tablename, ecode, ename: string);
+procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
 function LoadOrderFile(filename, azs: string): Integer;
 
 implementation
 
 uses MainUnit, MlogUnit;
 
-procedure CheckLink(tablename, ecode, ename: string);
+procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
   var
     rc: integer;
 begin
 
   if Trim(ecode) = '' then Exit;
-  if tablename = 'PAYMENTMODES' then
-  begin
-    if Length(ecode) > 10 then
-      ecode := Copy(Trim(ecode), 1, 10);
-  end;
 
   with DM.FDQuery do
   begin
@@ -55,8 +50,18 @@ begin
     rc := RecordCount;
     if rc < 1 then
     begin
-      SQL.Text := 'insert into ' + tablename +
-        '(code, name) values (:code, :name)';
+
+      if length(adds) = 2 then
+      begin
+        SQL.Text := 'insert into ' + tablename +
+          '(code, name,'+adds[0]+') values (:code, :name, :adds)';
+      end
+      else
+      begin
+        SQL.Text := 'insert into ' + tablename +
+          '(code, name) values (:code, :name)';
+      end;
+
       with Params do
       begin
         Clear;
@@ -72,10 +77,24 @@ begin
           DataType := ftString;
           ParamType := ptInput;
         end;
+        if length(adds) = 2 then
+        begin
+          with Add do
+          begin
+            Name := 'adds';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+
+        end;
 
       end;
       ParamByName('code').AsString := ecode;
       ParamByName('name').AsString := ename;
+      if length(adds) = 2 then
+      begin
+        ParamByName('adds').AsString := adds[1];
+      end;
       Prepare;
       ExecSQL;
 
@@ -707,9 +726,9 @@ begin
       paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
       partnername := attrs.getNamedItem('PartnerName').nodeValue;
 
-      CheckLink('WARES', fuelcode, fuelname);
-      CheckLink('PAYMENTMODES', paymentcode, paymentname);
-      CheckLink('CONTRAGENTS', partnercode, partnername);
+      CheckLink('WARES', fuelcode, fuelname, []);
+      CheckLink('PAYMENTMODES', paymentcode, paymentname, []);
+      CheckLink('CONTRAGENTS', partnercode, partnername, []);
 
       tanknum := attrs.getNamedItem('TankNum').nodeValue;
       hosename := attrs.getNamedItem('HoseName').nodeValue;
@@ -952,8 +971,8 @@ begin
       fuelname := attrs.getNamedItem('FuelName').nodeValue;
       paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
 
-      CheckLink('WARES', fuelcode, fuelname);
-      CheckLink('PAYMENTMODES', paymentcode, paymentname);
+      CheckLink('WARES', fuelcode, fuelname,[]);
+      CheckLink('PAYMENTMODES', paymentcode, paymentname, []);
 
       with attrs do begin
         odt := getNamedItem('Date').nodeValue
@@ -1431,8 +1450,8 @@ begin
       fuelname := attrs.getNamedItem('FuelName').nodeValue;
       partnername := attrs.getNamedItem('PartnerName').nodeValue;
 
-      CheckLink('WARES', fuelcode, fuelname);
-      CheckLink('CONTRAGENTS', partnercode, partnername);
+      CheckLink('WARES', fuelcode, fuelname, []);
+      CheckLink('CONTRAGENTS', partnercode, partnername, []);
 
       tanknum := attrs.getNamedItem('TankNum').nodeValue;
       odt := attrs.getNamedItem('DateTime').nodeValue;
@@ -1579,16 +1598,268 @@ begin
 
       end;
 
-
     end;
+    AddToLog(format('%d records added', [len]));
+
 end;
 
 // .............................................................................
 
 // ItemOutcomesByRetail
 procedure LoadIOBR(node: IDOMNode; id: integer);
+  var i, len, rc: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+
+    itemextcode, itemname, paymentextcode,
+      paymentname, partnerextcode, partnername: string;
+
+      itemgroup, itemgrpextcode, partnerinn, nds, sunit, frdepartment,
+        hash, itemcode: String;
+      sIsservice, sItemid, sIsReturn, sQuantity: String;
+      sAmount, sPricefasttrade, sPricein, sPriceretail: String;
+
+      Isservice, Itemid, IsReturn, Quantity: integer;
+      Amount, Pricefasttrade, Pricein, Priceretail: Extended;
+
 begin
-  // no data
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+    begin
+      attrs := NL.item[i].attributes;
+
+      itemextcode := attrs.getNamedItem('ItemExtCode').nodeValue;
+      paymentextcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
+      partnerextcode := attrs.getNamedItem('PartnerExtCode').nodeValue;
+      itemcode := attrs.getNamedItem('ItemCode').nodeValue;
+
+      if Trim(itemextcode) = '' then itemextcode := 'EMPTY';
+      if Trim(itemcode) = '' then itemcode := 'EMPTY';
+      if Trim(paymentextcode) = '' then paymentextcode := 'EMPTY';
+      if Trim(partnerextcode) = '' then partnerextcode := 'EMPTY';
+
+      itemname := attrs.getNamedItem('ItemName').nodeValue;
+      paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
+      partnername := attrs.getNamedItem('PartnerName').nodeValue;
+
+      CheckLink('ITEMS', itemextcode, itemname, ['ICODE', itemcode]);
+      CheckLink('PAYMENTMODES', paymentextcode, paymentname, []);
+      CheckLink('CONTRAGENTS', partnerextcode, partnername, []);
+
+
+      itemgroup := attrs.getNamedItem('ItemGroup').nodeValue;
+      itemgrpextcode := attrs.getNamedItem('ItemsGrpExtCode').nodeValue;
+      partnerinn := attrs.getNamedItem('PartnerINN').nodeValue;
+      nds := attrs.getNamedItem('Nds').nodeValue;
+      sunit := attrs.getNamedItem('Unit').nodeValue;
+      frdepartment := attrs.getNamedItem('FRDepartment').nodeValue;
+      hash := attrs.getNamedItem('Hash').nodeValue;
+      sIsservice := attrs.getNamedItem('IsService').nodeValue;
+      sItemid := attrs.getNamedItem('ItemID').nodeValue;
+      sIsReturn := attrs.getNamedItem('IsReturn').nodeValue;
+      sQuantity := attrs.getNamedItem('Quantity').nodeValue;
+      sAmount := attrs.getNamedItem('Amount').nodeValue;
+      sPricefasttrade := attrs.getNamedItem('PriceFastTrade').nodeValue;
+      sPricein := attrs.getNamedItem('PriceIn').nodeValue;
+      sPriceretail := attrs.getNamedItem('PriceRetail').nodeValue;
+
+      Isservice := StrToIntDef(sIsservice, 0);
+      Itemid := StrToIntDef(sItemid, 0);
+      IsReturn := StrToIntDef(sIsReturn, 0);
+      Quantity := StrToIntDef(sQuantity, 0);
+
+      Amount := StrToextDef(sAmount, 0);
+      Pricefasttrade := StrToextDef(sPricefasttrade, 0);
+      Pricein := StrToextDef(sPricein, 0);
+      Priceretail := StrToextDef(sPriceretail, 0);
+
+      with DM.FDQuery do
+      begin
+        sql.Text := 'insert into itemoutcomesbyretail' +
+          '(session_id, itemname, itemextcode, itemgroup, itemgrpextcode,isservice,'+
+          'paymentmodename,paymentmodeextcode,partnername,partnerextcode,partnerinn,itemid,nds,unit,frdepartment,hash,itemcode,isreturn,quantity,amount,pricefasttrade,pricein,priceretail)' +
+          ' values ' +
+          '(:session_id, :itemname, :itemextcode, :itemgroup, :itemgrpextcode,:isservice,'+
+          ':paymentmodename,:paymentmodeextcode,:partnername,:partnerextcode,:partnerinn,:itemid,:nds,:unit,:frdepartment,:hash,:itemcode,:isreturn,:quantity,:amount,:pricefasttrade,:pricein,:priceretail)';
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemname';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemgroup';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemgrpextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'isservice';
+              DataType := ftSmallint;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'paymentmodename';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'paymentmodeextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnername';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnerextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnerinn';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemid';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'nds';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'unit';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'frdepartment';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'hash';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'isreturn';
+              DataType := ftSmallInt;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'quantity';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'amount';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'pricefasttrade';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'pricein';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'priceretail';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+
+        end;
+
+        ParamByName('session_id').AsInteger := id;
+        ParamByName('itemname').AsString := itemname;
+        ParamByName('itemextcode').AsString := itemgrpextcode;
+        ParamByName('itemgroup').AsString := itemgroup;
+        ParamByName('itemgrpextcode').AsString := itemgrpextcode;
+        ParamByName('isservice').AsSmallInt := Isservice;
+        ParamByName('paymentmodename').AsString := paymentname;
+        ParamByName('paymentmodeextcode').AsString := paymentextcode;
+        ParamByName('partnername').AsString := partnername;
+        ParamByName('partnerextcode').AsString := partnerextcode;
+        ParamByName('partnerinn').AsString := partnerinn;
+        ParamByName('itemid').AsInteger := Itemid;
+        ParamByName('nds').AsString := nds;
+        ParamByName('unit').AsString := sunit;
+        ParamByName('frdepartment').AsString := frdepartment;
+        ParamByName('hash').AsString := hash;
+        ParamByName('itemcode').AsString := itemcode;
+        ParamByName('isreturn').AsSmallInt := IsReturn;
+        ParamByName('quantity').AsInteger := Quantity;
+        ParamByName('amount').AsExtended := Amount;
+        ParamByName('pricefasttrade').AsExtended := Pricefasttrade;
+        ParamByName('pricein').AsExtended := Pricein;
+        ParamByName('priceretail').AsExtended := Priceretail;
+    //    Prepare;
+    //    ExecSQL;
+
+      end;
+
+    end;
+
+    AddToLog(format('%d records added', [len]));
+
 end;
 
 end.
