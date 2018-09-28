@@ -168,6 +168,8 @@ begin
           //logm.Lines.Clear;
           ExecSQL('delete from orders');
           AddToLog('deleted from orders');
+          ExecSQL('delete from cashflow');
+          AddToLog('deleted from cashflow');
           ExecSQL('delete from outcomesbyretail');
           AddToLog('deleted from outcomesbyretail');
           ExecSQL('delete from itemoutcomesbyretail');
