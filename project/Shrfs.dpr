@@ -2,6 +2,8 @@ program Shrfs;
 
 uses
   Vcl.Forms,
+  Vcl.Dialogs,
+  System.SysUtils,
   MainUnit in 'MainUnit.pas' {MainForm},
   AboutUnit in 'AboutUnit.pas' {AboutForm},
   ForFutureUseUnit in 'ForFutureUseUnit.pas' {ForFutureUseForm},
@@ -13,7 +15,9 @@ uses
   FormWithGridUnit in 'FormWithGridUnit.pas' {FormWithGrid},
   SessionListUnit in 'SessionListUnit.pas' {SessionListForm},
   MlogUnit in 'MlogUnit.pas' {MlogForm},
-  StationsUnit in 'StationsUnit.pas' {StationsForm};
+  StationsUnit in 'StationsUnit.pas' {StationsForm},
+  TablesListUnit in 'TablesListUnit.pas' {TablesListForm},
+  TableFromXmlUnit in 'TableFromXmlUnit.pas' {TableFromXmlForm};
 
 {$R *.res}
 

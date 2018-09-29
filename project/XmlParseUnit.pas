@@ -4,7 +4,7 @@ interface
 
 uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, System.IOUtils, Data.DB, System.Types,
-  XML.xmldom, XML.XMLIntf, FIREDAC.Stan.Error, FireDAC.Phys.IBWrapper,
+  XML.xmldom, XML.XMLIntf, FIREDAC.Stan.Error, FIREDAC.Stan.Param,FireDAC.Phys.IBWrapper,
   XML.XMLDoc, ErrorUnit, DmUnit;
 
 procedure ParseInputFile(Doc: IDOMDocument);
@@ -16,6 +16,8 @@ procedure LoadOBR(node: IDOMNode; id: integer);
 procedure LoadIOBR(node: IDOMNode; id: integer);
 procedure LoadIBR(node: IDOMNode; id: integer);
 procedure LoadCF(node: IDOMNode; id: integer);
+procedure LoadTDIB(node: IDOMNode; id: integer);
+procedure LoadTDBItems(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
 procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
 function LoadOrderFile(filename, azs: string): Integer;
@@ -372,6 +374,10 @@ begin
       else if nname = 'ItemOutcomesByRetail' then
       begin
         LoadIOBR(n1, id);
+      end
+      else if nname = 'TradeDocsInBills' then
+      begin
+        LoadTDIB(n1, id);
       end
       else if nname = 'CashFlow' then
       begin
@@ -1967,5 +1973,352 @@ begin
     AddToLog(format('%d records added', [len]));
 
 end;
+
+// .............................................................................
+
+// TradeDocsInBills
+procedure LoadTDIB(node: IDOMNode; id: integer);
+  var i, len, tdb_id: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+
+    sInBillHID, NDoc, sDateDoc, PriceName, PriceExtCode, PartnerName,
+      PartnerExtCode, PartnerInn, PartnerKPP, StoragesName, StoragesExtCode,
+      FirmsName, FirmsExtCode: String;
+
+    InBillHID:  Integer;
+    DateDoc: TDateTime;
+
+
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+      n := NL.item[i];
+      attrs := n.attributes;
+      with attrs do
+      begin
+        sInBillHID := getNamedItem('InBillHID').nodeValue;
+        NDoc := getNamedItem('NDoc').nodeValue;
+        sDateDoc := getNamedItem('DateDoc').nodeValue;
+        PriceName := getNamedItem('PriceName').nodeValue;
+        PriceExtCode := getNamedItem('PriceExtCode').nodeValue;
+        PartnerName := getNamedItem('PartnerName').nodeValue;
+        PartnerExtCode := getNamedItem('PartnerExtCode').nodeValue;
+        PartnerInn := getNamedItem('PartnerInn').nodeValue;
+        PartnerKPP := getNamedItem('PartnerKPP').nodeValue;
+        StoragesName := getNamedItem('StoragesName').nodeValue;
+        StoragesExtCode := getNamedItem('StoragesExtCode').nodeValue;
+        FirmsName := getNamedItem('FirmsName').nodeValue;
+        FirmsExtCode := getNamedItem('FirmsExtCode').nodeValue;
+      end;
+
+      if Trim(PartnerExtCode) = '' then PartnerExtCode := 'EMPTY';
+
+      CheckLink('CONTRAGENTS', PartnerExtCode, PartnerName, []);
+      CheckLink('STORAGES', StoragesExtCode, StoragesName, []);
+      CheckLink('FIRMS', FirmsExtCode, FirmsName, []);
+
+      InBillHID := StrToIntDef(sInBillHID, 0);
+      DateDoc := VarToDateTime(sDateDoc);
+      DateTimeToString(sDateDoc, 'yyyy-mm-dd hh:nn:ss', DateDoc);
+
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into tradedocsinbill ' +
+          '(session_id, inbillhid,ndoc,datedoc,pricename,priceextcode,'+
+            'partnername,partnerextcode,partnerinn,partnerkpp,'+
+            'storagesname,storagesextcode,firmsname,firmsextcode)' +
+          ' values ' +
+          '(:session_id, :inbillhid,:ndoc,:datedoc,:pricename,:priceextcode,'+
+            ':partnername,:partnerextcode,:partnerinn,:partnerkpp,'+
+            ':storagesname,:storagesextcode,:firmsname,:firmsextcode)' +
+          ' returning id';
+          with params do
+          begin
+            Clear;
+            with Add do
+            begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'inbillhid';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'ndoc';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'datedoc';
+              DataType := ftTimeStamp;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'pricename';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'priceextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'partnername';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'partnerextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'partnerinn';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'partnerkpp';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'storagesname';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'storagesextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'firmsname';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'firmsextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+            end;
+          end;
+
+          ParamByName('session_id').AsInteger := id;
+          ParamByName('inbillhid').AsInteger := InBillHID;
+          ParamByName('ndoc').AsString := NDoc;
+          ParamByName('datedoc').AsString := sDateDoc;
+          ParamByName('pricename').AsString := PriceName;
+          ParamByName('priceextcode').AsString := PriceExtCode;
+          ParamByName('partnername').AsString := PartnerName;
+          ParamByName('partnerextcode').AsString := PartnerExtCode;
+          ParamByName('partnerinn').AsString := PartnerInn;
+          ParamByName('partnerkpp').AsString := PartnerKPP;
+          ParamByName('storagesname').AsString := StoragesName;
+          ParamByName('storagesextcode').AsString := StoragesExtCode;
+          ParamByName('firmsname').AsString := FirmsName;
+          ParamByName('firmsextcode').AsString := FirmsExtCode;
+
+          Prepare;
+          Open;
+          First;
+          tdb_id := FieldByName('id').AsInteger;
+      end;
+
+      LoadTDBItems(n, tdb_id);
+
+  end;
+  AddToLog(format('%d records added', [len]));
+
+end;
+
+// .............................................................................
+
+procedure LoadTDBItems(node: IDOMNode; id: integer);
+  var i, len: integer;
+    NL: IDOMNodeList;
+    attrs: IDOMNamedNodeMap;
+
+    ItemName, ItemExtCode, sItemIsService, ItemCode, sUnitName, UnitExtCode,
+      sAmount, sQuantity, sPrice, sNdsAmount, sTotal, NdsName, NdsExtCode: String;
+    Quantity, ItemIsService: Integer;
+    Amount, Price, NdsAmount, Total: Extended;
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+    attrs := NL.item[i].attributes;
+    with attrs do
+    begin
+      ItemName := getNamedItem('ItemName').nodeValue;
+      ItemExtCode := getNamedItem('ItemExtCode').nodeValue;
+      sItemIsService := getNamedItem('ItemIsService').nodeValue;
+      ItemCode := getNamedItem('ItemCode').nodeValue;
+      sUnitName := getNamedItem('UnitName').nodeValue;
+      UnitExtCode := getNamedItem('UnitExtCode').nodeValue;
+      sAmount := getNamedItem('Amount').nodeValue;
+      sQuantity := getNamedItem('Quantity').nodeValue;
+      sPrice := getNamedItem('Price').nodeValue;
+      sNdsAmount := getNamedItem('NdsAmount').nodeValue;
+      sTotal := getNamedItem('Total').nodeValue;
+      NdsName := getNamedItem('NdsName').nodeValue;
+      NdsExtCode := getNamedItem('NdsExtCode').nodeValue;
+
+      Quantity := StrToIntDef(sQuantity, 0);
+      ItemIsService := StrToIntDef(sItemIsService, 0);
+      Amount := StrToextDef(sAmount, 0);
+      Price := StrToextDef(sPrice, 0);
+      Total := StrToextDef(sTotal, 0);
+      NdsAmount := StrToextDef(sNdsAmount, 0);
+    end;
+      CheckLink('ITEMS',ItemExtCode,ItemName, ['ICODE', itemcode]);
+
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'insert into tdb_items ' +
+          '(bill_id, itemname, itemextcode,itemisservice,itemcode,unitname,' +
+          'unitextcode,amount,quantity,price,ndsamount,total,ndsname,ndsextcode)' +
+          ' values ' +
+          '(:bill_id, :itemname, :itemextcode,:itemisservice,:itemcode,:unitname,' +
+          ':unitextcode,:amount,:quantity,:price,:ndsamount,:total,:ndsname,:ndsextcode)';
+
+        with params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'bill_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'itemname';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'itemextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'itemisservice';
+            DataType := ftSmallint;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'itemcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'unitname';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'unitextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'amount';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'quantity';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'price';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'ndsamount';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'total';
+            DataType := ftExtended;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'ndsname';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'ndsextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+        end;
+
+        ParamByName('bill_id').AsInteger := id;
+        ParamByName('itemname').AsString := ItemName;
+        ParamByName('itemextcode').AsString := ItemExtCode;
+        ParamByName('itemisservice').AsSmallInt := ItemIsService;
+        ParamByName('itemcode').AsString := ItemCode;
+        ParamByName('unitname').AsString := sUnitName;
+        ParamByName('unitextcode').AsString := UnitExtCode;
+        ParamByName('amount').AsExtended := Amount;
+        ParamByName('quantity').AsInteger := Quantity;
+        ParamByName('price').AsExtended := Price;
+        ParamByName('ndsamount').AsExtended := NdsAmount;
+        ParamByName('total').AsExtended := Total;
+        ParamByName('ndsname').AsString := NdsName;
+        ParamByName('ndsextcode').AsString := NdsExtCode;
+
+        Prepare;
+        ExecSQL;
+
+      end;
+
+  end;
+  AddToLog(format('%d records added in TDB_ITEMS', [len]));
+
+end;
+
 
 end.

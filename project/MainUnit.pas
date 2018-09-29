@@ -16,7 +16,7 @@ uses
   JvSelectDirectory, JvDialogs, XmlParseUnit, Xml.xmldom, Xml.XMLIntf,
   Xml.XMLDoc, ErrorUnit, Vcl.StdCtrls, JvExStdCtrls, JvMemo, YNUnit,
   JvFormPlacement, JvComponentBase, JvAppStorage, JvAppRegistryStorage,
-  SessionListUnit;
+  SessionListUnit, Vcl.StdActns;
 
 type
   TMainForm = class(TForm)
@@ -52,10 +52,19 @@ type
     Sessions2: TMenuItem;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
     StationsAction: TAction;
     N1: TMenuItem;
     ToolButton8: TToolButton;
+    XmlTablesAction: TAction;
+    XML1: TMenuItem;
+    ToolButton9: TToolButton;
+    WindowCascade1: TWindowCascade;
+    WindowTileHorizontal1: TWindowTileHorizontal;
+    WindowTileVertical1: TWindowTileVertical;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton12: TToolButton;
+    ToolButton7: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -67,6 +76,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SessionsActionExecute(Sender: TObject);
     procedure StationsActionExecute(Sender: TObject);
+    procedure XmlTablesActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -87,7 +97,7 @@ implementation
 
 {$R *.dfm}
 
-uses BaseFormUnit1, MlogUnit, StationsUnit;
+uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit;
 
 
 // .............................................................................
@@ -145,8 +155,8 @@ end;
 procedure TMainForm.ApplicationEventsException(Sender: TObject; E: Exception);
 begin
   //ErrorMessageBox(self, e.Message);
-  MessageDlg(E.Message, mtError, [mbOk], 0);
-  Application.Terminate;
+  MessageDlg('AE: ' + E.Message, mtError, [mbOk], 0);
+//  Application.Terminate;
 end;
 
 // ........................................................................
@@ -178,8 +188,21 @@ begin
           AddToLog('deleted from outcomesbyoffice');
           ExecSQL('delete from incomesbydischarge');
           AddToLog('deleted from incomesbydischarge');
+
+          ExecSQL('delete from tdb_items');
+          AddToLog('deleted from tdb_items');
+
+          ExecSQL('delete from TRADEDOCSINBILL');
+          AddToLog('deleted from tradedocsinbill');
+
           ExecSQL('delete from wares');
           AddToLog('deleted from wares');
+
+          ExecSQL('delete from storages');
+          AddToLog('deleted from storages');
+          ExecSQL('delete from firms');
+          AddToLog('deleted from firms');
+
           ExecSQL('delete from items');
           AddToLog('deleted from items');
           ExecSQL('delete from tanks');
@@ -250,6 +273,9 @@ begin
 //
 end;
 
+// .............................................................................
+
+
 procedure TMainForm.LoadFileActionExecute(Sender: TObject);
   var filename: String;
       doc: IDOMDocument;
@@ -296,7 +322,15 @@ begin
     TStationsForm.Create(self, 'stations');
   end
   else GetMDIForm('stations').Show;
+end;
 
+procedure TMainForm.XmlTablesActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('tableslist') then
+  begin
+    TTablesListForm.Create(self, 'tableslist');
+  end
+  else GetMDIForm('tableslist').Show;
 end;
 
 end.

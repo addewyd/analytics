@@ -95,48 +95,45 @@
         </DelphiCompile>
         <DCCReference Include="MainUnit.pas">
             <Form>MainForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="AboutUnit.pas">
             <Form>AboutForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="ForFutureUseUnit.pas">
             <Form>ForFutureUseForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="DmUnit.pas">
             <Form>DM</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="XmlParseUnit.pas"/>
         <DCCReference Include="ErrorUnit.pas">
             <Form>ErrorForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="YNUnit.pas">
             <Form>YNForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="BaseFormUnit1.pas">
             <Form>BaseForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="FormWithGridUnit.pas">
             <Form>FormWithGrid</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="SessionListUnit.pas">
             <Form>SessionListForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="MlogUnit.pas">
             <Form>MlogForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="StationsUnit.pas">
             <Form>StationsForm</Form>
+        </DCCReference>
+        <DCCReference Include="TablesListUnit.pas">
+            <Form>TablesListForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TableFromXmlUnit.pas">
+            <Form>TableFromXmlForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Action = AboutAction
+  Hint = 'About'
   Caption = 'Shrfs'
   ClientHeight = 619
   ClientWidth = 733
@@ -15,7 +15,6 @@ object MainForm: TMainForm
   Menu = MainMenuM
   OldCreateOrder = False
   OnActivate = FormActivate
-  OnClick = AboutActionExecute
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -59,13 +58,18 @@ object MainForm: TMainForm
       Top = 0
       Action = StationsAction
     end
-    object ToolButton4: TToolButton
+    object ToolButton9: TToolButton
       Left = 69
+      Top = 0
+      Action = XmlTablesAction
+    end
+    object ToolButton4: TToolButton
+      Left = 92
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 92
+      Left = 115
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -73,22 +77,40 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 100
+      Left = 123
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
       ImageIndex = 130
     end
+    object ToolButton10: TToolButton
+      Left = 146
+      Top = 0
+      Action = WindowCascade1
+      ImageIndex = 12
+    end
+    object ToolButton11: TToolButton
+      Left = 169
+      Top = 0
+      Action = WindowTileHorizontal1
+      ImageIndex = 14
+    end
+    object ToolButton12: TToolButton
+      Left = 192
+      Top = 0
+      Action = WindowTileVertical1
+      ImageIndex = 15
+    end
     object ToolButton7: TToolButton
-      Left = 123
+      Left = 215
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
-      ImageIndex = 131
+      ImageIndex = 142
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 131
+      Left = 223
       Top = 0
       Action = ClearDBAction
     end
@@ -133,6 +155,10 @@ object MainForm: TMainForm
       end
       object N1: TMenuItem
         Action = StationsAction
+        GroupIndex = 44
+      end
+      object XML1: TMenuItem
+        Action = XmlTablesAction
         GroupIndex = 44
       end
     end
@@ -182,6 +208,29 @@ object MainForm: TMainForm
       Caption = #1050#1086#1076#1099' '#1040#1047#1057
       ImageIndex = 320
       OnExecute = StationsActionExecute
+    end
+    object XmlTablesAction: TAction
+      Caption = #1058#1072#1073#1083#1080#1094#1099' '#1080#1079' XML'
+      ImageIndex = 353
+      OnExecute = XmlTablesActionExecute
+    end
+    object WindowCascade1: TWindowCascade
+      Category = 'Window'
+      Caption = '&Cascade'
+      Hint = 'Cascade'
+      ImageIndex = 382
+    end
+    object WindowTileHorizontal1: TWindowTileHorizontal
+      Category = 'Window'
+      Caption = 'Tile &Horizontally'
+      Hint = 'Tile Horizontal'
+      ImageIndex = 383
+    end
+    object WindowTileVertical1: TWindowTileVertical
+      Category = 'Window'
+      Caption = '&Tile Vertically'
+      Hint = 'Tile Vertical'
+      ImageIndex = 384
     end
   end
   object ApplicationEvents: TApplicationEvents
