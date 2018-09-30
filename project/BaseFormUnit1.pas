@@ -45,6 +45,9 @@ constructor TBaseForm.Create(pr: TComponent; fname: string);
 begin
   inherited create(pr);
   formname := fname;
+  self.Name := 'FS_' + fname;
+  //MainMenu.Items[0].Caption := formname;
+
 end;
 
 

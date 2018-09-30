@@ -35,6 +35,7 @@ uses DmUnit, ErrorUnit, MainUnit, TableFromXmlUnit;
 procedure TTablesListForm.FormCreate(Sender: TObject);
 begin
   inherited;
+  MainMenu.Items[0].Caption := formname;
   with FDQuery do
     begin
     Transaction.StartTransaction;
@@ -72,6 +73,7 @@ begin
 
     wfieldlist := TStringList.Create;
     try
+
       wfieldlist.Add('azscode');
       wfieldlist.Add('sessionnum');
       wfieldlist.Add('startdatetime');
@@ -83,6 +85,8 @@ begin
 
 
       tt := TTableFromXmlForm.Create(MainForm, s);
+      tt.JvFS.AppStoragePath := 'FS_' + s;
+
       tt.Caption := s;
 
       for r  := 0 to wfieldlist.Count - 1 do
@@ -91,18 +95,22 @@ begin
         tt.JvDBGrid.Columns[r].FieldName := wfieldlist[r];
       end;
 
+//      JvFS.RestoreFormPlacement;
+
       with tt.FDQF01 do
       begin
 
         Connection := DM.FDConnection;
-        Transaction := tt.FDT01;
-        Transaction.Connection := DM.FDConnection;
+        Transaction := DM.FDTransaction;// .FDT01;
+//        Transaction.Connection := DM.FDConnection;
+        Transaction.StartTransaction;
 
         SQL.Text := 'select s.azscode as azscode, startdatetime from sessions s join ' + s +
           ' t on s.id=t.session_id group by azscode, startdatetime';
 
         Open;
-        First;
+//        First;
+        Transaction.Commit;
       end;
 
       with tt.FDQuery do

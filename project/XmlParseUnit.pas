@@ -13,14 +13,18 @@ function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
 procedure LoadTanks(node: IDOMNode; id: integer);
 procedure LoadHoses(node: IDOMNode; id: integer);
 procedure LoadOBR(node: IDOMNode; id: integer);
+procedure LoadOBC(node: IDOMNode; id: integer);
 procedure LoadIOBR(node: IDOMNode; id: integer);
 procedure LoadIBR(node: IDOMNode; id: integer);
 procedure LoadCF(node: IDOMNode; id: integer);
 procedure LoadTDIB(node: IDOMNode; id: integer);
+procedure LoadTR(node: IDOMNode; id: integer);
+procedure LoadIR(node: IDOMNode; id: integer);
 procedure LoadTDBItems(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
 procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
 function LoadOrderFile(filename, azs: string): Integer;
+function TryToGetCode(tablename, ename: String): String;
 
 implementation
 
@@ -105,6 +109,42 @@ begin
 
     end;
 
+  end;
+
+end;
+
+// ..................................................................
+
+function TryToGetCode(tablename, ename: String): String;
+  var
+    rc: integer;
+begin
+  result := '';
+
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select code from ' + tablename + ' where name = :name';
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'name';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+
+    ParamByName('name').AsString := ename;
+    Prepare;
+    Open;
+
+    rc := RecordCount;
+    if rc > 0 then
+    begin
+      result := FieldByName('code').AsString;
+
+    end;
   end;
 
 end;
@@ -321,7 +361,7 @@ begin
       IncomesByDischarge         +
       IncomesByWholesale      -
       ItemOutcomesByRetail    -
-      ItemOutcomesByPaysheet  -
+      ItemOutcomesByPaysheet  +
       CashFlow                   +
       OutcomesByCoupon           +
       OutcomesByOffice           +
@@ -371,6 +411,10 @@ begin
       begin
         LoadOBO(n1, id, azs);
       end
+      else if nname = 'OutcomesByCoupon' then
+      begin
+        LoadOBC(n1, id);
+      end
       else if nname = 'ItemOutcomesByRetail' then
       begin
         LoadIOBR(n1, id);
@@ -378,6 +422,14 @@ begin
       else if nname = 'TradeDocsInBills' then
       begin
         LoadTDIB(n1, id);
+      end
+      else if nname = 'TechReturns' then
+      begin
+        LoadTR(n1, id);
+      end
+      else if nname = 'ItemRests' then
+      begin
+        LoadIR(n1, id);
       end
       else if nname = 'CashFlow' then
       begin
@@ -1989,8 +2041,6 @@ procedure LoadTDIB(node: IDOMNode; id: integer);
 
     InBillHID:  Integer;
     DateDoc: TDateTime;
-
-
 begin
   NL := node.childNodes;
   len := nl.length;
@@ -2318,6 +2368,392 @@ begin
   end;
   AddToLog(format('%d records added in TDB_ITEMS', [len]));
 
+end;
+
+// .............................................................................
+
+// TechReturn
+procedure LoadTR(node: IDOMNode; id: integer);
+  var i, len: integer;
+    NL: IDOMNodeList;
+    attrs: IDOMNamedNodeMap;
+
+    sNum, sODT, FuelName, FuelExtCode, TankNum,
+      TankExtCode, sVolume, sMass, sDensity: String;
+    num: Integer;
+    odt: TDateTime;
+    Volume, Mass, Density: Extended;
+
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+    attrs := NL.item[i].attributes;
+    with attrs do
+    begin
+      sNum := getNamedItem('Num').nodeValue;
+      sOdt := getNamedItem('DateTime').nodeValue;
+      FuelName := getNamedItem('FuelName').nodeValue;
+      FuelExtCode := getNamedItem('FuelExtCode').nodeValue;
+      TankNum := getNamedItem('TankNum').nodeValue;
+      TankExtCode := getNamedItem('TankExtCode').nodeValue;
+      sVolume := getNamedItem('Volume').nodeValue;
+      sMass := getNamedItem('Mass').nodeValue;
+      sDensity := getNamedItem('Density').nodeValue;
+    end;
+
+    num := StrToIntDef(sNum, 0);
+    Odt := VarToDateTime(sOdt);
+    DateTimeToString(sodt, 'yyyy-mm-dd hh:nn:ss', odt);
+    Volume := StrToextDef(sVolume, 0);
+    Mass := StrToextDef(sMass, 0);
+    Density := StrToextDef(sDensity, 0);
+
+    CheckLink('WARES', fuelextcode, fuelname, []);
+
+    with DM.FDQuery do
+    begin
+      SQL.Text := 'insert into techreturn '+
+        '(session_id, num,odt,fuelname,fuelextcode,tanknum, tankextcode,volume,mass,density)'+
+        ' values '+
+        '(:session_id, :num,:odt,:fuelname,:fuelextcode,:tanknum, :tankextcode,:volume,:mass,:density)';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'num';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'odt';
+          DataType := ftTimeStamp;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'fuelname';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'fuelextcode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'tanknum';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'tankextcode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'volume';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'mass';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'density';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+      end;
+        ParamByName('session_id').AsInteger := id;
+        ParamByName('num').AsInteger := num;
+        ParamByName('odt').AsString := sODT;
+        ParamByName('fuelname').AsString := FuelName;
+        ParamByName('fuelextcode').AsString := FuelExtCode;
+        ParamByName('tanknum').AsString := TankNum;
+        ParamByName('tankextcode').AsString := TankExtCode;
+        ParamByName('volume').AsExtended := Volume;
+        ParamByName('mass').AsExtended := Mass;
+        ParamByName('density').AsExtended := Density;
+
+
+        Prepare;
+        ExecSQL;
+
+    end;
+
+  end;
+  AddToLog(format('%d records added', [len]));
+end;
+
+// .............................................................................
+
+// OutcomesByCoupon
+procedure LoadOBC(node: IDOMNode; id: integer);
+  var i, len: integer;
+    NL: IDOMNodeList;
+    attrs: IDOMNamedNodeMap;
+    sOdt, sSessionID, DocID, sVolume, sAmount, CouponCode,
+      CouponFuelName, sCouponVolume, sVolumeFact: String;
+    odt: TDateTime;
+    SessionID: Integer;
+    Volume, Amount, VolumeFact, CouponVolume: Extended;
+    FuelExtCode: String;
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+    attrs := NL.item[i].attributes;
+    with attrs do
+    begin
+      sOdt:= getNamedItem('Date').nodeValue;
+      sSessionID := getNamedItem('SessionID').nodeValue;
+      DocID := getNamedItem('DocID').nodeValue;
+      sVolume := getNamedItem('Volume').nodeValue;
+      sAmount := getNamedItem('Amount').nodeValue;
+      CouponCode := getNamedItem('CouponCode').nodeValue;
+      CouponFuelName := getNamedItem('CouponFuelName').nodeValue;
+      sCouponVolume := getNamedItem('CouponVolume').nodeValue;
+      sVolumeFact := getNamedItem('VolumeFact').nodeValue;
+
+
+    end;
+
+    Odt := VarToDateTime(sOdt);
+    DateTimeToString(sodt, 'yyyy-mm-dd hh:nn:ss', odt);
+
+    SessionID := StrToIntDef(sSessionID, 0);
+    Volume := StrToextDef(sVolume, 0);
+    CouponVolume := StrToextDef(sCouponVolume, 0);
+    Amount := StrToextDef(sAmount, 0);
+    VolumeFact := StrToextDef(sVolumeFact, 0);
+    FuelExtCode := TryTogetCode('WARES', CouponFuelName);
+
+    with DM.FDQuery do
+    begin
+      sql.Text := 'insert into outcomesbycoupon ' +
+        '(session_id,odt, sessionid,docid,volume,amount,' +
+            'couponcode,couponfuelname,couponvolume,volumefact,fuelextcode)' +
+        ' values ' +
+        '(:session_id,:odt, :sessionid,:docid,:volume,:amount,' +
+            ':couponcode,:couponfuelname,:couponvolume,:volumefact,:fuelextcode)';
+
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'odt';
+          DataType := ftTimeStamp;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'sessionid';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'docid';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'volume';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'couponvolume';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'amount';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'couponcode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'couponfuelname';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'volumefact';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'fuelextcode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+
+      end;
+      ParamByName('session_id').AsInteger := id;
+      ParamByName('odt').AsString := sOdt;
+      ParamByName('sessionid').AsInteger := SessionID;
+      ParamByName('docid').AsString := DocID;
+      ParamByName('volume').AsExtended := Volume;
+      ParamByName('couponvolume').AsExtended := CouponVolume;
+      ParamByName('amount').AsExtended := Amount;
+      ParamByName('volumefact').AsExtended := VolumeFact;
+      ParamByName('couponcode').AsString := CouponCode;
+      ParamByName('couponfuelname').AsString := CouponFuelName;
+
+      if FuelExtCode <> '' then
+        ParamByName('fuelextcode').AsString := FuelExtCode
+      else
+        ParamByName('fuelextcode').Clear();
+
+      Prepare;
+      ExecSQL;
+
+    end;
+
+
+  end;
+  AddToLog(format('%d records added', [len]));
+
+end;
+
+// .............................................................................
+
+// ItemRests
+procedure LoadIR(node: IDOMNode; id: integer);
+  var i, len: integer;
+    NL: IDOMNodeList;
+    attrs: IDOMNamedNodeMap;
+
+    ItemRest: Integer;
+    sItemRest,StorageExtCode, StorageName, ItemExtCode, ItemName, ItemCode: String;
+
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+  begin
+    attrs := NL.item[i].attributes;
+    with attrs do
+    begin
+      sItemRest := getNamedItem('ItemRest').nodeValue;
+      StorageExtCode := getNamedItem('StorageExtCode').nodeValue;
+      StorageName := getNamedItem('StorageName').nodeValue;
+      ItemExtCode := getNamedItem('ItemExtCode').nodeValue;
+      ItemName := getNamedItem('ItemName').nodeValue;
+      ItemCode := getNamedItem('ItemCode').nodeValue;
+    end;
+    ItemRest := StrToIntDef(sItemRest, 0);
+
+    CheckLink('STORAGES', StorageExtCode, StorageName, []);
+    CheckLink('ITEMS', ItemExtCode, ItemName, ['ICODE',ItemCode]);
+
+    with DM.FDQuery do
+    begin
+      SQL.Text := 'insert into itemrests (session_id, itemrest,storageextcode,storagename,itemextcode,itemname,itemcode) values ' +
+        '(:session_id, :itemrest,:storageextcode,' +
+        ':storagename,:itemextcode,:itemname,:itemcode)';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'itemrest';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'storageextcode';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'storagename';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'itemextcode';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'itemname';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'itemcode';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('session_id').AsInteger := id;
+      ParamByName('itemrest').AsInteger := id;
+      ParamByName('storageextcode').AsString := StorageExtCode;
+      ParamByName('storagename').AsString := StorageName;
+      ParamByName('itemextcode').AsString := ItemExtCode;
+      ParamByName('itemname').AsString := ItemName;
+      ParamByName('itemcode').AsString := ItemCode;
+      Prepare;
+      ExecSQL;
+
+    end;
+
+  end;
+
+  AddToLog(format('%d records added', [len]));
 end;
 
 

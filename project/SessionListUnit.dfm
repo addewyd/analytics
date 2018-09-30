@@ -8,10 +8,13 @@ inherited SessionListForm: TSessionListForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 551
+    ExplicitWidth = 551
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 345
     Width = 551
+    ExplicitTop = 345
+    ExplicitWidth = 551
   end
   inherited JvDBGrid: TJvDBGrid
     Width = 551
@@ -41,11 +44,17 @@ inherited SessionListForm: TSessionListForm
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 326
     Width = 551
-    ExplicitTop = 243
+    ExplicitTop = 326
+    ExplicitWidth = 551
+  end
+  inherited MainMenu: TMainMenu
+    inherited File1: TMenuItem
+      Caption = #1057#1084#1077#1085#1099
+    end
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180012C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12728,7 +12737,6 @@ inherited SessionListForm: TSessionListForm
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
     UpdateTransaction = DM.FDTransaction
-    FetchOptions.Unidirectional = False
     SQL.Strings = (
       
         'select azscode, sessionnum, startdatetime, username from session' +

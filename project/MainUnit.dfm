@@ -142,13 +142,26 @@ object MainForm: TMainForm
         GroupIndex = 22
       end
     end
+    object N2: TMenuItem
+      Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082#1080
+      GroupIndex = 50
+      object N3: TMenuItem
+        Action = CatGSMAction
+      end
+      object N4: TMenuItem
+        Action = CatPartnersAction
+      end
+      object N5: TMenuItem
+        Action = CatItemsAction
+      end
+    end
     object Options1: TMenuItem
       Caption = 'Options'
-      GroupIndex = 30
+      GroupIndex = 50
     end
     object Service1: TMenuItem
       Caption = 'Service'
-      GroupIndex = 40
+      GroupIndex = 50
       object ClearDB1: TMenuItem
         Action = ClearDBAction
         GroupIndex = 42
@@ -169,8 +182,8 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Images = DM.imlist
-    Left = 72
-    Top = 48
+    Left = 80
+    Top = 56
     object CloseAction: TAction
       Caption = 'Quit'
       ImageIndex = 48
@@ -231,6 +244,18 @@ object MainForm: TMainForm
       Caption = '&Tile Vertically'
       Hint = 'Tile Vertical'
       ImageIndex = 384
+    end
+    object CatGSMAction: TAction
+      Caption = #1043#1057#1052
+      OnExecute = CatGSMActionExecute
+    end
+    object CatPartnersAction: TAction
+      Caption = #1055#1072#1088#1090#1085#1105#1088#1099
+      OnExecute = CatPartnersActionExecute
+    end
+    object CatItemsAction: TAction
+      Caption = #1058#1086#1074#1072#1088#1099
+      OnExecute = CatItemsActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

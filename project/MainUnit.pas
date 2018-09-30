@@ -65,6 +65,13 @@ type
     ToolButton11: TToolButton;
     ToolButton12: TToolButton;
     ToolButton7: TToolButton;
+    CatGSMAction: TAction;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    CatPartnersAction: TAction;
+    N4: TMenuItem;
+    CatItemsAction: TAction;
+    N5: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -77,6 +84,9 @@ type
     procedure SessionsActionExecute(Sender: TObject);
     procedure StationsActionExecute(Sender: TObject);
     procedure XmlTablesActionExecute(Sender: TObject);
+    procedure CatGSMActionExecute(Sender: TObject);
+    procedure CatPartnersActionExecute(Sender: TObject);
+    procedure CatItemsActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -97,7 +107,8 @@ implementation
 
 {$R *.dfm}
 
-uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit;
+uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
+  PartnersUnit, CatItemsUnit;
 
 
 // .............................................................................
@@ -161,6 +172,40 @@ end;
 
 // ........................................................................
 
+procedure TMainForm.CatGSMActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('catgsm') then
+  begin
+    TCatGSMForm.Create(self, 'catgsm');
+  end
+  else GetMDIForm('catgsm').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.CatItemsActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('catitems') then
+  begin
+    TCatItemsForm.Create(self, 'catitems');
+  end
+  else GetMDIForm('catitems').Show;
+
+end;
+
+// .............................................................................
+
+procedure TMainForm.CatPartnersActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('catpartners') then
+  begin
+    TPartnersForm.Create(self, 'catpartners');
+  end
+  else GetMDIForm('catpartners').Show;
+end;
+
+// .............................................................................
+
 procedure TMainForm.ClearDBActionExecute(Sender: TObject);
 begin
 
@@ -194,6 +239,14 @@ begin
 
           ExecSQL('delete from TRADEDOCSINBILL');
           AddToLog('deleted from tradedocsinbill');
+
+          ExecSQL('delete from techreturn');
+          AddToLog('deleted from techreturn');
+          ExecSQL('delete from OutcomesByCoupon');
+          AddToLog('deleted from outcomesbycoupon');
+
+          ExecSQL('delete from itemrests');
+          AddToLog('deleted from itemrests');
 
           ExecSQL('delete from wares');
           AddToLog('deleted from wares');

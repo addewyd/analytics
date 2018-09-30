@@ -1,10 +1,10 @@
-unit SessionListUnit;
+unit CatItemsUnit;
 
 interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, DmUnit, FormWithGridUnit, Data.DB,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FormWithGridUnit, Data.DB,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
@@ -14,7 +14,7 @@ uses
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar;
 
 type
-  TSessionListForm = class(TFormWithGrid)
+  TCatItemsForm = class(TFormWithGrid)
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -23,31 +23,30 @@ type
   end;
 
 var
-  SessionListForm: TSessionListForm;
+  CatItemsForm: TCatItemsForm;
 
 implementation
 
 {$R *.dfm}
 
-procedure TSessionListForm.FormCreate(Sender: TObject);
+uses DmUnit;
+
+procedure TCatItemsForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  //MainMenu.Items[0].Caption := formname;
-
   with FDQuery do
   begin
-//    Connection := DM.FDConnection;
-//    Transaction := DM.FDConnection.Transaction;
+    SQL.Text := 'select code, name from items';
     Transaction.StartTransaction;
     try
-//      SQL.Text := 'select azscode, sessionnum, startdatetime, username from sessions';
       Open;
-      FetchAll;
+//      FetchAll;
       Transaction.Commit;
     except
       Transaction.Rollback;
     end;
   end;
+
 end;
 
 end.

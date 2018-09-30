@@ -3,6 +3,8 @@ inherited TablesListForm: TTablesListForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvDBGrid: TJvDBGrid
+    Options = [dgEditing, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ReadOnly = True
     OnDblClick = JvDBGridDblClick
     CanDelete = False
     Columns = <
@@ -15,7 +17,7 @@ inherited TablesListForm: TTablesListForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

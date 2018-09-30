@@ -1,51 +1,21 @@
-inherited FormWithGrid: TFormWithGrid
-  Caption = 'FormWithGrid'
+inherited CatItemsForm: TCatItemsForm
+  Caption = #1058#1086#1074#1072#1088#1099
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvStatusBar1: TJvStatusBar
-    Top = 243
     ExplicitTop = 243
   end
-  object JvDBGrid: TJvDBGrid [2]
-    Left = 0
-    Top = 29
-    Width = 418
-    Height = 214
-    Align = alClient
-    DataSource = JvDS
-    TabOrder = 2
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    IniStorage = JvFS
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    EditControls = <>
-    RowsHeight = 17
-    TitleRowHeight = 17
+  inherited JvDBGridFooter: TJvDBGridFooter
+    ExplicitTop = 262
   end
-  object JvDBGridFooter: TJvDBGridFooter [3]
-    Left = 0
-    Top = 262
-    Width = 418
-    Height = 19
-    SizeGrip = True
-    Visible = False
-    Columns = <>
-    DataSource = JvDS
-    DBGrid = JvDBGrid
-  end
-  inherited JvFS: TJvFormStorage
-    StoredValues = <
-      item
-      end>
+  inherited MainMenu: TMainMenu
+    inherited File1: TMenuItem
+      Caption = #1058#1086#1074#1072#1088#1099
+    end
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180012C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12724,14 +12694,8 @@ inherited FormWithGrid: TFormWithGrid
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
   end
-  object JvDS: TJvDataSource
-    DataSet = FDQuery
-    Left = 320
-    Top = 72
-  end
-  object FDQuery: TFDQuery
-    FetchOptions.AssignedValues = [evUnidirectional]
-    Left = 240
-    Top = 152
+  inherited FDQuery: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = DM.FDTransaction
   end
 end

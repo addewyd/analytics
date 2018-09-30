@@ -17,7 +17,10 @@ uses
   MlogUnit in 'MlogUnit.pas' {MlogForm},
   StationsUnit in 'StationsUnit.pas' {StationsForm},
   TablesListUnit in 'TablesListUnit.pas' {TablesListForm},
-  TableFromXmlUnit in 'TableFromXmlUnit.pas' {TableFromXmlForm};
+  TableFromXmlUnit in 'TableFromXmlUnit.pas' {TableFromXmlForm},
+  CatGSMUnit in 'CatGSMUnit.pas' {CatGSMForm},
+  PartnersUnit in 'PartnersUnit.pas' {PartnersForm},
+  CatItemsUnit in 'CatItemsUnit.pas' {CatItemsForm};
 
 {$R *.res}
 
