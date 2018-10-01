@@ -28,6 +28,7 @@ type
     JvDateEndP: TJvDateTimePicker;
     JvCheckBox02: TJvCheckBox;
     JvCheckBox03: TJvCheckBox;
+    FDUpdateSQL: TFDUpdateSQL;
     procedure JvDBCB01Change(Sender: TObject);
     procedure JvCheckBox01Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -39,11 +40,20 @@ type
     procedure FormActivate(Sender: TObject);
     procedure JvFSBeforeRestorePlacement(Sender: TObject);
     procedure JvFSBeforeSavePlacement(Sender: TObject);
+    procedure JvDBGridEditChange(Sender: TObject);
+    procedure JvDBGridCanEditCell(Grid: TJvDBGrid; Field: TField;
+      var AllowEdit: Boolean);
+    procedure JvDBGridExit(Sender: TObject);
+    procedure JvDBGridColExit(Sender: TObject);
+    procedure JvDSDataChange(Sender: TObject; Field: TField);
+    procedure JvDSStateChange(Sender: TObject);
+    procedure JvDSUpdateData(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     SQLText: String;
+    TableName: String;
     procedure FilterAndShowData;
     constructor Create(pr: TComponent; fname: String); reintroduce; overload;
 
@@ -62,9 +72,11 @@ constructor TTableFromXmlForm.Create(pr: TComponent; fname: string);
 begin
   inherited create(pr, fname);
   //MainMenu.Items[0].Caption := formname;
+  TableName := fname;
   JvFS.AppStoragePath := 'FS_' + fname;
 end;
 
+// .............................................................................
 
 procedure TTableFromXmlForm.FilterAndShowData;
   var
@@ -140,11 +152,23 @@ begin
   //JvFS.SaveFormPlacement;
 end;
 
+// .............................................................................
+
 procedure TTableFromXmlForm.FormCreate(Sender: TObject);
+  var
+    len: integer;
 begin
   inherited;
   MainMenu.Items[0].Caption := formname;
   JvDBCB01.ClearValue;
+
+  if TableName = 'Tanks' then
+  begin
+    JvDBGrid.ReadOnly := false;
+    //JvDBGrid.Columns.Items[3].ReadOnly := false;
+
+  end;
+
 end;
 
 // .............................................................................
@@ -198,6 +222,54 @@ begin
   inherited;
   FilterAndShowData();
 
+end;
+
+procedure TTableFromXmlForm.JvDBGridCanEditCell(Grid: TJvDBGrid; Field: TField;
+  var AllowEdit: Boolean);
+begin
+  inherited;
+//ErrorMessageBox(self, 'caned');
+
+end;
+
+procedure TTableFromXmlForm.JvDBGridColExit(Sender: TObject);
+begin
+  inherited;
+//  ErrorMessageBox(self, 'colexit');
+end;
+
+procedure TTableFromXmlForm.JvDBGridEditChange(Sender: TObject);
+begin
+  inherited;
+//ErrorMessageBox(self, 'edichange');
+end;
+
+procedure TTableFromXmlForm.JvDBGridExit(Sender: TObject);
+begin
+  inherited;
+//ErrorMessageBox(self, 'exit');
+
+end;
+
+procedure TTableFromXmlForm.JvDSDataChange(Sender: TObject; Field: TField);
+begin
+  inherited;
+//ErrorMessageBox(self, 'dch');
+end;
+
+procedure TTableFromXmlForm.JvDSStateChange(Sender: TObject);
+begin
+  inherited;
+//ErrorMessageBox(self, 'stste');
+end;
+
+procedure TTableFromXmlForm.JvDSUpdateData(Sender: TObject);
+begin
+  inherited;
+  if TableName = 'Tanks' then
+  begin
+    FDQuery.Transaction.StartTransaction;
+  end;
 end;
 
 procedure TTableFromXmlForm.JvFSBeforeRestorePlacement(Sender: TObject);

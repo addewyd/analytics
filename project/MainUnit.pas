@@ -16,7 +16,10 @@ uses
   JvSelectDirectory, JvDialogs, XmlParseUnit, Xml.xmldom, Xml.XMLIntf,
   Xml.XMLDoc, ErrorUnit, Vcl.StdCtrls, JvExStdCtrls, JvMemo, YNUnit,
   JvFormPlacement, JvComponentBase, JvAppStorage, JvAppRegistryStorage,
-  SessionListUnit, Vcl.StdActns;
+  SessionListUnit, Vcl.StdActns, IdContext, IdCustomHTTPServer, IdBaseComponent,
+  IdComponent, IdCustomTCPServer, IdHTTPServer, IdCookieManager, IdIntercept,
+  IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
+  IdLogFile;
 
 type
   TMainForm = class(TForm)
@@ -72,6 +75,16 @@ type
     N4: TMenuItem;
     CatItemsAction: TAction;
     N5: TMenuItem;
+    SimpleReportAction: TAction;
+    N6: TMenuItem;
+    ToolButton13: TToolButton;
+    PaimentModesAction: TAction;
+    N7: TMenuItem;
+    ToolButton14: TToolButton;
+    HTTPServer: TIdHTTPServer;
+    IdLogFile: TIdLogFile;
+    IdLogEvent: TIdLogEvent;
+    IdServerInterceptLogFile: TIdServerInterceptLogFile;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -87,6 +100,10 @@ type
     procedure CatGSMActionExecute(Sender: TObject);
     procedure CatPartnersActionExecute(Sender: TObject);
     procedure CatItemsActionExecute(Sender: TObject);
+    procedure SimpleReportActionExecute(Sender: TObject);
+    procedure PaimentModesActionExecute(Sender: TObject);
+    procedure HTTPServerCommandGet(AContext: TIdContext;
+      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   private
     { Private declarations }
   public
@@ -108,7 +125,8 @@ implementation
 {$R *.dfm}
 
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
-  PartnersUnit, CatItemsUnit;
+  PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
+  PaymentModesUnit;
 
 
 // .............................................................................
@@ -146,6 +164,37 @@ end;
 
 // .............................................................................
 
+procedure TMainForm.HTTPServerCommandGet(AContext: TIdContext;
+  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+  var
+    s, r: String;
+    n, i: Integer;
+begin
+  s := ARequestInfo.UserAgent;
+  r := 'TEST ' + ARequestInfo.Params.Text + ' ' + s;
+  AResponseInfo.Cookies.Add;
+  AResponseInfo.Cookies[0].CookieName := 'ccc';
+  AResponseInfo.Cookies[0].Value := 'ttt';
+  n := ARequestInfo.Cookies.Count;
+
+  r := r + '<br>' + IntToStr(n);
+
+  //AddToLog(s);
+
+  for i := 0 to n - 1 do
+  begin
+
+    r := r + ARequestInfo.Cookies[i].CookieName;
+    r := r + '=';
+    r := r + ARequestInfo.Cookies[i].Value;;
+    r := r + '<br>';
+  end;
+  AResponseInfo.ContentText  := r;
+
+end;
+
+// .............................................................................
+
 Procedure AddToLog(msg: String);
 begin
   if not MainForm.isWinOpen('mlog') then
@@ -165,7 +214,6 @@ end;
 
 procedure TMainForm.ApplicationEventsException(Sender: TObject; E: Exception);
 begin
-  //ErrorMessageBox(self, e.Message);
   MessageDlg('AE: ' + E.Message, mtError, [mbOk], 0);
 //  Application.Terminate;
 end;
@@ -306,6 +354,7 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   JVFS.SaveFormPlacement();
+  HTTPServer.Active := false;
 end;
 
 // .............................................................................
@@ -317,6 +366,8 @@ begin
   Exepath := ExtractFilePath(Application.ExeName);
   dbname := Exepath + '\db\shrfs.fdb';
   Application.Title := 'Shrfs';
+  HTTPServer.DefaultPort := 8033;
+  HTTPServer.Active := true;
 end;
 
 // .............................................................................
@@ -355,6 +406,15 @@ begin
   end;
 end;
 
+procedure TMainForm.PaimentModesActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('paymentmodes') then
+  begin
+    TPaymentModesForm.Create(self, 'paymentmodes');
+  end
+  else GetMDIForm('paymentmodes').Show;
+end;
+
 // .............................................................................
 
 procedure TMainForm.SessionsActionExecute(Sender: TObject);
@@ -364,6 +424,23 @@ begin
     TSessionListForm.Create(self, 'sessions');
   end
   else GetMDIForm('sessions').Show;
+end;
+
+procedure TMainForm.SimpleReportActionExecute(Sender: TObject);
+  var
+    srd: TSimpleReportDialog;
+begin
+  if not isWinOpen('simplereport') then
+  begin
+    srd := TSimpleReportDialog.Create(self);
+    if srd.ShowModal = mrOk then
+    begin
+      TSimpleReportForm.Create(
+        self, 'simplereport', srd.LookupAzs.LookupValue,
+          srd.DateStartEdit.Date, srd.DateEndEdit.Date);
+    end
+  end
+  else GetMDIForm('simplereport').Show;
 end;
 
 // .............................................................................

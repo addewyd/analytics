@@ -148,6 +148,18 @@
             <Form>CatItemsForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="SipleReportUnit.pas">
+            <Form>SimpleReportDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SimpleReportUnit.pas">
+            <Form>SimpleReportForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="PaymentModesUnit.pas">
+            <Form>PaymentModesForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

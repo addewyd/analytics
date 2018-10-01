@@ -3,7 +3,7 @@ inherited TablesListForm: TTablesListForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvDBGrid: TJvDBGrid
-    Options = [dgEditing, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
     OnDblClick = JvDBGridDblClick
     CanDelete = False

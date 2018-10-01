@@ -20,7 +20,10 @@ uses
   TableFromXmlUnit in 'TableFromXmlUnit.pas' {TableFromXmlForm},
   CatGSMUnit in 'CatGSMUnit.pas' {CatGSMForm},
   PartnersUnit in 'PartnersUnit.pas' {PartnersForm},
-  CatItemsUnit in 'CatItemsUnit.pas' {CatItemsForm};
+  CatItemsUnit in 'CatItemsUnit.pas' {CatItemsForm},
+  SipleReportUnit in 'SipleReportUnit.pas' {SimpleReportDialog},
+  SimpleReportUnit in 'SimpleReportUnit.pas' {SimpleReportForm},
+  PaymentModesUnit in 'PaymentModesUnit.pas' {PaymentModesForm};
 
 {$R *.res}
 

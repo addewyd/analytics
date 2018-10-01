@@ -83,33 +83,60 @@ begin
         wfieldlist.Add('tanknum');
       end;
 
+      if s = 'Tanks' then
+      begin
+        wfieldlist.Add('EndDensity');
+      end;
 
       tt := TTableFromXmlForm.Create(MainForm, s);
       tt.JvFS.AppStoragePath := 'FS_' + s;
-
       tt.Caption := s;
+
+      if s = 'Tanks' then
+      begin
+
+        with tt.JvDBGrid do
+        begin
+          ReadOnly := false;
+          Options := Options + [dgEditing];
+          tt.FDQuery.UpdateTransaction := DM.FDTransaction;
+          tt.FDUpdateSql.ModifySQL.Clear;
+          tt.FDUpdateSql.ModifySQL.Text :=
+            'update tanks set EndDensity=:EndDensity where id=:id';
+          tt.FDQuery.UpdateObject := tt.FDUpdateSQL;
+        end;
+      end;
+
 
       for r  := 0 to wfieldlist.Count - 1 do
       begin
-        tt.JvDBGrid.Columns.Add;
-        tt.JvDBGrid.Columns[r].FieldName := wfieldlist[r];
-      end;
+        with tt.JvDBGrid do
+        begin
+          Columns.Add;
+          Columns[r].FieldName := wfieldlist[r];
 
-//      JvFS.RestoreFormPlacement;
+          Columns[r].ReadOnly := true;
+          if Columns[r].FieldName = 'EndDensity' then
+          begin
+            Columns[r].ReadOnly := false;
+
+          end;
+        end;
+      end;
 
       with tt.FDQF01 do
       begin
 
         Connection := DM.FDConnection;
-        Transaction := DM.FDTransaction;// .FDT01;
-//        Transaction.Connection := DM.FDConnection;
+        Transaction := DM.FDTransaction;
         Transaction.StartTransaction;
 
-        SQL.Text := 'select s.azscode as azscode, startdatetime from sessions s join ' + s +
-          ' t on s.id=t.session_id group by azscode, startdatetime';
+//        SQL.Text := 'select s.azscode as azscode, startdatetime from sessions s join ' + s +
+//          ' t on s.id=t.session_id group by azscode, startdatetime';
+        SQL.Text := 'select s.azscode as azscode from sessions s join ' + s +
+          ' t on s.id=t.session_id group by azscode';
 
         Open;
-//        First;
         Transaction.Commit;
       end;
 
@@ -118,7 +145,7 @@ begin
         Connection := DM.FDConnection;
         Transaction := DM.FDTransaction;
 
-        SQL.Text := 'select t.id, '
+        SQL.Text := 'select t.id as id, '
           + wfieldlist.CommaText
           + ' from sessions s join '
           + s + ' t on s.id = t.session_id';

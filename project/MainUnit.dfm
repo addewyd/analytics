@@ -1,8 +1,8 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Hint = 'About'
-  Caption = 'Shrfs'
+  Action = SimpleReportAction
+  Caption = 'Main'
   ClientHeight = 619
   ClientWidth = 733
   Color = clBtnFace
@@ -15,6 +15,7 @@ object MainForm: TMainForm
   Menu = MainMenuM
   OldCreateOrder = False
   OnActivate = FormActivate
+  OnClick = SimpleReportActionExecute
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -58,18 +59,28 @@ object MainForm: TMainForm
       Top = 0
       Action = StationsAction
     end
-    object ToolButton9: TToolButton
+    object ToolButton14: TToolButton
       Left = 69
+      Top = 0
+      Action = PaimentModesAction
+    end
+    object ToolButton9: TToolButton
+      Left = 92
       Top = 0
       Action = XmlTablesAction
     end
+    object ToolButton13: TToolButton
+      Left = 115
+      Top = 0
+      Action = SimpleReportAction
+    end
     object ToolButton4: TToolButton
-      Left = 92
+      Left = 138
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 115
+      Left = 161
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -77,32 +88,32 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 123
+      Left = 169
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
       ImageIndex = 130
     end
     object ToolButton10: TToolButton
-      Left = 146
+      Left = 192
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 169
+      Left = 215
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 192
+      Left = 238
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
     end
     object ToolButton7: TToolButton
-      Left = 215
+      Left = 261
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -110,7 +121,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 223
+      Left = 269
       Top = 0
       Action = ClearDBAction
     end
@@ -154,6 +165,9 @@ object MainForm: TMainForm
       object N5: TMenuItem
         Action = CatItemsAction
       end
+      object N7: TMenuItem
+        Action = PaimentModesAction
+      end
     end
     object Options1: TMenuItem
       Caption = 'Options'
@@ -174,6 +188,10 @@ object MainForm: TMainForm
         Action = XmlTablesAction
         GroupIndex = 44
       end
+      object N6: TMenuItem
+        Action = SimpleReportAction
+        GroupIndex = 44
+      end
     end
     object About1: TMenuItem
       Action = AboutAction
@@ -192,7 +210,7 @@ object MainForm: TMainForm
     object AboutAction: TAction
       Caption = 'About'
       Hint = 'About'
-      ImageIndex = 31
+      ImageIndex = 223
       OnExecute = AboutActionExecute
     end
     object LoadFileAction: TAction
@@ -219,11 +237,13 @@ object MainForm: TMainForm
     end
     object StationsAction: TAction
       Caption = #1050#1086#1076#1099' '#1040#1047#1057
+      Hint = #1040#1047#1057
       ImageIndex = 320
       OnExecute = StationsActionExecute
     end
     object XmlTablesAction: TAction
       Caption = #1058#1072#1073#1083#1080#1094#1099' '#1080#1079' XML'
+      Hint = #1058#1072#1073#1083#1080#1094#1099' '#1086#1090' '#1058#1086#1087#1072#1079#1072
       ImageIndex = 353
       OnExecute = XmlTablesActionExecute
     end
@@ -256,6 +276,18 @@ object MainForm: TMainForm
     object CatItemsAction: TAction
       Caption = #1058#1086#1074#1072#1088#1099
       OnExecute = CatItemsActionExecute
+    end
+    object SimpleReportAction: TAction
+      Caption = #1055#1088#1086#1089#1090#1086#1081' '#1054#1090#1095#1105#1090
+      Hint = #1055#1088#1086#1089#1090#1086#1081' '#1054#1090#1095#1105#1090
+      ImageIndex = 188
+      OnExecute = SimpleReportActionExecute
+    end
+    object PaimentModesAction: TAction
+      Caption = #1042#1080#1076#1099' '#1054#1087#1083#1072#1090#1099
+      Hint = #1042#1080#1076#1099' '#1054#1087#1083#1072#1090#1099
+      ImageIndex = 24
+      OnExecute = PaimentModesActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents
@@ -292,5 +324,29 @@ object MainForm: TMainForm
     StoredValues = <>
     Left = 48
     Top = 416
+  end
+  object HTTPServer: TIdHTTPServer
+    Bindings = <>
+    DefaultPort = 8033
+    Intercept = IdServerInterceptLogFile
+    AutoStartSession = True
+    SessionState = True
+    OnCommandGet = HTTPServerCommandGet
+    Left = 352
+    Top = 72
+  end
+  object IdLogFile: TIdLogFile
+    Intercept = IdLogEvent
+    Left = 432
+    Top = 80
+  end
+  object IdLogEvent: TIdLogEvent
+    Left = 432
+    Top = 136
+  end
+  object IdServerInterceptLogFile: TIdServerInterceptLogFile
+    Filename = 'c:\wprc\shrfs.log'
+    Left = 360
+    Top = 200
   end
 end

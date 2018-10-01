@@ -40,7 +40,6 @@ begin
     Transaction.StartTransaction;
     try
       Open;
-//      FetchAll;
       Transaction.Commit;
     except
       Transaction.Rollback;

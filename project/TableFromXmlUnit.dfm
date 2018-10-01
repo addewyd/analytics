@@ -23,7 +23,11 @@ inherited TableFromXmlForm: TTableFromXmlForm
     Height = 268
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
+    OnColExit = JvDBGridColExit
+    OnExit = JvDBGridExit
     IniStorage = nil
+    OnEditChange = JvDBGridEditChange
+    OnCanEditCell = JvDBGridCanEditCell
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 323
@@ -12808,10 +12812,18 @@ inherited TableFromXmlForm: TTableFromXmlForm
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
   end
+  inherited JvDS: TJvDataSource
+    OnStateChange = JvDSStateChange
+    OnDataChange = JvDSDataChange
+    OnUpdateData = JvDSUpdateData
+  end
   inherited FDQuery: TFDQuery
     FilterOptions = [foCaseInsensitive]
     FetchOptions.AssignedValues = [evCache, evUnidirectional]
     FetchOptions.Cache = [fiBlobs, fiDetails]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
     Left = 296
     Top = 136
   end
@@ -12823,5 +12835,10 @@ inherited TableFromXmlForm: TTableFromXmlForm
   object FDQF01: TFDQuery
     Left = 464
     Top = 80
+  end
+  object FDUpdateSQL: TFDUpdateSQL
+    Connection = DM.FDConnection
+    Left = 408
+    Top = 192
   end
 end

@@ -1929,9 +1929,8 @@ end;
 
 // CashFlow
 procedure LoadCF(node: IDOMNode; id: integer);
-  var i, len, rc: integer;
+  var i, len: integer;
     NL: IDOMNodeList;
-    n: IDOMNode;
     attrs: IDOMNamedNodeMap;
     sDocTypeID, DocTypeName, sCashID, CashName, Remark, sAmount: String;
     DocTypeID, CashID : integer;
@@ -2740,7 +2739,7 @@ begin
         end;
       end;
       ParamByName('session_id').AsInteger := id;
-      ParamByName('itemrest').AsInteger := id;
+      ParamByName('itemrest').AsInteger := ItemRest;
       ParamByName('storageextcode').AsString := StorageExtCode;
       ParamByName('storagename').AsString := StorageName;
       ParamByName('itemextcode').AsString := ItemExtCode;

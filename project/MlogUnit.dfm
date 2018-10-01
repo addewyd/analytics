@@ -3,14 +3,10 @@ inherited MlogForm: TMlogForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    object ToolButton2: TToolButton [0]
-      Left = 0
+    object ToolButton2: TToolButton
+      Left = 23
       Top = 0
       Action = ClearAction
-    end
-    inherited ToolButton1: TToolButton
-      Left = 23
-      ExplicitLeft = 23
     end
   end
   object mlog: TMemo [2]
@@ -21,10 +17,6 @@ inherited MlogForm: TMlogForm
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 2
-    ExplicitLeft = 40
-    ExplicitTop = 56
-    ExplicitWidth = 185
-    ExplicitHeight = 89
   end
   inherited ActionList: TActionList
     object ClearAction: TAction
@@ -35,6 +27,7 @@ inherited MlogForm: TMlogForm
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
+      Caption = #1051#1086#1075
       object Clear1: TMenuItem [0]
         Action = ClearAction
       end
@@ -42,7 +35,7 @@ inherited MlogForm: TMlogForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180012C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -12,7 +12,6 @@ inherited CatGSMForm: TCatGSMForm
   inherited JvStatusBar1: TJvStatusBar
     Top = 298
     Width = 477
-    ExplicitTop = 243
   end
   inherited JvDBGrid: TJvDBGrid
     Width = 477
@@ -36,7 +35,6 @@ inherited CatGSMForm: TCatGSMForm
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 317
     Width = 477
-    ExplicitTop = 262
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
