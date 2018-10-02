@@ -24,6 +24,8 @@ type
     FDCommand: TFDCommand;
     FDConnection: TFDConnection;
     FDTransaction: TFDTransaction;
+    FDTransactionH: TFDTransaction;
+    FDCH: TFDConnection;
   private
     { Private declarations }
   public

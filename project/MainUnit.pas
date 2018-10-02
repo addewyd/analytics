@@ -333,9 +333,10 @@ begin
   //
   JVFS.RestoreFormPlacement();
   try
-    DM.FDConnection.Params.Add('Database=' + dbname);
+    DM.FDConnection.Params.Add('Database=' + 'localhost:'+dbname);
     DM.FDConnection.Open;
     StatusBar1.Panels[0].Text := ExtractFileName(dbname);
+
   except
     on e: exception do
     begin

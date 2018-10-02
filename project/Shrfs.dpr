@@ -23,7 +23,9 @@ uses
   CatItemsUnit in 'CatItemsUnit.pas' {CatItemsForm},
   SipleReportUnit in 'SipleReportUnit.pas' {SimpleReportDialog},
   SimpleReportUnit in 'SimpleReportUnit.pas' {SimpleReportForm},
-  PaymentModesUnit in 'PaymentModesUnit.pas' {PaymentModesForm};
+  PaymentModesUnit in 'PaymentModesUnit.pas' {PaymentModesForm},
+  HttpServiceUnit in 'HttpServiceUnit.pas',
+  OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog};
 
 {$R *.res}
 

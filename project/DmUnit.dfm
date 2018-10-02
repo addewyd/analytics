@@ -6,7 +6,7 @@ object DM: TDM
     Left = 232
     Top = 56
     Bitmap = {
-      494C01017E018001240010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12715,12 +12715,15 @@ object DM: TDM
       'DriverID=FB'
       'CharacterSet=UTF8'
       'User_Name=sysdba'
-      'Password=masterkey')
+      'Password=masterkey'
+      
+        'Database=localhost:C:\Users\user\Documents\topaz\analytics\proje' +
+        'ct\Win32\Debug\db\SHRFS.FDB')
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransaction
-    Left = 232
-    Top = 120
+    Left = 288
+    Top = 56
   end
   object FDTransaction: TFDTransaction
     Options.AutoStart = False
@@ -12728,5 +12731,25 @@ object DM: TDM
     Connection = FDConnection
     Left = 164
     Top = 128
+  end
+  object FDTransactionH: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = FDCH
+    Left = 288
+    Top = 160
+  end
+  object FDCH: TFDConnection
+    ConnectionName = 'fdh'
+    Params.Strings = (
+      'DriverID=FB'
+      'CharacterSet=UTF8'
+      'Password=masterkey'
+      'Port=3050'
+      'User_Name=SYSDBA')
+    LoginPrompt = False
+    Transaction = FDTransactionH
+    Left = 280
+    Top = 216
   end
 end

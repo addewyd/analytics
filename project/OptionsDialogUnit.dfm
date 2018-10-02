@@ -48,7 +48,7 @@ object OptionsDialog: TOptionsDialog
     TextMargins.Y = 0
     WordWrap = False
   end
-  object JvEdit1: TJvEdit
+  object DBLocEdit: TJvEdit
     Left = 112
     Top = 16
     Width = 301

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Action = SimpleReportAction
+  Hint = #1055#1088#1086#1089#1090#1086#1081' '#1054#1090#1095#1105#1090
   Caption = 'SHRFS'
   ClientHeight = 619
   ClientWidth = 733

@@ -9,9 +9,6 @@ inherited StationsForm: TStationsForm
       Action = UpdateAction
     end
   end
-  inherited JvStatusBar1: TJvStatusBar
-    ExplicitTop = 243
-  end
   inherited JvDBGrid: TJvDBGrid
     Columns = <
       item
@@ -30,12 +27,10 @@ inherited StationsForm: TStationsForm
         Visible = True
       end>
   end
-  inherited JvDBGridFooter: TJvDBGridFooter
-    ExplicitTop = 262
-  end
   inherited ActionList: TActionList
     object UpdateAction: TAction
       Caption = 'Update'
+      Hint = 'Commit'
       ImageIndex = 361
       OnExecute = UpdateActionExecute
     end
@@ -50,7 +45,7 @@ inherited StationsForm: TStationsForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

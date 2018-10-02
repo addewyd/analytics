@@ -12,7 +12,7 @@ type
     OkButton: TButton;
     CancelButton: TButton;
     JvStaticText1: TJvStaticText;
-    JvEdit1: TJvEdit;
+    DBLocEdit: TJvEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
