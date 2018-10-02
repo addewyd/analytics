@@ -13,6 +13,7 @@ uses
   ErrorUnit;
 
   procedure ErrorMessageBox(f: TForm; msg: String);
+  procedure ErrorMessageBox2(f: TForm; msg: array of String);
   function StrToextDef(s: String; d: Extended): Extended;
 
 type
@@ -43,6 +44,18 @@ implementation
   begin
     ErrorForm := TErrorForm.Create(f);
     ErrorForm.Memo1.Lines.Add(msg);
+    ErrorForm.ShowModal;
+  end;
+
+  procedure ErrorMessageBox2(f: TForm; msg: array of String);
+    var
+      i: Integer;
+  begin
+    ErrorForm := TErrorForm.Create(f);
+    for i := 0 to Length(msg) - 1 do
+    begin
+      ErrorForm.Memo1.Lines.Add(msg[i]);
+    end;
     ErrorForm.ShowModal;
   end;
 

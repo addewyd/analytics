@@ -31,6 +31,8 @@ begin
   Close;
 end;
 
+// ............................................................................
+
 procedure TErrorForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   action := caFree;

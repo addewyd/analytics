@@ -4,12 +4,13 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics,
+  Vcl.Graphics,  System.UITypes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Actions, Vcl.ActnList, Vcl.Menus,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, FireDAC.Comp.Client, Data.DB, Vcl.ComCtrls,
   Vcl.ToolWin, Vcl.AppEvnts, System.ImageList, Vcl.ImgList,
+  Registry,
 
   FStorage, AboutUnit, DmUnit, JvDataSource, Vcl.Grids, Vcl.DBGrids,
   JvExDBGrids, JvDBGrid, FireDAC.Phys.FB, FireDAC.Phys.FBDef, JvBaseDlg,
@@ -82,9 +83,11 @@ type
     N7: TMenuItem;
     ToolButton14: TToolButton;
     HTTPServer: TIdHTTPServer;
-    IdLogFile: TIdLogFile;
-    IdLogEvent: TIdLogEvent;
     IdServerInterceptLogFile: TIdServerInterceptLogFile;
+    OptionsAction: TAction;
+    ToolButton15: TToolButton;
+    ToolButton16: TToolButton;
+    Options2: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -104,8 +107,10 @@ type
     procedure PaimentModesActionExecute(Sender: TObject);
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure OptionsActionExecute(Sender: TObject);
   private
     { Private declarations }
+    gdbname: String;
   public
     { Public declarations }
     function GetMdiForm(formname: string): TForm;
@@ -126,7 +131,7 @@ implementation
 
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
-  PaymentModesUnit;
+  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit;
 
 
 // .............................................................................
@@ -170,26 +175,12 @@ procedure TMainForm.HTTPServerCommandGet(AContext: TIdContext;
     s, r: String;
     n, i: Integer;
 begin
-  s := ARequestInfo.UserAgent;
-  r := 'TEST ' + ARequestInfo.Params.Text + ' ' + s;
-  AResponseInfo.Cookies.Add;
-  AResponseInfo.Cookies[0].CookieName := 'ccc';
-  AResponseInfo.Cookies[0].Value := 'ttt';
-  n := ARequestInfo.Cookies.Count;
 
-  r := r + '<br>' + IntToStr(n);
+//  s := ARequestInfo.UserAgent;
+//  r := '<html>TEST<br> ' + ARequestInfo.Params.Text + ' <br>' + s + '</html>';
+//  AResponseInfo.ContentText  := r;
 
-  //AddToLog(s);
-
-  for i := 0 to n - 1 do
-  begin
-
-    r := r + ARequestInfo.Cookies[i].CookieName;
-    r := r + '=';
-    r := r + ARequestInfo.Cookies[i].Value;;
-    r := r + '<br>';
-  end;
-  AResponseInfo.ContentText  := r;
+  CommandGet(AContext, ArequestInfo, AResponseInfo);
 
 end;
 
@@ -341,12 +332,18 @@ procedure TMainForm.FormActivate(Sender: TObject);
 begin
   //
   JVFS.RestoreFormPlacement();
-  DM.FDConnection.Params.Add('Database=' + dbname);
-  DM.FDConnection.Open;
-  //Database := dbname;
-  StatusBar1.Panels[0].Text := dbname;
-//    SetLocaleInfo(    LOCALE_SYSTEM_DEFAULT,  LOCALE_SDECIMAL,'.');
-//    SetLocaleInfo(    LOCALE_SYSTEM_DEFAULT,  LOCALE_STHOUSAND,',');
+  try
+    DM.FDConnection.Params.Add('Database=' + dbname);
+    DM.FDConnection.Open;
+    StatusBar1.Panels[0].Text := ExtractFileName(dbname);
+  except
+    on e: exception do
+    begin
+        ErrorMessageBox2(self,
+          ['Set correct db location', 'And restart App, please']);
+    end;
+
+  end;
 end;
 
 // .............................................................................
@@ -360,14 +357,25 @@ end;
 // .............................................................................
 
 procedure TMainForm.FormCreate(Sender: TObject);
-
+  var
+    reg: TRegIniFile;
+    db: String;
+  const
+    SubKey: string = 'Software\Shrfs';
 begin
   // set up form
-  Exepath := ExtractFilePath(Application.ExeName);
-  dbname := Exepath + '\db\shrfs.fdb';
-  Application.Title := 'Shrfs';
-  HTTPServer.DefaultPort := 8033;
-  HTTPServer.Active := true;
+
+  reg := TRegIniFile.Create(SubKey);
+  try
+    db := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+    Exepath := ExtractFilePath(Application.ExeName);
+    dbname := Exepath + db;
+    Application.Title := 'Shrfs';
+    HTTPServer.DefaultPort := 8033;
+    HTTPServer.Active := true;
+  finally
+    reg.Free;
+  end;
 end;
 
 // .............................................................................
@@ -406,6 +414,37 @@ begin
   end;
 end;
 
+// .............................................................................
+
+procedure TMainForm.OptionsActionExecute(Sender: TObject);
+  var
+    od: TOptionsDialog;
+    reg: TRegIniFile;
+    dbloc: String;
+begin
+  try
+    reg := TRegIniFile.Create('Software\Shrfs');
+    try
+      od := TOptionsDialog.Create(self);
+      dbloc := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+      od.DBLocEdit.Text := dbloc;
+      if od.ShowModal = mrOK then
+      begin
+        dbloc := od.DBLocEdit.Text;
+        reg.WriteString('options', 'db', dbloc);
+
+      end;
+    finally
+      reg.Free;
+    end;
+  except
+    on e: Exception do
+      ErrorMessageBox(self, e.message);
+  end;
+end;
+
+// .............................................................................
+
 procedure TMainForm.PaimentModesActionExecute(Sender: TObject);
 begin
   if not isWinOpen('paymentmodes') then
@@ -425,6 +464,8 @@ begin
   end
   else GetMDIForm('sessions').Show;
 end;
+
+// .............................................................................
 
 procedure TMainForm.SimpleReportActionExecute(Sender: TObject);
   var
@@ -453,6 +494,8 @@ begin
   end
   else GetMDIForm('stations').Show;
 end;
+
+// .............................................................................
 
 procedure TMainForm.XmlTablesActionExecute(Sender: TObject);
 begin

@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Action = SimpleReportAction
-  Caption = 'Main'
+  Caption = 'SHRFS'
   ClientHeight = 619
   ClientWidth = 733
   Color = clBtnFace
@@ -28,10 +28,10 @@ object MainForm: TMainForm
     Panels = <
       item
         Text = 'db'
-        Width = 150
+        Width = 260
       end
       item
-        Width = 150
+        Width = 260
       end>
   end
   object ToolBar1: TToolBar
@@ -74,13 +74,18 @@ object MainForm: TMainForm
       Top = 0
       Action = SimpleReportAction
     end
-    object ToolButton4: TToolButton
+    object ToolButton15: TToolButton
       Left = 138
+      Top = 0
+      Action = OptionsAction
+    end
+    object ToolButton4: TToolButton
+      Left = 161
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 161
+      Left = 184
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -88,32 +93,40 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 169
+      Left = 192
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
       ImageIndex = 130
     end
+    object ToolButton16: TToolButton
+      Left = 215
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton16'
+      ImageIndex = 142
+      Style = tbsSeparator
+    end
     object ToolButton10: TToolButton
-      Left = 192
+      Left = 223
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 215
+      Left = 246
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 238
+      Left = 269
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
     end
     object ToolButton7: TToolButton
-      Left = 261
+      Left = 292
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -121,8 +134,10 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 269
+      Left = 300
       Top = 0
+      Margins.Left = 20
+      Margins.Right = 20
       Action = ClearDBAction
     end
   end
@@ -172,6 +187,9 @@ object MainForm: TMainForm
     object Options1: TMenuItem
       Caption = 'Options'
       GroupIndex = 50
+      object Options2: TMenuItem
+        Action = OptionsAction
+      end
     end
     object Service1: TMenuItem
       Caption = 'Service'
@@ -289,6 +307,11 @@ object MainForm: TMainForm
       ImageIndex = 24
       OnExecute = PaimentModesActionExecute
     end
+    object OptionsAction: TAction
+      Caption = 'Options'
+      ImageIndex = 62
+      OnExecute = OptionsActionExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
@@ -307,8 +330,8 @@ object MainForm: TMainForm
     Top = 280
   end
   object XMLDoc: TXMLDocument
-    Left = 248
-    Top = 136
+    Left = 208
+    Top = 128
   end
   object JvAppRS: TJvAppRegistryStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
@@ -329,24 +352,13 @@ object MainForm: TMainForm
     Bindings = <>
     DefaultPort = 8033
     Intercept = IdServerInterceptLogFile
-    AutoStartSession = True
-    SessionState = True
     OnCommandGet = HTTPServerCommandGet
-    Left = 352
+    Left = 320
     Top = 72
-  end
-  object IdLogFile: TIdLogFile
-    Intercept = IdLogEvent
-    Left = 432
-    Top = 80
-  end
-  object IdLogEvent: TIdLogEvent
-    Left = 432
-    Top = 136
   end
   object IdServerInterceptLogFile: TIdServerInterceptLogFile
     Filename = 'c:\wprc\shrfs.log'
-    Left = 360
-    Top = 200
+    Left = 320
+    Top = 128
   end
 end
