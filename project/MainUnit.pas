@@ -108,6 +108,9 @@ type
     procedure HTTPServerCommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure OptionsActionExecute(Sender: TObject);
+    procedure HTTPServerCommandOther(AContext: TIdContext;
+      ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure HTTPServerException(AContext: TIdContext; AException: Exception);
   private
     { Private declarations }
     gdbname: String;
@@ -171,17 +174,29 @@ end;
 
 procedure TMainForm.HTTPServerCommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-  var
-    s, r: String;
-    n, i: Integer;
 begin
-
-//  s := ARequestInfo.UserAgent;
-//  r := '<html>TEST<br> ' + ARequestInfo.Params.Text + ' <br>' + s + '</html>';
-//  AResponseInfo.ContentText  := r;
 
   CommandGet(AContext, ArequestInfo, AResponseInfo);
 
+end;
+
+procedure TMainForm.HTTPServerCommandOther(AContext: TIdContext;
+  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+begin
+//
+  //  ARequestInfo.PostStream
+end;
+
+procedure TMainForm.HTTPServerException(AContext: TIdContext;
+  AException: Exception);
+begin
+  TThread.Queue(nil,
+    procedure
+    begin
+
+      AddToLog(AException.Message);
+
+    end);
 end;
 
 // .............................................................................

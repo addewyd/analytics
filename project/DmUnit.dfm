@@ -12732,15 +12732,15 @@ object DM: TDM
     Left = 164
     Top = 128
   end
-  object FDTransactionH: TFDTransaction
+  object FDTransactionH_r: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
-    Connection = FDCH
+    Connection = FDCH_r
     Left = 288
     Top = 160
   end
-  object FDCH: TFDConnection
-    ConnectionName = 'fdh'
+  object FDCH_r: TFDConnection
+    ConnectionName = 'fdh_r'
     Params.Strings = (
       'DriverID=FB'
       'CharacterSet=UTF8'
@@ -12748,7 +12748,8 @@ object DM: TDM
       'Port=3050'
       'User_Name=SYSDBA')
     LoginPrompt = False
-    Transaction = FDTransactionH
+    Transaction = FDTransactionH_r
+    UpdateTransaction = FDTransactionH_r
     Left = 280
     Top = 216
   end

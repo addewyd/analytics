@@ -352,6 +352,8 @@ object MainForm: TMainForm
     Bindings = <>
     DefaultPort = 8033
     Intercept = IdServerInterceptLogFile
+    OnException = HTTPServerException
+    OnCommandOther = HTTPServerCommandOther
     OnCommandGet = HTTPServerCommandGet
     Left = 320
     Top = 72

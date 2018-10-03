@@ -14,29 +14,35 @@ IdContext, IdCustomHTTPServer, IdBaseComponent,
   IdLogFile;
 
 Procedure CommandGet(Context: TIdContext;
-  var Request: TIdHTTPRequestInfo; var Response: TIdHTTPResponseInfo);
+  Request: TIdHTTPRequestInfo; Response: TIdHTTPResponseInfo);
 
 implementation
 
-uses DmUnit;
+uses DmUnit, MainUnit;
 
-Procedure SendTables(Response: TIdHTTPResponseInfo);
   var
     query: TFDQuery;
-    resp: String;
-begin
-  resp := '';
+    conn: TFDConnection;
+    tran: TFDTransaction;
 
-  try
+// .............................................................................
+
+  Procedure SendTables(Response: TIdHTTPResponseInfo);
+  var
+    resp: String;
+  begin
+    resp := '';
+
     query := TFDQuery.Create(nil);
     try
       with query do
       begin
-        DM.FDCH.Params := DM.FDConnection.Params;
-        Connection := DM.FDCH;
+        conn.Transaction := tran;
+        conn.Params := DM.FDConnection.Params;
+        Connection := conn;
 
-        DM.FDCH.Open();
-        Transaction := DM.FDTransactionH;
+        conn.Open();
+        Transaction := tran;
         SQL.Text := 'select id, tablename from tableslist';
         Transaction.StartTransaction;
         try
@@ -52,50 +58,97 @@ begin
         end;
       end;
     finally
-      if DM.FDCH.Connected then DM.FDCH.Close;
+      if conn.Connected then
+        conn.Close;
 
       query.Free;
+    end;
+    Response.ContentText := resp;
+
+  end;
+
+// .............................................................................
+
+Procedure CommandGet(Context: TIdContext; Request: TIdHTTPRequestInfo;
+  Response: TIdHTTPResponseInfo);
+var
+  s, r, u, d, postdata: string;
+  slen: Integer;
+  buf: TBytes;
+begin
+  s := Request.UserAgent;
+  u := Request.URI;
+  d := Request.Document;
+  r := '';
+
+  TThread.Queue(nil,
+    procedure
+    begin
+
+      AddToLog(u);
+    end);
+
+  try
+    conn := TFDConnection.Create(nil);
+    tran := TFDTransaction.Create(nil);
+
+    conn.DriverName := 'FB';
+    conn.FetchOptions := DM.FDConnection.FetchOptions;
+    conn.ResourceOptions := DM.FDConnection.ResourceOptions;
+    conn.UpdateOptions := DM.FDConnection.UpdateOptions;
+    conn.UpdateTransaction := tran;
+
+    tran.Options := DM.FDTransaction.Options;
+    tran.Connection := conn;
+
+    try
+
+      if u = '/Version' then
+      begin
+
+        Response.ContentText := Format('R: %s ' + chr($0D) + chr($0A) +
+          'U: %s D: %s', [Request.Params.Text, u, d]);
+      end
+      else if u = '/Tables' then
+      begin
+        SendTables(Response);
+      end
+      else if u = '/PostTest' then
+      begin
+        //PostTest(Request, Response);
+        slen := Request.PostStream.Size;
+        SetLength(buf, slen);
+        Request.PostStream.ReadData(buf, slen);
+
+        postdata := StringOf(buf);
+        Response.ContentText := Format('%s size: %d'
+          + chr($0D) + chr($0A) +
+          ' %s'
+          + chr($0D) + chr($0A) +
+          'Command P: %s '
+          + chr($0D) + chr($0A) +
+          'U: %s D: %s', [Request.Command, slen, postdata,
+          Request.Params.Text, u, d]);
+
+      end
+      else
+      begin
+        Response.ContentText := Format('Unknown command P: %s '
+          + chr($0D) + chr($0A) +
+          'U: %s D: %s', [Request.Params.Text, u, d]);
+      end;
+    finally
+      tran.Free;
+      conn.Free;
     end;
 
   except
     on e: Exception do
     begin
-      resp := 'HE: ' + e.Message;
+      Response.ContentText := 'HE: ' + e.Message;
     end;
 
   end;
-  Response.ContentText := resp;
-
-end;
-
-// .............................................................................
-
-Procedure CommandGet(Context: TIdContext;
-  var Request: TIdHTTPRequestInfo; var Response: TIdHTTPResponseInfo);
-  var
-    s, r, u, d: string;
-begin
-  s := Request.UserAgent;
-  u := Request.URI;
-  d := Request.Document;
-  r := '<html>TEST 02<br> ' + Request.Params.Text + ' <br>' + s + '</html>';
-
-  if u = '/Version' then
-  begin
-
-    Response.ContentText  :=
-      Format('R: %s '+ chr($0d)+chr($0a) + 'U: %s D: %s',[Request.Params.Text,u,d]);
-  end
-  else if u = '/Tables' then
-  begin
-    SendTables(Response);
-  end
-  else
-  begin
-    Response.ContentText  := 'Unknown command';
-  end;
-
-
 
 end;
 
