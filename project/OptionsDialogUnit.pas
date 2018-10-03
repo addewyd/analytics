@@ -13,6 +13,8 @@ type
     CancelButton: TButton;
     JvStaticText1: TJvStaticText;
     DBLocEdit: TJvEdit;
+    JvStaticText2: TJvStaticText;
+    HostEdit: TJvEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }

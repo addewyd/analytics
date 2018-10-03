@@ -56,4 +56,24 @@ object OptionsDialog: TOptionsDialog
     TabOrder = 3
     Text = ''
   end
+  object JvStaticText2: TJvStaticText
+    Left = 24
+    Top = 48
+    Width = 26
+    Height = 17
+    Caption = 'Host'
+    Layout = tlTop
+    TabOrder = 4
+    TextMargins.X = 0
+    TextMargins.Y = 0
+    WordWrap = False
+  end
+  object HostEdit: TJvEdit
+    Left = 112
+    Top = 44
+    Width = 97
+    Height = 21
+    TabOrder = 5
+    Text = ''
+  end
 end

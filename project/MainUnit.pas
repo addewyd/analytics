@@ -126,6 +126,7 @@ var
   MainForm: TMainForm;
   Exepath: String;
   dbname: string;
+  host: String;
   CurrentFile: String;
 
 implementation
@@ -384,8 +385,9 @@ begin
   reg := TRegIniFile.Create(SubKey);
   try
     db := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+    host := reg.ReadString('options', 'host', '94.181.67.31');
     Exepath := ExtractFilePath(Application.ExeName);
-    dbname := Exepath + db;
+    dbname := host + ':' + Exepath + db;
     Application.Title := 'Shrfs';
     HTTPServer.DefaultPort := 8033;
     HTTPServer.Active := true;
@@ -437,17 +439,21 @@ procedure TMainForm.OptionsActionExecute(Sender: TObject);
     od: TOptionsDialog;
     reg: TRegIniFile;
     dbloc: String;
+    host: String;
 begin
   try
     reg := TRegIniFile.Create('Software\Shrfs');
     try
       od := TOptionsDialog.Create(self);
       dbloc := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+      host := reg.ReadString('options', 'host', 'localhost');
       od.DBLocEdit.Text := dbloc;
+      od.HostEdit.Text := host;
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
         reg.WriteString('options', 'db', dbloc);
+        reg.WriteString('options', 'host', host);
 
       end;
     finally
