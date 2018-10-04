@@ -3,8 +3,8 @@ object DM: TDM
   Height = 324
   Width = 462
   object imlist: TImageList
-    Left = 232
-    Top = 56
+    Left = 88
+    Top = 48
     Bitmap = {
       494C01017E018001280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
@@ -12718,19 +12718,20 @@ object DM: TDM
       'Password=masterkey'
       
         'Database=localhost:C:\Users\user\Documents\topaz\analytics\proje' +
-        'ct\Win32\Debug\db\SHRFS.FDB')
+        'ct\Win32\Debug\db\SHRFS.FDB'
+      'Protocol=TCPIP')
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransaction
-    Left = 288
+    Left = 296
     Top = 56
   end
   object FDTransaction: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = FDConnection
-    Left = 164
-    Top = 128
+    Left = 220
+    Top = 56
   end
   object FDTransactionH_r: TFDTransaction
     Options.AutoStart = False

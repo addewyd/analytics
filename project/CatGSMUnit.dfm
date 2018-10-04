@@ -8,10 +8,13 @@ inherited CatGSMForm: TCatGSMForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 477
+    ExplicitWidth = 477
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 298
     Width = 477
+    ExplicitTop = 298
+    ExplicitWidth = 477
   end
   inherited JvDBGrid: TJvDBGrid
     Width = 477
@@ -29,12 +32,15 @@ inherited CatGSMForm: TCatGSMForm
         Expanded = False
         FieldName = 'name'
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+        Width = 120
         Visible = True
       end>
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 317
     Width = 477
+    ExplicitTop = 317
+    ExplicitWidth = 477
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
@@ -43,7 +49,7 @@ inherited CatGSMForm: TCatGSMForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

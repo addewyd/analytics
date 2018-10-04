@@ -59,7 +59,7 @@ object BaseForm: TBaseForm
     Left = 40
     Top = 80
     object CloseAction: TAction
-      Caption = 'Close'
+      Caption = #1047#1072#1082#1088#1099#1090#1100
       Hint = 'Close'
       ImageIndex = 48
       OnExecute = CloseActionExecute

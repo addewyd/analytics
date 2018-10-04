@@ -34,6 +34,7 @@ uses DmUnit;
 procedure TCatItemsForm.FormCreate(Sender: TObject);
 begin
   inherited;
+
   with FDQuery do
   begin
     SQL.Text := 'select code, name from items';
@@ -42,6 +43,8 @@ begin
       Open;
 //      FetchAll;
       Transaction.Commit;
+      JvDBGrid.Columns[0].Title.Caption := 'Код';
+      JvDBGrid.Columns[1].Title.Caption := 'Наименование';
     except
       Transaction.Rollback;
     end;

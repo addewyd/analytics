@@ -23,21 +23,27 @@ inherited SessionListForm: TSessionListForm
       item
         Expanded = False
         FieldName = 'azscode'
+        Title.Caption = #1050#1086#1076' '#1040#1047#1057
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'sessionnum'
+        Title.Caption = #1053#1086#1084#1077#1088' '#1089#1084#1077#1085#1099
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'startdatetime'
+        Title.Caption = #1053#1072#1095#1072#1083#1086
+        Width = 80
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'username'
+        Title.Caption = #1054#1087#1077#1088#1072#1090#1086#1088
+        Width = 120
         Visible = True
       end>
   end
@@ -53,8 +59,9 @@ inherited SessionListForm: TSessionListForm
     end
   end
   inherited ImageList: TImageList
+    Top = 80
     Bitmap = {
-      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

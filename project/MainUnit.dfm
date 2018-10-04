@@ -145,7 +145,7 @@ object MainForm: TMainForm
     Left = 16
     Top = 40
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = #1060#1072#1081#1083
       GroupIndex = 10
       object LoadFile1: TMenuItem
         Action = LoadFileAction
@@ -161,7 +161,7 @@ object MainForm: TMainForm
       end
     end
     object Sessions1: TMenuItem
-      Caption = 'Sessions'
+      Caption = #1057#1084#1077#1085#1099
       GroupIndex = 20
       object Sessions2: TMenuItem
         Action = SessionsAction
@@ -185,7 +185,7 @@ object MainForm: TMainForm
       end
     end
     object Options1: TMenuItem
-      Caption = 'Options'
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       GroupIndex = 50
       object Options2: TMenuItem
         Action = OptionsAction
@@ -221,19 +221,20 @@ object MainForm: TMainForm
     Left = 80
     Top = 56
     object CloseAction: TAction
-      Caption = 'Quit'
+      Caption = #1047#1072#1082#1088#1099#1090#1100
+      Hint = #1047#1072#1082#1088#1099#1090#1100
       ImageIndex = 48
       OnExecute = CloseActionExecute
     end
     object AboutAction: TAction
-      Caption = 'About'
-      Hint = 'About'
+      Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+      Hint = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
       ImageIndex = 223
       OnExecute = AboutActionExecute
     end
     object LoadFileAction: TAction
-      Caption = 'Load File'
-      Hint = 'Load file'
+      Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1092#1072#1081#1083
+      Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1092#1072#1081#1083
       ImageIndex = 68
       OnExecute = LoadFileActionExecute
     end
@@ -242,13 +243,13 @@ object MainForm: TMainForm
       OnExecute = LoadDirActionExecute
     end
     object ClearDBAction: TAction
-      Caption = 'Clear DB'
-      Hint = 'Delete ALL data'
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1042#1057#1045' '#1076#1072#1085#1085#1099#1077
+      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1042#1057#1045' '#1076#1072#1085#1085#1099#1077
       ImageIndex = 141
       OnExecute = ClearDBActionExecute
     end
     object SessionsAction: TAction
-      Caption = 'Sessions'
+      Caption = #1057#1084#1077#1085#1099
       Hint = #1057#1084#1077#1085#1099
       ImageIndex = 80
       OnExecute = SessionsActionExecute
@@ -285,14 +286,17 @@ object MainForm: TMainForm
     end
     object CatGSMAction: TAction
       Caption = #1043#1057#1052
+      Hint = #1043#1057#1052
       OnExecute = CatGSMActionExecute
     end
     object CatPartnersAction: TAction
       Caption = #1055#1072#1088#1090#1085#1105#1088#1099
+      Hint = #1055#1072#1088#1090#1085#1105#1088#1099
       OnExecute = CatPartnersActionExecute
     end
     object CatItemsAction: TAction
       Caption = #1058#1086#1074#1072#1088#1099
+      Hint = #1058#1086#1074#1072#1088#1099
       OnExecute = CatItemsActionExecute
     end
     object SimpleReportAction: TAction
@@ -308,7 +312,8 @@ object MainForm: TMainForm
       OnExecute = PaimentModesActionExecute
     end
     object OptionsAction: TAction
-      Caption = 'Options'
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
+      Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 62
       OnExecute = OptionsActionExecute
     end

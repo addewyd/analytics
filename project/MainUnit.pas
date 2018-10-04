@@ -128,6 +128,7 @@ var
   dbname: string;
   host: String;
   CurrentFile: String;
+  embed: Boolean;
 
 implementation
 
@@ -345,11 +346,29 @@ end;
 // .............................................................................
 
 procedure TMainForm.FormActivate(Sender: TObject);
+  var
+    oParams : TFDPhysFBConnectionDefParams;
 begin
   //
   JVFS.RestoreFormPlacement();
   try
-    DM.FDConnection.Params.Add('Database=' + 'localhost:'+dbname);
+    with
+    DM.FDConnection.Params do
+    begin
+      Clear;
+      Add('Database=' + dbname);
+      Add('DriverID=FB');
+      if embed then Add('Protocol=Local')
+      else Add('Protocol=TCPIP');
+      Add('User_Name=SYSDBA');
+      Add('Password=masterkey');
+      Add('SQLDialect=3');
+      if embed then Add('Server=')
+      else Add('server=' + host);
+      Add('CharacterSet=UTF8');
+
+    end;
+
     DM.FDConnection.Open;
     StatusBar1.Panels[0].Text := ExtractFileName(dbname);
 
@@ -361,6 +380,7 @@ begin
     end;
 
   end;
+
 end;
 
 // .............................................................................
@@ -381,16 +401,20 @@ procedure TMainForm.FormCreate(Sender: TObject);
     SubKey: string = 'Software\Shrfs';
 begin
   // set up form
-
   reg := TRegIniFile.Create(SubKey);
   try
     db := reg.ReadString('options', 'db', '\db\shrfs.fdb');
-    host := reg.ReadString('options', 'host', '94.181.67.31');
+    host := reg.ReadString('options', 'host', 'localhost'{,'94.181.67.31'});
+    embed := reg.ReadBool('options', 'embedded', false);
     Exepath := ExtractFilePath(Application.ExeName);
-    dbname := host + ':' + Exepath + db;
+//    if embed then
+      dbname := Exepath + db;
+//    else
+//      dbname := host + ':' + Exepath + db;
     Application.Title := 'Shrfs';
     HTTPServer.DefaultPort := 8033;
     HTTPServer.Active := true;
+
   finally
     reg.Free;
   end;
@@ -440,6 +464,7 @@ procedure TMainForm.OptionsActionExecute(Sender: TObject);
     reg: TRegIniFile;
     dbloc: String;
     host: String;
+    embed: Boolean;
 begin
   try
     reg := TRegIniFile.Create('Software\Shrfs');
@@ -447,18 +472,24 @@ begin
       od := TOptionsDialog.Create(self);
       dbloc := reg.ReadString('options', 'db', '\db\shrfs.fdb');
       host := reg.ReadString('options', 'host', 'localhost');
+      embed := reg.ReadBool('options', 'embedded', false);
       od.DBLocEdit.Text := dbloc;
       od.HostEdit.Text := host;
+      od.JvCheckBox1.Checked := embed;
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
+        host := od.HostEdit.Text;
+        embed := od.JvCheckBox1.Checked;
         reg.WriteString('options', 'db', dbloc);
-        reg.WriteString('options', 'host', host);
-
+        if Trim(host) <> 'local' then
+          reg.WriteString('options', 'host', host);
+        reg.WriteBool('options', 'embedded', embed);
       end;
     finally
       reg.Free;
     end;
+
   except
     on e: Exception do
       ErrorMessageBox(self, e.message);

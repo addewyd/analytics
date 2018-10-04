@@ -41,6 +41,8 @@ begin
     try
       Open;
       Transaction.Commit;
+      JvDBGrid.Columns[0].Title.Caption := 'Код';
+      JvDBGrid.Columns[1].Title.Caption := 'Наименование';
     except
       Transaction.Rollback;
     end;

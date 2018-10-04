@@ -76,4 +76,15 @@ object OptionsDialog: TOptionsDialog
     TabOrder = 5
     Text = ''
   end
+  object JvCheckBox1: TJvCheckBox
+    Left = 224
+    Top = 46
+    Width = 71
+    Height = 17
+    Caption = 'Embedded'
+    TabOrder = 6
+    OnClick = JvCheckBox1Click
+    LinkedControls = <>
+    LeftText = True
+  end
 end
