@@ -234,9 +234,10 @@ endProcedure
 	Request.SetBodyFromString(SQLText);
 	Response = Conn.post(Request);
 	r = Response.GetBodyAsString();
-//	Message(r);
+	Message(r);
 	qtable.Очистить();
 	
 	//qtable.Очистить();
 	SQLS(r);
+	Conn.Удалить(Request);
 КонецПроцедуры

@@ -39,6 +39,7 @@ uses DmUnit, MainUnit;
       begin
         conn.Transaction := tran;
         conn.Params := DM.FDConnection.Params;
+
         Connection := conn;
 
         conn.Open();
@@ -67,17 +68,22 @@ uses DmUnit, MainUnit;
 
   end;
 
+// .............................................................................
+
   Procedure ExecSQL(Response: TIdHTTPResponseInfo; qsql: String);
-    var xml, fv: String;
+    var xml, fv, f: String;
       nf,i: Integer;
 
   begin
     xml := '<?xml version="1.0" encoding="utf-8"?>' + #13#10;
     query := TFDQuery.Create(nil);
     try
+ //     query.Encoder.Encoding := ecUTF8;
+//      query.Encoder.Encode()
       with query do
       begin
         conn.Transaction := tran;
+        //conn.Params.Add('CharacterSet=UTF8');
         conn.Params := DM.FDConnection.Params;
         Connection := conn;
 
@@ -95,10 +101,13 @@ uses DmUnit, MainUnit;
             for i := 0 to nf - 1 do
             begin
               fv := Fields[i].FieldName;
-              xml := xml + '<' + fv + '>';
-              xml := xml + Utf8ToAnsi (Fields[i].AsString);
-              xml := xml + '</' + fv + '>';
 
+              f := FieldByName(fv).AsString;
+              f := StringReplace(f,'<','&lt;',[rfReplaceAll]);
+              f := StringReplace(f,'>','&gt;',[rfReplaceAll]);
+              xml := xml + '     <' + fv + '>';
+              xml := xml + f;
+              xml := xml + '</' + fv + '>'#13#10;
             end;
 
             xml := xml + '</record>'#13#10;
@@ -116,7 +125,19 @@ uses DmUnit, MainUnit;
 
       query.Free;
     end;
-    Response.ContentText := xml;
+              MainForm.IdServerInterceptLogFile.LogWriteString(xml);
+//    Response.ContentEncoding := '';
+ {
+  TThread.Queue(nil,
+    procedure
+    begin
+
+      AddToLog(xml);
+    end);
+  }
+    Response.CharSet := 'utf-8';
+    Response.ContentType := 'text/xml; charset=utf-8';
+    Response.ContentText :=  xml;
   end;
 
 // .............................................................................
@@ -143,7 +164,22 @@ begin
   try
     conn := TFDConnection.Create(nil);
     tran := TFDTransaction.Create(nil);
-
+{
+   with conn.Params do
+    begin
+      Clear;
+      Add('Database=' + dbname);
+      Add('DriverID=FB');
+      if embed then Add('Protocol=Local')
+      else Add('Protocol=TCPIP');
+      Add('User_Name=SYSDBA');
+      Add('Password=masterkey');
+      Add('SQLDialect=3');
+      if embed then Add('Server=')
+      else Add('server=' + host);
+      Add('CharacterSet=UTF8');
+    end;
+ }
     conn.DriverName := 'FB';
     conn.FetchOptions := DM.FDConnection.FetchOptions;
     conn.ResourceOptions := DM.FDConnection.ResourceOptions;
@@ -192,6 +228,12 @@ begin
 
         postdata := StringOf(buf);
 //        Response.ContentText := Format('your query`:%s', [postdata]);
+        ExecSQL(response, postdata);
+
+      end
+      else if u = '/SQLG' then
+      begin
+        postdata := 'select * from outcomesbyretail';
         ExecSQL(response, postdata);
 
       end

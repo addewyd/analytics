@@ -12712,14 +12712,14 @@ object DM: TDM
   object FDConnection: TFDConnection
     ConnectionName = 'FDConnection'
     Params.Strings = (
-      'DriverID=FB'
       'CharacterSet=UTF8'
       'User_Name=sysdba'
       'Password=masterkey'
       
         'Database=localhost:C:\Users\user\Documents\topaz\analytics\proje' +
         'ct\Win32\Debug\db\SHRFS.FDB'
-      'Protocol=TCPIP')
+      'Protocol=TCPIP'
+      'ConnectionDef=FDConnection')
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransaction
@@ -12753,5 +12753,13 @@ object DM: TDM
     UpdateTransaction = FDTransactionH_r
     Left = 280
     Top = 216
+  end
+  object FDManager: TFDManager
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <>
+    Active = True
+    Left = 152
+    Top = 120
   end
 end

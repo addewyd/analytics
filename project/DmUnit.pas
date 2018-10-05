@@ -26,6 +26,7 @@ type
     FDTransaction: TFDTransaction;
     FDTransactionH_r: TFDTransaction;
     FDCH_r: TFDConnection;
+    FDManager: TFDManager;
   private
     { Private declarations }
   public

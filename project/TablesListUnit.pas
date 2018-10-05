@@ -81,6 +81,7 @@ begin
       if s = 'OutcomesByRetail' then
       begin
         wfieldlist.Add('tanknum');
+        wfieldlist.Add('fuelname');
       end;
 
       if s = 'Tanks' then

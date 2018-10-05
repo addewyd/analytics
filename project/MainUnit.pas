@@ -366,6 +366,7 @@ begin
       if embed then Add('Server=')
       else Add('server=' + host);
       Add('CharacterSet=UTF8');
+      //Add('lc_ctype=UTF8');
 
     end;
 
@@ -414,6 +415,7 @@ begin
     Application.Title := 'Shrfs';
     HTTPServer.DefaultPort := 8033;
     HTTPServer.Active := true;
+    IdServerInterceptLogFile.Filename:= Exepath + '/db/http.log';
 
   finally
     reg.Free;
