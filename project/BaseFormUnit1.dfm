@@ -29,7 +29,10 @@ object BaseForm: TBaseForm
     object ToolButton1: TToolButton
       Left = 0
       Top = 0
+      Hint = #1047#1072#1082#1088#1099#1090#1100
       Action = CloseAction
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   object JvStatusBar1: TJvStatusBar

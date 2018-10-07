@@ -11,7 +11,8 @@ uses
   JvDataSource, System.ImageList, Vcl.ImgList, Vcl.Menus, System.Actions,
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
-  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar;
+  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar
+  , TableFromXmlUnit;
 
 type
   TTablesListForm = class(TFormWithGrid)
@@ -19,6 +20,8 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+      tt: TTableFromXmlForm;
+
   public
     { Public declarations }
   end;
@@ -30,7 +33,7 @@ implementation
 
 {$R *.dfm}
 
-uses DmUnit, ErrorUnit, MainUnit, TableFromXmlUnit;
+uses DmUnit, ErrorUnit, MainUnit;
 
 procedure TTablesListForm.FormCreate(Sender: TObject);
 begin
@@ -60,8 +63,6 @@ var
   grid: TJvDBGrid;
   r: integer;
   s: String;
-  tt: TTableFromXmlForm;
-
   wfieldlist: TStringList;
 
 begin
@@ -81,7 +82,17 @@ begin
       if s = 'OutcomesByRetail' then
       begin
         wfieldlist.Add('tanknum');
+        wfieldlist.Add('hosename');
+        wfieldlist.Add('fuelextcode');
         wfieldlist.Add('fuelname');
+        wfieldlist.Add('paymentmodeextcode');
+        wfieldlist.Add('paymentmodename');
+        wfieldlist.Add('partnerextcode');
+        wfieldlist.Add('partnername');
+        wfieldlist.Add('volume');
+        wfieldlist.Add('amount');
+        wfieldlist.Add('mass');
+        wfieldlist.Add('origprice');
       end;
 
       if s = 'Tanks' then

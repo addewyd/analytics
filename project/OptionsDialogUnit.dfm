@@ -87,4 +87,36 @@ object OptionsDialog: TOptionsDialog
     LinkedControls = <>
     LeftText = True
   end
+  object HTTPCheckBox: TJvCheckBox
+    Left = 24
+    Top = 80
+    Width = 101
+    Height = 17
+    Caption = 'HTTP Service'
+    Checked = True
+    State = cbChecked
+    TabOrder = 7
+    LinkedControls = <>
+    AutoSize = False
+    LeftText = True
+  end
+  object JvStaticText3: TJvStaticText
+    Left = 134
+    Top = 82
+    Width = 54
+    Height = 17
+    Caption = 'Allowed IP'
+    Layout = tlTop
+    TabOrder = 8
+    TextMargins.X = 0
+    TextMargins.Y = 0
+    WordWrap = False
+  end
+  object IPAMemo: TMemo
+    Left = 211
+    Top = 82
+    Width = 202
+    Height = 89
+    TabOrder = 9
+  end
 end

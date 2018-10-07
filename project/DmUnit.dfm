@@ -12758,6 +12758,8 @@ object DM: TDM
     FormatOptions.AssignedValues = [fvMapRules]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <>
+    ResourceOptions.AssignedValues = [rvDefaultStoreFormat]
+    ResourceOptions.DefaultStoreFormat = sfJSON
     Active = True
     Left = 152
     Top = 120

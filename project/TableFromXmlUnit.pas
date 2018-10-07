@@ -48,12 +48,14 @@ type
     procedure JvDSDataChange(Sender: TObject; Field: TField);
     procedure JvDSStateChange(Sender: TObject);
     procedure JvDSUpdateData(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     SQLText: String;
     TableName: String;
+
     procedure FilterAndShowData;
     constructor Create(pr: TComponent; fname: String); reintroduce; overload;
 
@@ -96,7 +98,7 @@ begin
     if not (JvDBCB01.Text = '') then
     begin
       azscode := JvDBCB01.Text;
-      wfilter := ' where azscode = ' + chr($27) + azscode + chr($27);
+      wfilter := ' where azscode = '#$27 + azscode + #$27;
     end;
   end;
 
@@ -284,6 +286,23 @@ begin
   inherited;
 //  ErrorMessageBox(self, jvfs.AppStoragePath);
 
+end;
+
+procedure TTableFromXmlForm.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+      with FDQF01 do
+      begin
+        Transaction.StartTransaction;
+        SQL.Text := 'select s.azscode as azscode from sessions s join '
+          + TableName +
+          ' t on s.id=t.session_id group by azscode';
+
+        Open;
+        Transaction.Commit;
+      end;
+
+  FilterAndShowData;
 end;
 
 end.

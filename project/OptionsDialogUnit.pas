@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, JvExStdCtrls, JvEdit,
-  JvExControls, JvStaticText, JvCheckBox, Registry;
+  JvExControls, JvStaticText, JvCheckBox, Registry, Vcl.ExtCtrls, JvExExtCtrls,
+  JvExtComponent, JvItemsPanel, JvMemo, JvHtControls;
 
 type
   TOptionsDialog = class(TForm)
@@ -16,6 +17,9 @@ type
     JvStaticText2: TJvStaticText;
     HostEdit: TJvEdit;
     JvCheckBox1: TJvCheckBox;
+    HTTPCheckBox: TJvCheckBox;
+    JvStaticText3: TJvStaticText;
+    IPAMemo: TMemo;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
   private

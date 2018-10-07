@@ -19,6 +19,10 @@ type
     JvDBGridFooter: TJvDBGridFooter;
     JvDS: TJvDataSource;
     FDQuery: TFDQuery;
+    RefreshAction: TAction;
+    N1: TMenuItem;
+    ToolButton2: TToolButton;
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -31,5 +35,11 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TFormWithGrid.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+//
+end;
 
 end.

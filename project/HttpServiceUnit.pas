@@ -78,8 +78,6 @@ uses DmUnit, MainUnit;
     xml := '<?xml version="1.0" encoding="utf-8"?>' + #13#10;
     query := TFDQuery.Create(nil);
     try
- //     query.Encoder.Encoding := ecUTF8;
-//      query.Encoder.Encode()
       with query do
       begin
         conn.Transaction := tran;
@@ -120,12 +118,11 @@ uses DmUnit, MainUnit;
         end;
       end;
     finally
-      if conn.Connected then
-        conn.Close;
+      if conn.Connected then conn.Close;
 
       query.Free;
     end;
-              MainForm.IdServerInterceptLogFile.LogWriteString(xml);
+    //MainForm.IdServerInterceptLogFile.LogWriteString(xml);
 //    Response.ContentEncoding := '';
  {
   TThread.Queue(nil,
@@ -145,21 +142,44 @@ uses DmUnit, MainUnit;
 Procedure CommandGet(Context: TIdContext; Request: TIdHTTPRequestInfo;
   Response: TIdHTTPResponseInfo);
 var
-  s, r, u, d, postdata: string;
-  slen: Integer;
+  s, r, u, d, ip, postdata: string;
+  slen, i: Integer;
   buf: TBytes;
+  ok: boolean;
 begin
   s := Request.UserAgent;
   u := Request.URI;
   d := Request.Document;
   r := '';
 
+//  ip := Request.RemoteIP;
+
+  ip := Context.Binding.PeerIP;
+  ok := false;
+
+  for i := 0 to IPAS.Count - 1 do
+  begin
+    if ip = IPAS[i] then
+    begin
+      ok := true;
+      break;
+    end;
+  end;
+
+
   TThread.Queue(nil,
     procedure
     begin
 
-      AddToLog(u);
+      AddToLog(u + ' ' + ip);
     end);
+
+
+  if not ok then
+  begin
+    Response.ContentText := 'Congratulations!';
+    Exit;
+  end;
 
   try
     conn := TFDConnection.Create(nil);

@@ -26,7 +26,6 @@ type
   TMainForm = class(TForm)
     MainMenuM: TMainMenu;
     File1: TMenuItem;
-    Options1: TMenuItem;
     About1: TMenuItem;
     Close1: TMenuItem;
     ActionList: TActionList;
@@ -87,7 +86,10 @@ type
     OptionsAction: TAction;
     ToolButton15: TToolButton;
     ToolButton16: TToolButton;
-    Options2: TMenuItem;
+    dtb1: TToolButton;
+    dtb2: TToolButton;
+    ToolButton17: TToolButton;
+    N8: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -111,6 +113,7 @@ type
     procedure HTTPServerCommandOther(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerException(AContext: TIdContext; AException: Exception);
+    procedure ToolBar1Click(Sender: TObject);
   private
     { Private declarations }
     gdbname: String;
@@ -127,8 +130,11 @@ var
   Exepath: String;
   dbname: string;
   host: String;
+  HTTPServiceOn: Boolean;
   CurrentFile: String;
   embed: Boolean;
+
+  IPAS: TStringList;
 
 implementation
 
@@ -181,6 +187,8 @@ begin
   CommandGet(AContext, ArequestInfo, AResponseInfo);
 
 end;
+
+// .............................................................................
 
 procedure TMainForm.HTTPServerCommandOther(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -397,16 +405,32 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
   var
     reg: TRegIniFile;
-    db: String;
+    db, ip, val: String;
+    len, i: Integer;
   const
     SubKey: string = 'Software\Shrfs';
 begin
   // set up form
+  IPAS := TStringList.Create;
+
   reg := TRegIniFile.Create(SubKey);
   try
     db := reg.ReadString('options', 'db', '\db\shrfs.fdb');
     host := reg.ReadString('options', 'host', 'localhost'{,'94.181.67.31'});
     embed := reg.ReadBool('options', 'embedded', false);
+    HTTPServiceOn := reg.ReadBool('options', 'httpservice', true);
+
+      IPAS.Clear;
+      len := 6;
+      for i := 0 to len - 1 do
+      begin
+        if i = 0 then val := '127.0.0.1'
+        else val := '';
+        ip := reg.ReadString('options', format('IP%d', [i]), val);
+        IPAS.Add(ip);
+      end;
+
+
     Exepath := ExtractFilePath(Application.ExeName);
 //    if embed then
       dbname := Exepath + db;
@@ -414,8 +438,17 @@ begin
 //      dbname := host + ':' + Exepath + db;
     Application.Title := 'Shrfs';
     HTTPServer.DefaultPort := 8033;
-    HTTPServer.Active := true;
-    IdServerInterceptLogFile.Filename:= Exepath + '/db/http.log';
+    if HTTPServiceOn then
+    begin
+      HTTPServer.Active := true;
+      IdServerInterceptLogFile.Filename:= Exepath + '/db/http.log';
+      StatusBar1.Panels[2].Text := format('HTTP service at TCP port %d',
+        [HTTPServer.DefaultPort]);
+    end
+    else
+    begin
+      StatusBar1.Panels[2].Text := 'HTTP Service off';
+    end;
 
   finally
     reg.Free;
@@ -465,28 +498,73 @@ procedure TMainForm.OptionsActionExecute(Sender: TObject);
     od: TOptionsDialog;
     reg: TRegIniFile;
     dbloc: String;
-    host: String;
+    host, ip, val: String;
     embed: Boolean;
+//    IPA: TStringList;
+    len, i: Integer;
 begin
   try
     reg := TRegIniFile.Create('Software\Shrfs');
     try
       od := TOptionsDialog.Create(self);
+
       dbloc := reg.ReadString('options', 'db', '\db\shrfs.fdb');
       host := reg.ReadString('options', 'host', 'localhost');
       embed := reg.ReadBool('options', 'embedded', false);
+
+      od.IPAMemo.Lines.Clear;
+      IPAS.Clear;
+      len := 6;
+      for i := 0 to len - 1 do
+      begin
+        if i = 0 then val := '127.0.0.1'
+        else val := '';
+        ip := reg.ReadString('options', format('IP%d', [i]), val);
+        if ip <> '' then
+        begin
+          od.IPAMemo.Lines.add(ip);
+        end;
+        IPAS.Add(ip);
+
+      end;
+
+      HTTPServiceOn := reg.ReadBool('options', 'httpservice', true);
       od.DBLocEdit.Text := dbloc;
       od.HostEdit.Text := host;
       od.JvCheckBox1.Checked := embed;
+      od.HTTPCheckBox.Checked :=  HTTPServiceOn;
+
+      od.IPAMemo.Enabled :=  HTTPServiceOn;
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
         host := od.HostEdit.Text;
         embed := od.JvCheckBox1.Checked;
+        HTTPServiceOn := od.HTTPCheckBox.Checked;
+
         reg.WriteString('options', 'db', dbloc);
         if Trim(host) <> 'local' then
           reg.WriteString('options', 'host', host);
         reg.WriteBool('options', 'embedded', embed);
+        reg.WriteBool('options', 'httpservice', HTTPServiceOn);
+        IPAS.Clear;
+        for i := 0 to len - 1 do
+        begin
+//          if i >= len then break;
+          if i >= od.IPAMemo.Lines.Count then
+          begin
+            ip := '';
+          end
+          else
+          begin
+            ip := Trim(od.IPAMemo.Lines[i]);
+          end;
+          reg.WriteString('options', format('IP%d', [i]), ip) ;
+          IPAS.Add(ip);
+        end;
+
+
+
       end;
     finally
       reg.Free;
@@ -548,6 +626,11 @@ begin
     TStationsForm.Create(self, 'stations');
   end
   else GetMDIForm('stations').Show;
+end;
+
+procedure TMainForm.ToolBar1Click(Sender: TObject);
+begin
+
 end;
 
 // .............................................................................

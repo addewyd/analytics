@@ -1,9 +1,8 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Hint = #1055#1088#1086#1089#1090#1086#1081' '#1054#1090#1095#1105#1090
   Caption = 'SHRFS'
-  ClientHeight = 619
+  ClientHeight = 522
   ClientWidth = 733
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,6 +13,7 @@ object MainForm: TMainForm
   FormStyle = fsMDIForm
   Menu = MainMenuM
   OldCreateOrder = False
+  ShowHint = False
   OnActivate = FormActivate
   OnClick = SimpleReportActionExecute
   OnClose = FormClose
@@ -22,7 +22,7 @@ object MainForm: TMainForm
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 600
+    Top = 503
     Width = 733
     Height = 19
     Panels = <
@@ -31,19 +31,25 @@ object MainForm: TMainForm
         Width = 260
       end
       item
-        Width = 260
+        Width = 240
+      end
+      item
+        Text = 'HTTP'
+        Width = 140
       end>
+    ExplicitTop = 600
   end
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
     Width = 733
     Height = 29
-    Caption = 'ToolBar1'
+    Customizable = True
     Images = DM.imlist
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    OnClick = ToolBar1Click
     object ToolButton3: TToolButton
       Left = 0
       Top = 0
@@ -92,15 +98,8 @@ object MainForm: TMainForm
       ImageIndex = 131
       Style = tbsSeparator
     end
-    object ToolButton1: TToolButton
-      Left = 192
-      Top = 0
-      Hint = 'Quit'
-      Action = CloseAction
-      ImageIndex = 130
-    end
     object ToolButton16: TToolButton
-      Left = 215
+      Left = 192
       Top = 0
       Width = 8
       Caption = 'ToolButton16'
@@ -108,22 +107,30 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 223
+      Left = 200
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 246
+      Left = 223
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 269
+      Left = 246
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
+    end
+    object dtb1: TToolButton
+      Left = 269
+      Top = 0
+      Width = 23
+      Caption = 'dtb1'
+      Enabled = False
+      Style = tbsDivider
     end
     object ToolButton7: TToolButton
       Left = 292
@@ -139,6 +146,29 @@ object MainForm: TMainForm
       Margins.Left = 20
       Margins.Right = 20
       Action = ClearDBAction
+    end
+    object dtb2: TToolButton
+      Left = 323
+      Top = 0
+      Width = 23
+      Caption = 'dtb2'
+      Enabled = False
+      Style = tbsDivider
+    end
+    object ToolButton17: TToolButton
+      Left = 346
+      Top = 0
+      Width = 9
+      Caption = 'ToolButton17'
+      ImageIndex = 131
+      Style = tbsSeparator
+    end
+    object ToolButton1: TToolButton
+      Left = 355
+      Top = 0
+      Hint = 'Quit'
+      Action = CloseAction
+      ImageIndex = 130
     end
   end
   object MainMenuM: TMainMenu
@@ -184,13 +214,6 @@ object MainForm: TMainForm
         Action = PaimentModesAction
       end
     end
-    object Options1: TMenuItem
-      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-      GroupIndex = 50
-      object Options2: TMenuItem
-        Action = OptionsAction
-      end
-    end
     object Service1: TMenuItem
       Caption = 'Service'
       GroupIndex = 50
@@ -208,6 +231,10 @@ object MainForm: TMainForm
       end
       object N6: TMenuItem
         Action = SimpleReportAction
+        GroupIndex = 44
+      end
+      object N8: TMenuItem
+        Action = OptionsAction
         GroupIndex = 44
       end
     end
