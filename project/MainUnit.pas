@@ -430,10 +430,9 @@ begin
         IPAS.Add(ip);
       end;
 
-
     Exepath := ExtractFilePath(Application.ExeName);
 //    if embed then
-      dbname := Exepath + db;
+    dbname := Exepath + db;
 //    else
 //      dbname := host + ':' + Exepath + db;
     Application.Title := 'Shrfs';
@@ -498,9 +497,7 @@ procedure TMainForm.OptionsActionExecute(Sender: TObject);
     od: TOptionsDialog;
     reg: TRegIniFile;
     dbloc: String;
-    host, ip, val: String;
-    embed: Boolean;
-//    IPA: TStringList;
+    ip, val: String;
     len, i: Integer;
 begin
   try
@@ -541,6 +538,7 @@ begin
         host := od.HostEdit.Text;
         embed := od.JvCheckBox1.Checked;
         HTTPServiceOn := od.HTTPCheckBox.Checked;
+        HTTPServer.Active := HTTPServiceOn;
 
         reg.WriteString('options', 'db', dbloc);
         if Trim(host) <> 'local' then
@@ -562,7 +560,6 @@ begin
           reg.WriteString('options', format('IP%d', [i]), ip) ;
           IPAS.Add(ip);
         end;
-
 
 
       end;

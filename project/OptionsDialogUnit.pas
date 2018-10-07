@@ -6,20 +6,23 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, JvExStdCtrls, JvEdit,
   JvExControls, JvStaticText, JvCheckBox, Registry, Vcl.ExtCtrls, JvExExtCtrls,
-  JvExtComponent, JvItemsPanel, JvMemo, JvHtControls;
+  JvExtComponent, JvItemsPanel, JvMemo, JvHtControls, JvPanel;
 
 type
   TOptionsDialog = class(TForm)
     OkButton: TButton;
     CancelButton: TButton;
-    JvStaticText1: TJvStaticText;
+    JvPanel1: TJvPanel;
     DBLocEdit: TJvEdit;
     JvStaticText2: TJvStaticText;
     HostEdit: TJvEdit;
     JvCheckBox1: TJvCheckBox;
+    JvStaticText1: TJvStaticText;
+    JvPanel2: TJvPanel;
     HTTPCheckBox: TJvCheckBox;
     JvStaticText3: TJvStaticText;
     IPAMemo: TMemo;
+    JvStaticText4: TJvStaticText;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
   private
