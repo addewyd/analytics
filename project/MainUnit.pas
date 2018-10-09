@@ -20,7 +20,7 @@ uses
   SessionListUnit, Vcl.StdActns, IdContext, IdCustomHTTPServer, IdBaseComponent,
   IdComponent, IdCustomTCPServer, IdHTTPServer, IdCookieManager, IdIntercept,
   IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
-  IdLogFile;
+  IdLogFile, Xml.omnixmldom, Xml.adomxmldom;
 
 type
   TMainForm = class(TForm)
@@ -114,6 +114,7 @@ type
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerException(AContext: TIdContext; AException: Exception);
     procedure ToolBar1Click(Sender: TObject);
+    procedure FormClick(Sender: TObject);
   private
     { Private declarations }
     gdbname: String;
@@ -328,8 +329,8 @@ begin
           AddToLog('deleted from hoses');
           ExecSQL('delete from paymentmodes');
           AddToLog('deleted from paymentmodes');
-          ExecSQL('delete from contragents');
-          AddToLog('deleted from contragents');
+          //ExecSQL('delete from contragents');
+          //AddToLog('deleted from contragents');
           ExecSQL('delete from sessions');
           AddToLog('deleted from sessions');
 
@@ -393,6 +394,11 @@ begin
 end;
 
 // .............................................................................
+
+procedure TMainForm.FormClick(Sender: TObject);
+begin
+//
+end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

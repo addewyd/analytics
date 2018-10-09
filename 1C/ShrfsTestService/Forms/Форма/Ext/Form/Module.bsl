@@ -231,7 +231,13 @@ endProcedure
 	Conn = new HTTPConnection(ServiceHost, ServicePort);
 	Request = new HTTPRequest();
 	Request.ResourceAddress = "SQL";
-	Request.SetBodyFromString(SQLText);
+	text = SQLText;
+	if  Upper(Left(triml(text),6)) <> "SELECT" then
+		Message("incorrect sql");
+		return;
+	endif;
+	
+	Request.SetBodyFromString(text);
 	Response = Conn.post(Request);
 	r = Response.GetBodyAsString();
 	Message(r);
@@ -240,4 +246,93 @@ endProcedure
 	//qtable.Очистить();
 	SQLS(r);
 	Conn.Удалить(Request);
+КонецПроцедуры
+
+&НаСервере
+Процедура PostContrНаСервере()
+	data = "<?xml version=" + """" + "1.0" + """" + " encoding=""windows-1251""?>" 
+	+ char(13) + char(10) + "<contragents>";
+    Запрос = Новый Запрос;
+    Запрос.Текст = 
+        "ВЫБРАТЬ *
+        |ИЗ
+        |   Справочник.Контрагенты КАК Контрагенты";
+ 
+    РезультатЗапроса = Запрос.Выполнить();
+ 
+    Выборка = РезультатЗапроса.Выбрать();
+ 
+    Пока Выборка.Следующий() Цикл
+
+		data = data + "<record>";
+		data = data + "<code>"+Выборка.Партнер.Код+"</code>";
+		data = data + "<name>"+Выборка.Наименование+"</name>";
+		data = data + "</record>";
+        Сообщить(Выборка.Партнер.Код + " "+	Выборка.Наименование);
+    КонецЦикла;
+	
+	// Отправить нахрен всё на сервис
+	
+	data = data + "</contragents>";
+	
+	Conn = new HTTPConnection(ServiceHost, ServicePort);
+	Request = new HTTPRequest();
+	Request.Заголовки.Вставить("ContentType", "text/xml; charset=windows-1251");
+	Request.ResourceAddress = "PostContr";
+	Request.SetBodyFromString(data,"windows-1251");
+	Response = Conn.post(Request);
+	r = Response.GetBodyAsString();
+	Message(r);
+	
+КонецПроцедуры
+
+// ..................................................................................
+
+&НаКлиенте
+Процедура PostContr(Команда)
+	PostContrНаСервере();
+КонецПроцедуры
+
+&НаСервере
+Процедура PostDOgНаСервере()
+	data = "<?xml version=" + """" + "1.0" + """" + " encoding=""windows-1251""?>" 
+	+ char(13) + char(10) + "<contracts>";
+	
+	Запрос = Новый Запрос;
+    Запрос.Текст = 
+        "ВЫБРАТЬ *
+        |ИЗ
+        |   Справочник.ДоговорыКонтрагентов КАК Договоры";
+ 
+    РезультатЗапроса = Запрос.Выполнить();
+ 
+    Выборка = РезультатЗапроса.Выбрать();
+ 
+    Пока Выборка.Следующий() Цикл
+		data = data + "<record>";
+		data = data + "<name>"+Выборка.Наименование+"</name>";
+		data = data + "<nomer>"+Выборка.Номер+"</nomer>";
+		data = data + "<partner_code>"+Выборка.Партнер.Код+"</partner_code>";
+		data = data + "</record>";
+
+        Сообщить(Выборка.Наименование + " " + Выборка.Номер + " " + Выборка.Партнер.Код);
+    КонецЦикла;
+	
+	data = data + "</contracts>";
+	
+	Conn = new HTTPConnection(ServiceHost, ServicePort);
+	Request = new HTTPRequest();
+	Request.Заголовки.Вставить("ContentType", "text/xml; charset=windows-1251");
+	Request.ResourceAddress = "PostContr";
+	Request.SetBodyFromString(data,"windows-1251");
+	Response = Conn.post(Request);
+	r = Response.GetBodyAsString();
+	Message(r);
+КонецПроцедуры
+
+// ..................................................................................
+
+&НаКлиенте
+Процедура PostDOg(Команда)
+	PostDOgНаСервере();
 КонецПроцедуры

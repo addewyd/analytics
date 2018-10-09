@@ -55,33 +55,73 @@
 					<ExtendedTooltip name="Группа4РасширеннаяПодсказка" id="18"/>
 					<ChildItems>
 						<UsualGroup name="Группа5" id="21">
+							<Group>Vertical</Group>
 							<ExtendedTooltip name="Группа5РасширеннаяПодсказка" id="22"/>
 							<ChildItems>
-								<Button name="TablesBut" id="19">
-									<Type>UsualButton</Type>
-									<CommandName>Form.Command.TablesCommand</CommandName>
+								<UsualGroup name="Группа7" id="49">
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
-											<v8:content>Tables</v8:content>
+											<v8:content>Список таблиц БД</v8:content>
 										</v8:item>
 									</Title>
-									<ExtendedTooltip name="TablesButРасширеннаяПодсказка" id="20"/>
-								</Button>
-								<Button name="PostBut" id="23">
-									<Type>UsualButton</Type>
-									<CommandName>Form.Command.PostCommand</CommandName>
+									<ExtendedTooltip name="Группа7РасширеннаяПодсказка" id="50"/>
+									<ChildItems>
+										<Button name="TablesBut" id="19">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.TablesCommand</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Tables</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="TablesButРасширеннаяПодсказка" id="20"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Группа8" id="51">
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
-											<v8:content>Post Test</v8:content>
+											<v8:content>Обновить</v8:content>
 										</v8:item>
 									</Title>
-									<ExtendedTooltip name="PostButРасширеннаяПодсказка" id="24"/>
-								</Button>
+									<ExtendedTooltip name="Группа8РасширеннаяПодсказка" id="52"/>
+									<ChildItems>
+										<Button name="ContrBut" id="45">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.PostContr</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Контрагенты</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="ContrButРасширеннаяПодсказка" id="46"/>
+										</Button>
+										<Button name="DogBut" id="47">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.PostDOg</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Договоры</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="DogButРасширеннаяПодсказка" id="48"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Группа6" id="27">
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Выполнить запрос</v8:content>
+								</v8:item>
+							</Title>
 							<ExtendedTooltip name="Группа6РасширеннаяПодсказка" id="28"/>
 							<ChildItems>
 								<Button name="SQLBut" id="25">
@@ -258,21 +298,6 @@
 			</ToolTip>
 			<Action>TablesCommand</Action>
 		</Command>
-		<Command name="PostCommand" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Post command</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Post command</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>PostCommand</Action>
-		</Command>
 		<Command name="SQL" id="4">
 			<Title>
 				<v8:item>
@@ -287,6 +312,36 @@
 				</v8:item>
 			</ToolTip>
 			<Action>SQL</Action>
+		</Command>
+		<Command name="PostContr" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post contr</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post contr</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PostContr</Action>
+		</Command>
+		<Command name="PostDOg" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post d og</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post d og</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PostDOg</Action>
 		</Command>
 	</Commands>
 </Form>

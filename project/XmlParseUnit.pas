@@ -4,7 +4,8 @@ interface
 
 uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, System.IOUtils, Data.DB, System.Types,
-  XML.xmldom, XML.XMLIntf, FIREDAC.Stan.Error, FIREDAC.Stan.Param,FireDAC.Phys.IBWrapper,
+  XML.xmldom, XML.XMLIntf,
+  FIREDAC.Stan.Error, FIREDAC.Stan.Param,FireDAC.Phys.IBWrapper,
   XML.XMLDoc, ErrorUnit, DmUnit;
 
 procedure ParseInputFile(Doc: IDOMDocument);

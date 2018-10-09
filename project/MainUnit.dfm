@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   ShowHint = False
   OnActivate = FormActivate
-  OnClick = SimpleReportActionExecute
+  OnClick = FormClick
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -364,6 +364,7 @@ object MainForm: TMainForm
   object XMLDoc: TXMLDocument
     Left = 208
     Top = 128
+    DOMVendorDesc = 'ADOM XML v4'
   end
   object JvAppRS: TJvAppRegistryStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
