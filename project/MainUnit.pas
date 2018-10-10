@@ -90,6 +90,9 @@ type
     dtb2: TToolButton;
     ToolButton17: TToolButton;
     N8: TMenuItem;
+    SessDataAction: TAction;
+    N9: TMenuItem;
+    ToolButton18: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -115,6 +118,7 @@ type
     procedure HTTPServerException(AContext: TIdContext; AException: Exception);
     procedure ToolBar1Click(Sender: TObject);
     procedure FormClick(Sender: TObject);
+    procedure SessDataActionExecute(Sender: TObject);
   private
     { Private declarations }
     gdbname: String;
@@ -143,7 +147,7 @@ implementation
 
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
-  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit;
+  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit;
 
 
 // .............................................................................
@@ -277,7 +281,6 @@ begin
   YNForm := TYNForm.Create(self);
   YNForm.Memo1.Text := 'Really?';
 
-  try
     if YNForm.ShowModal = mrOk then
     begin
 
@@ -340,9 +343,6 @@ begin
         end;
       end;
     end;
-  finally
-    YNForm.Free;
-  end;
 end;
 
 // ....................................................................
@@ -588,6 +588,19 @@ begin
     TPaymentModesForm.Create(self, 'paymentmodes');
   end
   else GetMDIForm('paymentmodes').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.SessDataActionExecute(Sender: TObject);
+begin
+
+  if not isWinOpen('tabform') then
+  begin
+    TTabForm.Create(self, 'tabform');
+  end
+  else GetMDIForm('tabform').Show;
+
 end;
 
 // .............................................................................

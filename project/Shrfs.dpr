@@ -25,7 +25,8 @@ uses
   SimpleReportUnit in 'SimpleReportUnit.pas' {SimpleReportForm},
   PaymentModesUnit in 'PaymentModesUnit.pas' {PaymentModesForm},
   HttpServiceUnit in 'HttpServiceUnit.pas',
-  OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog};
+  OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog},
+  TabUnit in 'TabUnit.pas' {TabForm};
 
 {$R *.res}
 

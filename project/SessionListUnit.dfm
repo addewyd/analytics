@@ -9,6 +9,14 @@ inherited SessionListForm: TSessionListForm
   inherited JvToolBar1: TJvToolBar
     Width = 551
     ExplicitWidth = 551
+    inherited ToolButton1: TToolButton
+      Left = 0
+      ExplicitLeft = 0
+    end
+    inherited ToolButton2: TToolButton
+      Left = 23
+      ExplicitLeft = 23
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 345
@@ -19,6 +27,8 @@ inherited SessionListForm: TSessionListForm
   inherited JvDBGrid: TJvDBGrid
     Width = 551
     Height = 297
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ReadOnly = True
     Columns = <
       item
         Expanded = False
@@ -61,7 +71,7 @@ inherited SessionListForm: TSessionListForm
   inherited ImageList: TImageList
     Top = 80
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

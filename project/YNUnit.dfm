@@ -14,6 +14,7 @@ object YNForm: TYNForm
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object Memo1: TMemo
@@ -33,7 +34,7 @@ object YNForm: TYNForm
     TabOrder = 0
   end
   object OKButton: TButton
-    Left = 8
+    Left = 112
     Top = 141
     Width = 75
     Height = 25

@@ -60,38 +60,43 @@ object MainForm: TMainForm
       Top = 0
       Action = SessionsAction
     end
-    object ToolButton8: TToolButton
+    object ToolButton18: TToolButton
       Left = 46
+      Top = 0
+      Action = SessDataAction
+    end
+    object ToolButton8: TToolButton
+      Left = 69
       Top = 0
       Action = StationsAction
     end
     object ToolButton14: TToolButton
-      Left = 69
+      Left = 92
       Top = 0
       Action = PaimentModesAction
     end
     object ToolButton9: TToolButton
-      Left = 92
+      Left = 115
       Top = 0
       Action = XmlTablesAction
     end
     object ToolButton13: TToolButton
-      Left = 115
+      Left = 138
       Top = 0
       Action = SimpleReportAction
     end
     object ToolButton15: TToolButton
-      Left = 138
+      Left = 161
       Top = 0
       Action = OptionsAction
     end
     object ToolButton4: TToolButton
-      Left = 161
+      Left = 184
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 184
+      Left = 207
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -99,7 +104,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton16: TToolButton
-      Left = 192
+      Left = 215
       Top = 0
       Width = 8
       Caption = 'ToolButton16'
@@ -107,25 +112,25 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 200
+      Left = 223
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 223
+      Left = 246
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 246
+      Left = 269
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
     end
     object dtb1: TToolButton
-      Left = 269
+      Left = 292
       Top = 0
       Width = 23
       Caption = 'dtb1'
@@ -133,7 +138,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 292
+      Left = 315
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -141,14 +146,14 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 300
+      Left = 323
       Top = 0
       Margins.Left = 20
       Margins.Right = 20
       Action = ClearDBAction
     end
     object dtb2: TToolButton
-      Left = 323
+      Left = 346
       Top = 0
       Width = 23
       Caption = 'dtb2'
@@ -156,7 +161,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton17: TToolButton
-      Left = 346
+      Left = 369
       Top = 0
       Width = 9
       Caption = 'ToolButton17'
@@ -164,7 +169,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 355
+      Left = 378
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
@@ -195,6 +200,10 @@ object MainForm: TMainForm
       GroupIndex = 20
       object Sessions2: TMenuItem
         Action = SessionsAction
+        GroupIndex = 22
+      end
+      object N9: TMenuItem
+        Action = SessDataAction
         GroupIndex = 22
       end
     end
@@ -343,6 +352,12 @@ object MainForm: TMainForm
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 62
       OnExecute = OptionsActionExecute
+    end
+    object SessDataAction: TAction
+      Caption = #1044#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
+      Hint = #1044#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
+      ImageIndex = 86
+      OnExecute = SessDataActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

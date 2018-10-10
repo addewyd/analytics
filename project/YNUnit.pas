@@ -11,6 +11,7 @@ type
     Memo1: TMemo;
     OKButton: TButton;
     Button2: TButton;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -23,5 +24,10 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TYNForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
 
 end.

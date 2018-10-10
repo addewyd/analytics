@@ -191,7 +191,7 @@ var
   nL, nL1: IDOMNodeList;
   n, n0, n1: IDOMNode;
   attrs: IDOMNamedNodeMap;
-  s, nname, d0, d1, d2, un, azs: String;
+  s, sql, nname, d0, d1, d2, un, azs: String;
   i, j, rc, id: integer;
   td0, td1, td2: TDateTime;
 begin
@@ -443,6 +443,39 @@ begin
 
     end;
   end;
+
+  // now we have  new records with azs,id
+
+  // fill  grouped tables here
+  // 1
+  (*
+    OutcomesByRetail, OutcomesByOffice, IncomesByDischarge,
+
+    (TradeDocsInActs, TradeDocsInBills ???) No
+
+    columns
+    вид движения, дата, код клиента, клиент, договор, форма оплдаты,
+    код товара, товар, кол-во, Ед изм,
+    Объем, Плотность, Цена, Сумма, Ставка НДС, Всего
+
+    Grouping in 1C
+
+    ТабФайл.Свернуть(
+      "НомСтр,ВидДвижения,КонецСмены,КодАЗС,Склад,КодКлиента,Клиент,Договор,
+          КодТовара,Товар,ЭтоГСМ,Плотность,ФормаОплаты,ФормаОплатыДляДокумента,
+          ЕдИзм,Цена,СтавкаНДС,ФайлЗагрузки",
+
+      "Колво,Объем,Сумма,НДС,Всего"
+      );
+
+    ТабФайл.Сортировать("КонецСмены,КодАЗС,ВидДвижения,ФормаОплаты,
+      ЭтоГСМ-,Клиент,Договор");
+
+
+  *)
+
+  sql :=  '';
+
 end;
 
 
