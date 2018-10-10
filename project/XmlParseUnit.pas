@@ -474,7 +474,40 @@ begin
 
   *)
 
-  sql :=  '';
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from inoutgsm where session_id=:id';
+    with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+    end;
+    ParamByName('id').AsInteger := id;
+    Prepare;
+    Open;
+    rc := RecordCount;
+
+
+  end;
+
+  if rc > 0 then
+  begin
+    AddToLog('sessiondata already loaded!');
+  end
+  else
+  begin
+
+    with DM.FDQueryForINOUTGSM do
+    begin
+
+    end;
+    // then update lastuser_id with user_id
+
+  end;
 
 end;
 

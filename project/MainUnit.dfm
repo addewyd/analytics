@@ -152,8 +152,13 @@ object MainForm: TMainForm
       Margins.Right = 20
       Action = ClearDBAction
     end
-    object dtb2: TToolButton
+    object ToolButton19: TToolButton
       Left = 346
+      Top = 0
+      Action = DelSessionsAction
+    end
+    object dtb2: TToolButton
+      Left = 369
       Top = 0
       Width = 23
       Caption = 'dtb2'
@@ -161,7 +166,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton17: TToolButton
-      Left = 369
+      Left = 392
       Top = 0
       Width = 9
       Caption = 'ToolButton17'
@@ -169,7 +174,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 378
+      Left = 401
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
@@ -229,6 +234,10 @@ object MainForm: TMainForm
       object ClearDB1: TMenuItem
         Action = ClearDBAction
         GroupIndex = 42
+      end
+      object N10: TMenuItem
+        Action = DelSessionsAction
+        GroupIndex = 44
       end
       object N1: TMenuItem
         Action = StationsAction
@@ -358,6 +367,12 @@ object MainForm: TMainForm
       Hint = #1044#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
       ImageIndex = 86
       OnExecute = SessDataActionExecute
+    end
+    object DelSessionsAction: TAction
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
+      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
+      ImageIndex = 280
+      OnExecute = DelSessionsActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

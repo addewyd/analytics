@@ -27,6 +27,7 @@ type
     FDTransactionH_r: TFDTransaction;
     FDCH_r: TFDConnection;
     FDManager: TFDManager;
+    FDQueryForINOUTGSM: TFDQuery;
   private
     { Private declarations }
   public

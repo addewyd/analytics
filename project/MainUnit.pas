@@ -93,6 +93,9 @@ type
     SessDataAction: TAction;
     N9: TMenuItem;
     ToolButton18: TToolButton;
+    DelSessionsAction: TAction;
+    N10: TMenuItem;
+    ToolButton19: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -119,6 +122,7 @@ type
     procedure ToolBar1Click(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure SessDataActionExecute(Sender: TObject);
+    procedure DelSessionsActionExecute(Sender: TObject);
   private
     { Private declarations }
     gdbname: String;
@@ -130,6 +134,7 @@ type
   end;
 
 Procedure AddToLog(msg: String);
+
 var
   MainForm: TMainForm;
   Exepath: String;
@@ -140,6 +145,9 @@ var
   embed: Boolean;
 
   IPAS: TStringList;
+
+  user_id: Integer;
+  user_role: Integer;
 
 implementation
 
@@ -344,6 +352,31 @@ begin
       end;
     end;
 end;
+// .............................................................................
+
+
+procedure TMainForm.DelSessionsActionExecute(Sender: TObject);
+begin
+//
+  YNForm := TYNForm.Create(self);
+  YNForm.Memo1.Text := 'Really?';
+
+    if YNForm.ShowModal = mrOk then
+    begin
+
+      with DM.FDConnection do
+      begin
+        Transaction.StartTransaction;
+        try
+          ExecSQL('delete from inoutgsm');
+          AddToLog('deleted from inoutgsm');
+          Transaction.Commit;
+        except
+          Transaction.Rollback;
+        end;
+      end;
+    end;
+end;
 
 // ....................................................................
 
@@ -416,7 +449,11 @@ procedure TMainForm.FormCreate(Sender: TObject);
   const
     SubKey: string = 'Software\Shrfs';
 begin
-  // set up form
+
+  user_id := 1; // admin
+  user_role := 1; // admin
+
+
   IPAS := TStringList.Create;
 
   reg := TRegIniFile.Create(SubKey);

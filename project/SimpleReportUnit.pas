@@ -16,7 +16,6 @@ uses
 type
   TSimpleReportForm = class(TFormWithGrid)
     ToXlsAction: TAction;
-    ToolButton2: TToolButton;
     XLS1: TMenuItem;
     procedure ToXlsActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
