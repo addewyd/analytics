@@ -501,9 +501,28 @@ begin
   else
   begin
 
+    try
     with DM.FDQueryForINOUTGSM do
     begin
-
+    with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+    end;
+    ParamByName('session_id').AsInteger := id;
+    Prepare;
+    ExecSQL;
+    end;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+        raise;
+      end;
     end;
     // then update lastuser_id with user_id
 
@@ -822,6 +841,43 @@ end;
 
 // .............................................................................
 
+procedure UpdateTanks(id: integer; tanknum, warecode: String);
+begin
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'update tanks set warecode=:warecode where session_id=:id and tanknum=:tn';
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tn';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'warecode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+
+        end;
+        ParamByName('id').AsInteger := id;
+        ParamByName('tn').AsString := tanknum;
+        ParamByName('warecode').AsString := warecode;
+        Prepare;
+        ExecSQL;
+
+      end;
+
+end;
+
 // OutcomesByRetail
 procedure LoadOBR(node: IDOMNode; id: integer);
   var i, len, rc: integer;
@@ -879,6 +935,8 @@ begin
       amount := StrToExtdef(sAmount, 0);
       mass := StrToExtdef(sMass, 0);
       origprice := StrToExtdef(sOrigprice, 0);
+
+      UpdateTanks(id, tanknum, fuelcode);
 
       with DM.FDQuery do
       begin
@@ -1127,6 +1185,9 @@ begin
       origprice := StrToExtdef(sOrigprice, 0);
 
       bHasOrder := false;
+
+
+      UpdateTanks(id, tanknum, fuelcode);
 
       with DM.FDQuery do
       begin
