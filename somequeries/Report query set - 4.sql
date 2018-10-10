@@ -1,5 +1,28 @@
+/* session_id is input parameter */
+
+insert into INOUTGSM
+    (SESSION_ID,
+     TBL,
+    DIRECTION,
+    CLIENT_CODE,
+    CONTRACT_ID,
+    PAYMENT_CODE,
+    WARE_CODE,
+    AMOUNT,
+    EI,
+    VOLUME,
+    DENSITY,
+    PRICE,
+    SUMM,
+    NDS,
+    WHOLE,
+    LASTUSER_ID,
+    UPDATED_AT,
+    STATE)
+
 select
     sid,
+    tbl,
     dir as direction,
     partnerextcode,
     c.id as contract_id,
@@ -21,6 +44,7 @@ select
     s.id as sid,
     azscode,
     sessionnum,
+    'R' as tbl,
     startdatetime,
     0 as dir,
     r.fuelextcode,
@@ -36,10 +60,9 @@ select
     sum(r.amount) as amount
     from sessions s
     join outcomesbyretail r on s.id = r.session_id
-    join tanks t on t.session_id = s.id
+    join tanks t on t.session_id = s.id  /* here must be user editable density table */
    where
-    azscode = '001'
-    and  startdatetime >= timestamp'2018-08-01 00:00:00'
+    r.session_id = :session_id
     and r.tanknum = t.tanknum
    group by sid,
     azscode,sessionnum,startdatetime,
@@ -57,6 +80,7 @@ select
     s.id as sid,
     azscode,
     sessionnum,
+    'O' as tbl,
     startdatetime,
     0 as dir,
     r.fuelextcode,
@@ -71,11 +95,10 @@ select
     sum(r.volume) as volume,
     sum(r.amount) as amount
     from sessions s
-    join outcomesbyretail r on s.id = r.session_id
+    join outcomesbyoffice r on s.id = r.session_id
     join tanks t on t.session_id = s.id
    where
-    azscode = '001'
-    and  startdatetime >= timestamp'2018-08-01 00:00:00'
+    r.session_id = :session_id
     and r.tanknum = t.tanknum
    group by sid,
     azscode,sessionnum,startdatetime,
@@ -93,6 +116,7 @@ select
     s.id as sid,
     azscode,
     sessionnum,
+    'I' as tbl,
     startdatetime,
     1 as dir,
     i.fuelextcode,
@@ -110,8 +134,7 @@ select
     join incomesbydischarge i on s.id = i.session_id
     join tanks t on t.session_id = s.id
    where
-    azscode = '001'
-    and  startdatetime >= timestamp'2018-08-01 00:00:00'
+    i.session_id = :session_id
     and i.tanknum = t.tanknum
    group by sid,
     azscode,sessionnum,startdatetime,
@@ -131,8 +154,10 @@ select
         on a.partnerextcode = p.code
     left join contracts c
         on a.partnerextcode = c.partner_code
+    where sid = :session_id
     group by
         sid,
+        tbl,
         direction,
         contract_id,
         fuelextcode,
@@ -146,6 +171,7 @@ select
         updated_at,
         state
    order by
+        sid,
         direction,
         pmec,
         partnerextcode
