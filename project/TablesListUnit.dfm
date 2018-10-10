@@ -2,12 +2,6 @@ inherited TablesListForm: TTablesListForm
   Caption = 'Tables'
   PixelsPerInch = 96
   TextHeight = 13
-  inherited JvToolBar1: TJvToolBar
-    inherited ToolButton2: TToolButton [0]
-    end
-    inherited ToolButton1: TToolButton [1]
-    end
-  end
   inherited JvDBGrid: TJvDBGrid
     Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True

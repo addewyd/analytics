@@ -97,7 +97,10 @@ begin
 
       if s = 'Tanks' then
       begin
+        wfieldlist.Add('TankNum');
+        wfieldlist.Add('StartFuelVolume');
         wfieldlist.Add('EndDensity');
+        wfieldlist.Add('warecode');
       end;
 
       tt := TTableFromXmlForm.Create(MainForm, s);

@@ -18,7 +18,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 672
     Height = 436
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     ExplicitLeft = 208
@@ -35,6 +35,26 @@ inherited TabForm: TTabForm
       ImageIndex = 1
       ExplicitWidth = 281
       ExplicitHeight = 165
+      object GridInOutGSM: TJvDBGrid
+        Left = 0
+        Top = 0
+        Width = 664
+        Height = 408
+        Align = alClient
+        DataSource = DSInOut
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
@@ -60,6 +80,9 @@ inherited TabForm: TTabForm
   inherited MainMenu: TMainMenu
     Left = 232
     Top = 200
+    inherited File1: TMenuItem
+      Caption = 'Tabs'
+    end
   end
   inherited ImageList: TImageList
     Left = 168
@@ -12743,5 +12766,19 @@ inherited TabForm: TTabForm
       8007800380030000801F800380030000801F800380030000801F800380038001
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
+  end
+  object DSInOut: TJvDataSource
+    DataSet = QueryInOut
+    Left = 436
+    Top = 117
+  end
+  object QueryInOut: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransaction
+    SQL.Strings = (
+      'select * from inoutgsm')
+    Left = 492
+    Top = 117
   end
 end
