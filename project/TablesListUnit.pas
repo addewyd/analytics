@@ -109,13 +109,16 @@ begin
 
         with tt.JvDBGrid do
         begin
+        {  NOT HERE
           ReadOnly := false;
           Options := Options + [dgEditing];
+
           tt.FDQuery.UpdateTransaction := DM.FDTransaction;
           tt.FDUpdateSql.ModifySQL.Clear;
           tt.FDUpdateSql.ModifySQL.Text :=
             'update tanks set EndDensity=:EndDensity where id=:id';
           tt.FDQuery.UpdateObject := tt.FDUpdateSQL;
+          }
         end;
       end;
 

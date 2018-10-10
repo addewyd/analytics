@@ -1,35 +1,71 @@
-inherited TablesListForm: TTablesListForm
-  Caption = 'Tables'
+inherited TabForm: TTabForm
+  Caption = 'Tabs'
+  ClientHeight = 484
+  ClientWidth = 672
+  ExplicitWidth = 688
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    inherited ToolButton2: TToolButton [0]
+    Width = 672
+  end
+  inherited JvStatusBar1: TJvStatusBar
+    Top = 465
+    Width = 672
+  end
+  object Pages: TJvPageControl [2]
+    Left = 0
+    Top = 29
+    Width = 672
+    Height = 436
+    ActivePage = TabSheet1
+    Align = alClient
+    TabOrder = 2
+    ExplicitLeft = 208
+    ExplicitTop = 224
+    ExplicitWidth = 289
+    ExplicitHeight = 193
+    object TabSheet1: TTabSheet
+      Caption = 'TabSheet1'
+      ExplicitWidth = 281
+      ExplicitHeight = 165
     end
-    inherited ToolButton1: TToolButton [1]
+    object TabSheet2: TTabSheet
+      Caption = 'TabSheet2'
+      ImageIndex = 1
+      ExplicitWidth = 281
+      ExplicitHeight = 165
+    end
+    object TabSheet3: TTabSheet
+      Caption = 'TabSheet3'
+      ImageIndex = 2
+      ExplicitWidth = 281
+      ExplicitHeight = 165
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'TabSheet4'
+      ImageIndex = 3
+      ExplicitWidth = 281
+      ExplicitHeight = 165
     end
   end
-  inherited JvDBGrid: TJvDBGrid
-    Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ReadOnly = True
-    OnDblClick = JvDBGridDblClick
-    CanDelete = False
-    Columns = <
-      item
-        Expanded = False
-        FieldName = 'TABLENAME'
-        Title.Caption = #1048#1084#1103' '#1090#1072#1073#1083#1080#1094#1099
-        Width = 348
-        Visible = True
-      end>
+  inherited JvAppRS: TJvAppRegistryStorage
+    Left = 104
+    Top = 200
+  end
+  inherited ActionList: TActionList
+    Left = 288
+    Top = 200
   end
   inherited MainMenu: TMainMenu
-    inherited File1: TMenuItem
-      Caption = #1058#1072#1073#1083#1080#1094#1099
-    end
+    Left = 232
+    Top = 200
   end
   inherited ImageList: TImageList
+    Left = 168
+    Top = 200
     Bitmap = {
-      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12707,17 +12743,5 @@ inherited TablesListForm: TTablesListForm
       8007800380030000801F800380030000801F800380030000801F800380038001
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
-  end
-  inherited FDQuery: TFDQuery
-    FilterOptions = [foCaseInsensitive]
-    Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransaction
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate]
-    UpdateOptions.EnableDelete = False
-    UpdateOptions.EnableInsert = False
-    UpdateOptions.EnableUpdate = False
-    SQL.Strings = (
-      'select tablename from tableslist')
   end
 end
