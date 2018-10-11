@@ -523,9 +523,59 @@ begin
   //
 
   // Tanks, Hoses
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from iotankshoses where session_id=:id';
+    with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+    end;
+    ParamByName('id').AsInteger := id;
+    Prepare;
+    Open;
+    rc := RecordCount;
+
+  end;
 
   // Fill IOTANKSHOSES
 
+  if rc > 0 then
+  begin
+    AddToLog('session data fror tanks already loaded!');
+  end
+  else
+  begin
+    try
+      with DM.FDQueryForIOTANKSHOSES do
+      begin
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+        end;
+        ParamByName('session_id').AsInteger := id;
+        Prepare;
+        ExecSQL;
+      end;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+        raise;
+      end;
+    end;
+    // then update lastuser_id with user_id
+
+  end;
 
 
   // 1
@@ -577,7 +627,7 @@ begin
   // Fill INOUTGSM with new data
   if rc > 0 then
   begin
-    AddToLog('session data already loaded!');
+    AddToLog('session data for gsm already loaded!');
   end
   else
   begin

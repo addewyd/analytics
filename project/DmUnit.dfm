@@ -12774,6 +12774,9 @@ object DM: TDM
     ResourceOptions.ParamCreate = False
     SQL.Strings = (
       '/* session_id is input parameter */'
+      
+        '/* TODO: Replace tanks & hoses select  by iotankshoses selects! ' +
+        ' */'
       ''
       'insert into INOUTGSM'
       '    (SESSION_ID,'
@@ -12966,7 +12969,70 @@ object DM: TDM
     Connection = FDConnection
     Transaction = FDTransaction
     UpdateTransaction = FDTransaction
+    SQL.Strings = (
+      'insert into iotankshoses'
+      '('
+      '    session_id, '
+      '    tanknum,'
+      '    startfuelvolume,'
+      '    endfactvolume,'
+      '    density,'
+      '    temperature,'
+      '    height,'
+      '    mass,'
+      '    water,'
+      '    deadrest,'
+      '    deadrestliter,'
+      '    warecode,'
+      '    hosenum,'
+      '    startcounter,'
+      '    endcounter,'
+      '    pumpnum,'
+      '    numinpump,'
+      '    hosetype,'
+      '    lastuser_id,'
+      '    updated_at,'
+      '    state'
+      ')'
+      ''
+      'select distinct'
+      '    s.id, '
+      '    t.tanknum,'
+      '    t.startfuelvolume,'
+      '    t.endfactvolume,'
+      '    t.enddensity,'
+      '    t.endtemperature,'
+      '    t.endheight,'
+      '    t.endmass,'
+      '    t.endwater,'
+      '    t.deadrest,'
+      '    t.deadrestliter,'
+      '    t.warecode,'
+      '    h.hosenum,'
+      '    h.startcounter,'
+      '    h.endcounter,'
+      '    h.pumpnum,'
+      '    h.numinpump,'
+      '    h.hosetype,'
+      '     1 as lastuser_id,'
+      '    current_timestamp as updated_at,'
+      '    0 as state'
+      ''
+      '    from'
+      '    hoses h'
+      '    inner join tanks t on h.tanknum = t.tanknum'
+      '    join sessions s on s.id = h.session_id'
+      ''
+      '    where t.session_id = :session_id'
+      '            and s.id = t.session_id'
+      ''
+      '    order by t.tanknum')
     Left = 136
     Top = 264
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        ParamType = ptInput
+      end>
   end
 end
