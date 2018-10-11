@@ -11,6 +11,7 @@ type
     Memo1: TMemo;
     OKButton: TButton;
     Button2: TButton;
+    ButtonForget: TButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }

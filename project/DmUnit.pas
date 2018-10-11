@@ -28,6 +28,7 @@ type
     FDCH_r: TFDConnection;
     FDManager: TFDManager;
     FDQueryForINOUTGSM: TFDQuery;
+    FDQueryForIOTANKSHOSES: TFDQuery;
   private
     { Private declarations }
   public

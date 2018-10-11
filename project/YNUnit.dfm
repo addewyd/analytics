@@ -34,7 +34,7 @@ object YNForm: TYNForm
     TabOrder = 0
   end
   object OKButton: TButton
-    Left = 112
+    Left = 116
     Top = 141
     Width = 75
     Height = 25
@@ -52,5 +52,15 @@ object YNForm: TYNForm
     Default = True
     ModalResult = 2
     TabOrder = 2
+  end
+  object ButtonForget: TButton
+    Left = 26
+    Top = 141
+    Width = 75
+    Height = 25
+    Caption = 'Forget'
+    ModalResult = 3
+    TabOrder = 3
+    Visible = False
   end
 end

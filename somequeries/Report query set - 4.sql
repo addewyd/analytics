@@ -47,8 +47,8 @@ select
     'R' as tbl,
     startdatetime,
     0 as dir,
-    r.fuelextcode,
-    r.fuelname,
+    t.warecode as fuelextcode,
+    w.name as fuelname,
     r.tanknum,
     origprice as price,
     '18' as nds,
@@ -61,6 +61,7 @@ select
     from sessions s
     join outcomesbyretail r on s.id = r.session_id
     join tanks t on t.session_id = s.id  /* here must be user editable density table */
+    join wares w on t.warecode = w.code
    where
     r.session_id = :session_id
     and r.tanknum = t.tanknum
@@ -83,9 +84,9 @@ select
     'O' as tbl,
     startdatetime,
     0 as dir,
-    r.fuelextcode,
-    r.fuelname,
-    r.tanknum, 
+    t.warecode as fuelextcode,
+    w.name as fuelname,
+    r.tanknum,
     r.origprice as price,
     '18' as nds,
     t.enddensity as density,
@@ -97,6 +98,7 @@ select
     from sessions s
     join outcomesbyoffice r on s.id = r.session_id
     join tanks t on t.session_id = s.id
+    join wares w on t.warecode = w.code
    where
     r.session_id = :session_id
     and r.tanknum = t.tanknum
@@ -119,9 +121,9 @@ select
     'I' as tbl,
     startdatetime,
     1 as dir,
-    i.fuelextcode,
-    i.fuelname,
-    i.tanknum, 
+    t.warecode as fuelextcode,
+    w.name as fuelname,
+    i.tanknum,
     i.price as price,
     '18' as nds,
     i.density as density,
@@ -133,6 +135,7 @@ select
     from sessions s
     join incomesbydischarge i on s.id = i.session_id
     join tanks t on t.session_id = s.id
+    join wares w on t.warecode = w.code
    where
     i.session_id = :session_id
     and i.tanknum = t.tanknum

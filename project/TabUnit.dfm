@@ -2,12 +2,27 @@ inherited TabForm: TTabForm
   Caption = 'Tabs'
   ClientHeight = 484
   ClientWidth = 672
+  OnCloseQuery = FormCloseQuery
   ExplicitWidth = 688
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 672
+    object ToolButton2: TToolButton [0]
+      Left = 0
+      Top = 0
+      Action = CommitAction
+    end
+    object ToolButton3: TToolButton [1]
+      Left = 23
+      Top = 0
+      Action = RollbackAction
+    end
+    inherited ToolButton1: TToolButton
+      Left = 46
+      ExplicitLeft = 46
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 465
@@ -48,6 +63,7 @@ inherited TabForm: TTabForm
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnEditChange = GridInOutGSMEditChange
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -76,6 +92,18 @@ inherited TabForm: TTabForm
   inherited ActionList: TActionList
     Left = 288
     Top = 200
+    object CommitAction: TAction
+      Caption = 'Commit'
+      Hint = 'Commit'
+      ImageIndex = 361
+      OnExecute = CommitActionExecute
+    end
+    object RollbackAction: TAction
+      Caption = 'Rollback'
+      Hint = 'Rollback'
+      ImageIndex = 328
+      OnExecute = RollbackActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     Left = 232
@@ -12776,8 +12804,14 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
     UpdateTransaction = DM.FDTransaction
+    FetchOptions.AssignedValues = [evAutoClose]
+    FetchOptions.AutoClose = False
     SQL.Strings = (
-      'select * from inoutgsm')
+      'select i.*, w.name as fuelname'
+      '   from inoutgsm i'
+      '   join wares w on w.code=i.ware_code'
+      '  '
+      '   order by i.session_id')
     Left = 492
     Top = 117
   end

@@ -17,10 +17,10 @@ type
   TStationsForm = class(TFormWithGrid)
     FDUpdSQL: TFDUpdateSQL;
     UpdateAction: TAction;
-    ToolButton2: TToolButton;
     Update1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure UpdateActionExecute(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -55,6 +55,14 @@ begin
     end;
   end;
 end;
+
+procedure TStationsForm.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+
+end;
+
+/// ............................................................................
 
 procedure TStationsForm.UpdateActionExecute(Sender: TObject);
 begin

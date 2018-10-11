@@ -297,6 +297,7 @@ begin
         Transaction.StartTransaction;
         try
           //logm.Lines.Clear;
+
           ExecSQL('delete from orders');
           AddToLog('deleted from orders');
           ExecSQL('delete from cashflow');
@@ -347,7 +348,11 @@ begin
 
           Transaction.Commit;
         except
-          Transaction.Rollback;
+          on e: Exception do
+          begin
+            Transaction.Rollback;
+            AddToLog(e.Message);
+          end;
         end;
       end;
     end;
@@ -474,10 +479,10 @@ begin
       end;
 
     Exepath := ExtractFilePath(Application.ExeName);
-//    if embed then
-    dbname := Exepath + db;
-//    else
-//      dbname := host + ':' + Exepath + db;
+    if embed then
+      dbname := (*Exepath + *)db
+    else
+      dbname := db;
     Application.Title := 'Shrfs';
     HTTPServer.DefaultPort := 8033;
     if HTTPServiceOn then

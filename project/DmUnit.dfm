@@ -12767,6 +12767,7 @@ object DM: TDM
   object FDQueryForINOUTGSM: TFDQuery
     Connection = FDConnection
     Transaction = FDTransaction
+    UpdateTransaction = FDTransaction
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvParamCreate]
@@ -12823,8 +12824,8 @@ object DM: TDM
       '    '#39'R'#39' as tbl,'
       '    startdatetime,'
       '    0 as dir,'
-      '    r.fuelextcode,'
-      '    r.fuelname,'
+      '    t.warecode as fuelextcode,'
+      '    w.name as fuelname,'
       '    r.tanknum,'
       '    origprice as price,'
       '    '#39'18'#39' as nds,'
@@ -12839,6 +12840,7 @@ object DM: TDM
       
         '    join tanks t on t.session_id = s.id  /* here must be user ed' +
         'itable density table */'
+      '    join wares w on t.warecode = w.code'
       '   where'
       '    r.session_id = :session_id'
       '    and r.tanknum = t.tanknum'
@@ -12853,6 +12855,7 @@ object DM: TDM
       '    paymentmodeextcode,'
       '    paymentmodename,'
       '    partnerextcode'
+      '/*   NO OFFICE!'
       'union all'
       'select'
       '    s.id as sid,'
@@ -12861,9 +12864,9 @@ object DM: TDM
       '    '#39'O'#39' as tbl,'
       '    startdatetime,'
       '    0 as dir,'
-      '    r.fuelextcode,'
-      '    r.fuelname,'
-      '    r.tanknum, '
+      '    t.warecode as fuelextcode,'
+      '    w.name as fuelname,'
+      '    r.tanknum,'
       '    r.origprice as price,'
       '    '#39'18'#39' as nds,'
       '    t.enddensity as density,'
@@ -12875,6 +12878,7 @@ object DM: TDM
       '    from sessions s'
       '    join outcomesbyoffice r on s.id = r.session_id'
       '    join tanks t on t.session_id = s.id'
+      '    join wares w on t.warecode = w.code'
       '   where'
       '    r.session_id = :session_id'
       '    and r.tanknum = t.tanknum'
@@ -12889,6 +12893,7 @@ object DM: TDM
       '    paymentmodeextcode,'
       '    paymentmodename,'
       '    partnerextcode'
+      '*/'
       'union all'
       'select'
       '    s.id as sid,'
@@ -12897,9 +12902,9 @@ object DM: TDM
       '    '#39'I'#39' as tbl,'
       '    startdatetime,'
       '    1 as dir,'
-      '    i.fuelextcode,'
-      '    i.fuelname,'
-      '    i.tanknum, '
+      '    t.warecode as fuelextcode,'
+      '    w.name as fuelname,'
+      '    i.tanknum,'
       '    i.price as price,'
       '    '#39'18'#39' as nds,'
       '    i.density as density,'
@@ -12911,6 +12916,7 @@ object DM: TDM
       '    from sessions s'
       '    join incomesbydischarge i on s.id = i.session_id'
       '    join tanks t on t.session_id = s.id'
+      '    join wares w on t.warecode = w.code'
       '   where'
       '    i.session_id = :session_id'
       '    and i.tanknum = t.tanknum'
@@ -12955,5 +12961,12 @@ object DM: TDM
       '        partnerextcode')
     Left = 128
     Top = 200
+  end
+  object FDQueryForIOTANKSHOSES: TFDQuery
+    Connection = FDConnection
+    Transaction = FDTransaction
+    UpdateTransaction = FDTransaction
+    Left = 136
+    Top = 264
   end
 end

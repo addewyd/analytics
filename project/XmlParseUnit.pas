@@ -23,7 +23,8 @@ procedure LoadTR(node: IDOMNode; id: integer);
 procedure LoadIR(node: IDOMNode; id: integer);
 procedure LoadTDBItems(node: IDOMNode; id: integer);
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
-procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
+//procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
+procedure CheckLink(tablename: string; var ecode: string; ename: string; adds: array of string);
 function LoadOrderFile(filename, azs: string): Integer;
 function TryToGetCode(tablename, ename: String): String;
 
@@ -31,12 +32,25 @@ implementation
 
 uses MainUnit, MlogUnit;
 
-procedure CheckLink(tablename, ecode, ename: string; adds: array of string);
+procedure CheckLink(tablename: string; var ecode: string; ename: string; adds: array of string);
   var
     rc: integer;
 begin
 
-  if Trim(ecode) = '' then Exit;
+  if Trim(ecode) = '' then
+  begin
+    if tablename='PAYMENTMODES' then
+    begin
+      if AnsiLowerCase(ename)  = 'безналичный расчет' then
+      begin
+        ecode := '99PL99';
+
+      end
+      else ecode := 'EMPTY';
+
+    end
+    else Exit;
+  end;
 
   with DM.FDQuery do
   begin
@@ -152,6 +166,61 @@ end;
 
 // ..................................................................
 
+procedure CheckContracts(ecode: String);
+  var
+    rc: integer;
+begin
+  if Trim(ecode) = '' then Exit;
+
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from contracts where partner_code = :code';
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'code';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+
+    end;
+    ParamByName('code').AsString := ecode;
+    Prepare;
+    Open;
+    rc := RecordCount;
+    if rc < 1 then
+    begin
+
+      begin
+        SQL.Text := 'insert into contracts ' +
+          '(partner_code) values (:code)';
+      end;
+
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'code';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+
+      end;
+      ParamByName('code').AsString := ecode;
+      Prepare;
+      ExecSQL;
+
+      AddToLog(format('Added %s in %s', [ecode, 'CONTRACTS']));
+
+    end;
+  end;
+end;
+
+// ..................................................................
+
 procedure ParseInputFile(Doc: IDOMDocument);
 var
   nL, nL1: IDOMNodeList;
@@ -162,11 +231,12 @@ begin
     DM.FDTransaction.StartTransaction;
     try
       ParseSessionFile(doc);
-      DM.FDTransaction.Commit;
+      if DM.FDTransaction.Active then DM.FDTransaction.Commit;
     except
       on e: Exception do
       begin
-        DM.FDTransaction.Rollback;
+        if DM.FDTransaction.Active then DM.FDTransaction.Rollback;
+        AddToLog(e.Message);
         ErrorMessageBox(MainForm, e.Message);
       end;
     end;
@@ -191,7 +261,7 @@ var
   nL, nL1: IDOMNodeList;
   n, n0, n1: IDOMNode;
   attrs: IDOMNamedNodeMap;
-  s, sql, nname, d0, d1, d2, un, azs: String;
+  s, sql, nname, d0, d1, d2, un, azs, pcode: String;
   i, j, rc, id: integer;
   td0, td1, td2: TDateTime;
 begin
@@ -444,9 +514,20 @@ begin
     end;
   end;
 
+  pcode := 'EMPTY';
+  CheckLink('PAYMENTMODES', pcode, 'N/A', []);
+
   // now we have  new records with azs,id
 
   // fill  grouped tables here
+  //
+
+  // Tanks, Hoses
+
+  // Fill IOTANKSHOSES
+
+
+
   // 1
   (*
     OutcomesByRetail, OutcomesByOffice, IncomesByDischarge,
@@ -491,20 +572,19 @@ begin
     Open;
     rc := RecordCount;
 
-
   end;
 
+  // Fill INOUTGSM with new data
   if rc > 0 then
   begin
-    AddToLog('sessiondata already loaded!');
+    AddToLog('session data already loaded!');
   end
   else
   begin
-
     try
-    with DM.FDQueryForINOUTGSM do
-    begin
-    with Params do begin
+      with DM.FDQueryForINOUTGSM do
+      begin
+        with Params do begin
           Clear;
           with Add do
           begin
@@ -512,11 +592,11 @@ begin
             DataType := ftInteger;
             ParamType := ptInput;
           end;
-    end;
-    ParamByName('session_id').AsInteger := id;
-    Prepare;
-    ExecSQL;
-    end;
+        end;
+        ParamByName('session_id').AsInteger := id;
+        Prepare;
+        ExecSQL;
+      end;
     except
       on e: Exception do
       begin
@@ -528,6 +608,14 @@ begin
 
   end;
 
+
+  // ...........................................................................
+  // END
+  with DM.FDTransaction do
+  begin
+    if Active then Commit;
+
+  end;
 end;
 
 
@@ -741,7 +829,6 @@ begin
 
       with DM.FDQuery do
       begin
-        //FetchOptions.AutoFetchAll := TFDFetchOptions.afAll;
         SQL.Text := 'select * from hoses where session_id = :id and hosenum = :hn';
         with Params do begin
           Clear;
@@ -833,15 +920,13 @@ begin
         ExecSQL;
 
       end;
-
     end;
-
 end;
 
 
 // .............................................................................
 
-procedure UpdateTanks(id: integer; tanknum, warecode: String);
+procedure UpdateTanks(id, hosenum: integer; tanknum, warecode: String);
 begin
       with DM.FDQuery do
       begin
@@ -876,11 +961,45 @@ begin
 
       end;
 
+      with DM.FDQuery do
+      begin
+        SQL.Text := 'update hoses set tanknum=:tanknum where session_id = :id and hosenum = :hn';
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'hn';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tanknum';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+
+        end;
+        ParamByName('id').AsInteger := id;
+        ParamByName('hn').AsInteger := hosenum;
+        ParamByName('tanknum').AsString := tanknum;
+        Prepare;
+        ExecSQL;
+
+      end;
 end;
+
+// .............................................................................
 
 // OutcomesByRetail
 procedure LoadOBR(node: IDOMNode; id: integer);
-  var i, len, rc: integer;
+  var i, len, rc, hosenum: integer;
     NL: IDOMNodeList;
     n: IDOMNode;
     attrs: IDOMNamedNodeMap;
@@ -904,7 +1023,7 @@ begin
       partnercode := attrs.getNamedItem('PartnerExtCode').nodeValue;
 
       if Trim(fuelcode) = '' then fuelcode := 'EMPTY';
-      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
+//      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
       if Trim(partnercode) = '' then partnercode := 'EMPTY';
 
 
@@ -915,6 +1034,7 @@ begin
       CheckLink('WARES', fuelcode, fuelname, []);
       CheckLink('PAYMENTMODES', paymentcode, paymentname, []);
       CheckLink('CONTRAGENTS', partnercode, partnername, []);
+      CheckContracts(partnercode);
 
       tanknum := attrs.getNamedItem('TankNum').nodeValue;
       hosename := attrs.getNamedItem('HoseName').nodeValue;
@@ -936,7 +1056,9 @@ begin
       mass := StrToExtdef(sMass, 0);
       origprice := StrToExtdef(sOrigprice, 0);
 
-      UpdateTanks(id, tanknum, fuelcode);
+      hosenum := StrToIntDef(hosename, 0);
+
+      UpdateTanks(id, hosenum, tanknum, fuelcode);
 
       with DM.FDQuery do
       begin
@@ -1106,7 +1228,7 @@ procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
   var
     orderpath: String;
     files: TStringDynArray;
-    cnt, i, len: Integer;
+    cnt, i, len, hosenum: Integer;
     nL: IDOMNodeList;
     attrs: IDOMNamedNodeMap;
     fuelcode, fuelname, paymentcode,
@@ -1154,7 +1276,7 @@ begin
       paymentcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
 
       if Trim(fuelcode) = '' then fuelcode := 'EMPTY';
-      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
+//      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
 
       fuelname := attrs.getNamedItem('FuelName').nodeValue;
       paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
@@ -1186,8 +1308,9 @@ begin
 
       bHasOrder := false;
 
+      hosenum := StrToIntDef(hosename, 0);
 
-      UpdateTanks(id, tanknum, fuelcode);
+      UpdateTanks(id, hosenum, tanknum, fuelcode);
 
       with DM.FDQuery do
       begin
@@ -1643,6 +1766,7 @@ begin
 
       CheckLink('WARES', fuelcode, fuelname, []);
       CheckLink('CONTRAGENTS', partnercode, partnername, []);
+      CheckContracts(partnercode);
 
       tanknum := attrs.getNamedItem('TankNum').nodeValue;
       odt := attrs.getNamedItem('DateTime').nodeValue;
@@ -1829,7 +1953,7 @@ begin
 
       if Trim(itemextcode) = '' then itemextcode := 'EMPTY';
       if Trim(itemcode) = '' then itemcode := 'EMPTY';
-      if Trim(paymentextcode) = '' then paymentextcode := 'EMPTY';
+//      if Trim(paymentextcode) = '' then paymentextcode := 'EMPTY';
       if Trim(partnerextcode) = '' then partnerextcode := 'EMPTY';
 
       itemname := attrs.getNamedItem('ItemName').nodeValue;
@@ -1839,6 +1963,7 @@ begin
       CheckLink('ITEMS', itemextcode, itemname, ['ICODE', itemcode]);
       CheckLink('PAYMENTMODES', paymentextcode, paymentname, []);
       CheckLink('CONTRAGENTS', partnerextcode, partnername, []);
+      CheckContracts(partnerextcode);
 
 
       itemgroup := attrs.getNamedItem('ItemGroup').nodeValue;
@@ -2198,6 +2323,7 @@ begin
       CheckLink('CONTRAGENTS', PartnerExtCode, PartnerName, []);
       CheckLink('STORAGES', StoragesExtCode, StoragesName, []);
       CheckLink('FIRMS', FirmsExtCode, FirmsName, []);
+      CheckContracts(partnerextcode);
 
       InBillHID := StrToIntDef(sInBillHID, 0);
       DateDoc := VarToDateTime(sDateDoc);
