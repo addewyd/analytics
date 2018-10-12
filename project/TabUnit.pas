@@ -11,7 +11,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid;
 
 type
   TTabForm = class(TBaseForm)
@@ -27,6 +27,9 @@ type
     RollbackAction: TAction;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
+    DSIOTH: TJvDataSource;
+    QueryIOTH: TFDQuery;
+    JvDBUltimGrid1: TJvDBUltimGrid;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -38,7 +41,9 @@ type
     dirty: boolean;
   public
     { Public declarations }
-    procedure ShowData();
+    session_id: Integer;
+    procedure ShowGSMData();
+    procedure ShowIOTHData();
   end;
 
 var
@@ -50,7 +55,7 @@ implementation
 
 uses DmUnit, MainUnit, YNUnit;
 
-procedure TTabForm.ShowData();
+procedure TTabForm.ShowGSMData();
 begin
   with QueryInOut do
   begin
@@ -72,6 +77,31 @@ begin
 
 end;
 
+// .............................................................................
+
+procedure TTabForm.ShowIOTHData();
+begin
+  with QueryIOTH do
+  begin
+    if Active then Close;
+
+    Transaction.StartTransaction;
+    try
+
+      Open;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+//      Transaction.Rollback;
+//        raise
+      end;
+    end;
+  end;
+
+end;
+
+// .............................................................................
 
 procedure TTabForm.CommitActionExecute(Sender: TObject);
 begin
@@ -82,7 +112,8 @@ begin
     begin
       Transaction.Commit;
       dirty := false;
-      ShowData;
+      ShowIOTHData;
+      ShowGSMData;
     end;
 
   end;
@@ -99,7 +130,8 @@ begin
     begin
       Transaction.Rollback;
       dirty := false;
-      ShowData;
+      ShowGSMData;
+
       GridInOutGSM.Refresh;
     end;
 
@@ -160,7 +192,42 @@ procedure TTabForm.FormCreate(Sender: TObject);
 begin
   inherited;
   dirty := false;
-  ShowData;
+
+  session_id := 209;
+
+  with QueryInOut do
+  begin
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').AsInteger := session_id;
+  end;
+
+  with QueryIOTH do
+  begin
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').AsInteger := session_id;
+  end;
+
+
+  ShowIOTHData;
+  ShowGSMData;
 
 end;
 

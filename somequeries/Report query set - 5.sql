@@ -1,5 +1,5 @@
 /* session_id is input parameter */
-/* TODO: Replace tanks & hoses select  by iotankshoses selects!  */
+
 
 select
     sid,

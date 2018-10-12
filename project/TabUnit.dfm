@@ -33,7 +33,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 672
     Height = 436
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     ExplicitLeft = 208
@@ -44,6 +44,25 @@ inherited TabForm: TTabForm
       Caption = 'TabSheet1'
       ExplicitWidth = 281
       ExplicitHeight = 165
+      object JvDBUltimGrid1: TJvDBUltimGrid
+        Left = 104
+        Top = 96
+        Width = 320
+        Height = 120
+        DataSource = DSIOTH
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'TabSheet2'
@@ -86,12 +105,16 @@ inherited TabForm: TTabForm
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
-    Left = 104
-    Top = 200
+    Left = 96
+    Top = 360
+  end
+  inherited JvFS: TJvFormStorage
+    Left = 56
+    Top = 360
   end
   inherited ActionList: TActionList
-    Left = 288
-    Top = 200
+    Left = 256
+    Top = 360
     object CommitAction: TAction
       Caption = 'Commit'
       Hint = 'Commit'
@@ -106,15 +129,15 @@ inherited TabForm: TTabForm
     end
   end
   inherited MainMenu: TMainMenu
-    Left = 232
-    Top = 200
+    Left = 200
+    Top = 360
     inherited File1: TMenuItem
       Caption = 'Tabs'
     end
   end
   inherited ImageList: TImageList
-    Left = 168
-    Top = 200
+    Left = 152
+    Top = 360
     Bitmap = {
       494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
@@ -12809,10 +12832,51 @@ inherited TabForm: TTabForm
     SQL.Strings = (
       'select i.*, w.name as fuelname'
       '   from inoutgsm i'
+      '   join sessions s on s.id = i.session_id'
       '   join wares w on w.code=i.ware_code'
-      '  '
+      ''
+      '  where s.id  = :session_id'
+      ''
       '   order by i.session_id')
     Left = 492
     Top = 117
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        ParamType = ptInput
+      end>
+  end
+  object DSIOTH: TJvDataSource
+    DataSet = QueryIOTH
+    Left = 436
+    Top = 69
+  end
+  object QueryIOTH: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransaction
+    SQL.Strings = (
+      'select'
+      '    w.name as fuelname,'
+      '    i.tanknum,'
+      '    i.hosenum,'
+      '    i.startfuelvolume,'
+      '    i.endfactvolume,'
+      
+        '    (select volume from calcoutcomes(:session_id, i.tanknum,i.ho' +
+        'senum)) as calc'
+      '    from iotankshoses i'
+      '    join sessions s on s.id = i.session_id'
+      '    join wares w on w.code = i.warecode'
+      ''
+      '    where'
+      '        s.id = :session_id')
+    Left = 492
+    Top = 69
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        ParamType = ptInput
+      end>
   end
 end
