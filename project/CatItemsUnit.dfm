@@ -2,6 +2,24 @@ inherited CatItemsForm: TCatItemsForm
   Caption = #1058#1086#1074#1072#1088#1099
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvDBGrid: TJvDBUltimGrid
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'CODE'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ICODE'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NAME'
+        Visible = True
+      end>
+  end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = #1058#1086#1074#1072#1088#1099
@@ -9,7 +27,7 @@ inherited CatItemsForm: TCatItemsForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12691,5 +12709,7 @@ inherited CatItemsForm: TCatItemsForm
   inherited FDQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
+    SQL.Strings = (
+      'select * from items')
   end
 end

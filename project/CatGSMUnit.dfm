@@ -16,7 +16,13 @@ inherited CatGSMForm: TCatGSMForm
     ExplicitTop = 298
     ExplicitWidth = 477
   end
-  inherited JvDBGrid: TJvDBGrid
+  inherited JvDBGridFooter: TJvDBGridFooter
+    Top = 317
+    Width = 477
+    ExplicitTop = 317
+    ExplicitWidth = 477
+  end
+  inherited JvDBGrid: TJvDBUltimGrid
     Width = 477
     Height = 269
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -24,23 +30,17 @@ inherited CatGSMForm: TCatGSMForm
     Columns = <
       item
         Expanded = False
-        FieldName = 'code'
+        FieldName = 'CODE'
         Title.Caption = #1050#1086#1076' 1'#1057
         Visible = True
       end
       item
         Expanded = False
-        FieldName = 'name'
+        FieldName = 'NAME'
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
         Width = 120
         Visible = True
       end>
-  end
-  inherited JvDBGridFooter: TJvDBGridFooter
-    Top = 317
-    Width = 477
-    ExplicitTop = 317
-    ExplicitWidth = 477
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
@@ -49,7 +49,7 @@ inherited CatGSMForm: TCatGSMForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12731,6 +12731,7 @@ inherited CatGSMForm: TCatGSMForm
   inherited FDQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransaction
     SQL.Strings = (
       'select code, name from wares')
   end

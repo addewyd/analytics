@@ -20,7 +20,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
-    GridInOutGSM: TJvDBGrid;
     DSInOut: TJvDataSource;
     QueryInOut: TFDQuery;
     CommitAction: TAction;
@@ -29,7 +28,10 @@ type
     ToolButton3: TToolButton;
     DSIOTH: TJvDataSource;
     QueryIOTH: TFDQuery;
-    JvDBUltimGrid1: TJvDBUltimGrid;
+    IOTHGrid: TJvDBUltimGrid;
+    GridInOutGSM: TJvDBUltimGrid;
+    FuelPopupMenu: TPopupMenu;
+    Add1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -131,8 +133,9 @@ begin
       Transaction.Rollback;
       dirty := false;
       ShowGSMData;
-
+      ShowIOTHData;
       GridInOutGSM.Refresh;
+      IOTHGrid.Refresh;
     end;
 
   end;

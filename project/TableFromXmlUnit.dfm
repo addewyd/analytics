@@ -17,18 +17,6 @@ inherited TableFromXmlForm: TTableFromXmlForm
     ExplicitTop = 342
     ExplicitWidth = 587
   end
-  inherited JvDBGrid: TJvDBGrid
-    Top = 55
-    Width = 587
-    Height = 268
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ReadOnly = True
-    OnColExit = JvDBGridColExit
-    OnExit = JvDBGridExit
-    IniStorage = nil
-    OnEditChange = JvDBGridEditChange
-    OnCanEditCell = JvDBGridCanEditCell
-  end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 323
     Width = 587
@@ -39,6 +27,18 @@ inherited TableFromXmlForm: TTableFromXmlForm
       end>
     ExplicitTop = 323
     ExplicitWidth = 587
+  end
+  inherited JvDBGrid: TJvDBUltimGrid
+    Top = 55
+    Width = 587
+    Height = 268
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ReadOnly = True
+    OnColExit = JvDBGridColExit
+    OnExit = JvDBGridExit
+    IniStorage = nil
+    OnEditChange = JvDBGridEditChange
+    OnCanEditCell = JvDBGridCanEditCell
   end
   object JvPanel1: TJvPanel [4]
     Left = 0
@@ -133,7 +133,7 @@ inherited TableFromXmlForm: TTableFromXmlForm
     Left = 184
     Top = 144
     Bitmap = {
-      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

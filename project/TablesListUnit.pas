@@ -12,7 +12,7 @@ uses
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar
-  , TableFromXmlUnit;
+  , TableFromXmlUnit, JvDBUltimGrid;
 
 type
   TTablesListForm = class(TFormWithGrid)

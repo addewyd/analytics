@@ -13,7 +13,6 @@ object MainForm: TMainForm
   FormStyle = fsMDIForm
   Menu = MainMenuM
   OldCreateOrder = False
-  ShowHint = False
   OnActivate = FormActivate
   OnClick = FormClick
   OnClose = FormClose
@@ -37,7 +36,6 @@ object MainForm: TMainForm
         Text = 'HTTP'
         Width = 140
       end>
-    ExplicitTop = 600
   end
   object ToolBar1: TToolBar
     Left = 0

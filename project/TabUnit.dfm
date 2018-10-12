@@ -9,46 +9,40 @@ inherited TabForm: TTabForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 672
-    object ToolButton2: TToolButton [0]
-      Left = 0
+    ExplicitWidth = 672
+    object ToolButton2: TToolButton
+      Left = 23
       Top = 0
       Action = CommitAction
     end
-    object ToolButton3: TToolButton [1]
-      Left = 23
+    object ToolButton3: TToolButton
+      Left = 46
       Top = 0
       Action = RollbackAction
-    end
-    inherited ToolButton1: TToolButton
-      Left = 46
-      ExplicitLeft = 46
     end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 465
     Width = 672
+    ExplicitTop = 465
+    ExplicitWidth = 672
   end
   object Pages: TJvPageControl [2]
     Left = 0
     Top = 29
     Width = 672
     Height = 436
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 208
-    ExplicitTop = 224
-    ExplicitWidth = 289
-    ExplicitHeight = 193
     object TabSheet1: TTabSheet
       Caption = 'TabSheet1'
-      ExplicitWidth = 281
-      ExplicitHeight = 165
-      object JvDBUltimGrid1: TJvDBUltimGrid
-        Left = 104
-        Top = 96
-        Width = 320
-        Height = 120
+      object IOTHGrid: TJvDBUltimGrid
+        Left = 0
+        Top = 0
+        Width = 664
+        Height = 201
+        Align = alTop
         DataSource = DSIOTH
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -56,20 +50,71 @@ inherited TabForm: TTabForm
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        AutoAppend = False
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        CanDelete = False
         EditControls = <>
         RowsHeight = 17
         TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'FUELNAME'
+            PopupMenu = FuelPopupMenu
+            ReadOnly = True
+            Width = 60
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TANKNUM'
+            ReadOnly = True
+            Visible = True
+          end
+          item
+            Alignment = taRightJustify
+            Expanded = False
+            FieldName = 'STARTFUELVOLUME'
+            Visible = True
+          end
+          item
+            Alignment = taRightJustify
+            Expanded = False
+            FieldName = 'ENDFACTVOLUME'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'HOSENUM'
+            ReadOnly = True
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CALC'
+            ReadOnly = True
+            Visible = True
+          end
+          item
+            Alignment = taRightJustify
+            Expanded = False
+            FieldName = 'STCNT'
+            Visible = True
+          end
+          item
+            Alignment = taRightJustify
+            Expanded = False
+            FieldName = 'ENDCOUNTER'
+            Visible = True
+          end>
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'TabSheet2'
       ImageIndex = 1
-      ExplicitWidth = 281
-      ExplicitHeight = 165
-      object GridInOutGSM: TJvDBGrid
+      object GridInOutGSM: TJvDBUltimGrid
         Left = 0
         Top = 0
         Width = 664
@@ -82,26 +127,51 @@ inherited TabForm: TTabForm
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        AutoAppend = False
         OnEditChange = GridInOutGSMEditChange
+        AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        CanDelete = False
         EditControls = <>
         RowsHeight = 17
         TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'DIRECTION'
+            Width = 108
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'FUELNAME'
+            ReadOnly = True
+            Width = 201
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CLIENTNAME'
+            Width = 217
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PAYMENTMODE'
+            Width = 118
+            Visible = True
+          end>
       end
     end
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
       ImageIndex = 2
-      ExplicitWidth = 281
-      ExplicitHeight = 165
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
-      ExplicitWidth = 281
-      ExplicitHeight = 165
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -139,7 +209,7 @@ inherited TabForm: TTabForm
     Left = 152
     Top = 360
     Bitmap = {
-      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12829,20 +12899,33 @@ inherited TabForm: TTabForm
     UpdateTransaction = DM.FDTransaction
     FetchOptions.AssignedValues = [evAutoClose]
     FetchOptions.AutoClose = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
-      'select i.*, w.name as fuelname'
+      'select '
+      '   i.id,'
+      '   i.direction,'
+      '    w.name as fuelname,'
+      '    c.name as clientname,'
+      '    p.name as paymentmode'
+      ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
       '   join wares w on w.code=i.ware_code'
+      '   join contragents c on c.code=i.client_code'
+      '   join paymentmodes p on p.code=i.payment_code'
       ''
       '  where s.id  = :session_id'
       ''
-      '   order by i.session_id')
+      '   order by i.direction,paymentmode,clientname')
     Left = 492
     Top = 117
     ParamData = <
       item
         Name = 'SESSION_ID'
+        DataType = ftInteger
         ParamType = ptInput
       end>
   end
@@ -12855,8 +12938,13 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
     UpdateTransaction = DM.FDTransaction
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
     SQL.Strings = (
       'select'
+      '    i.id,'
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.hosenum,'
@@ -12864,7 +12952,9 @@ inherited TabForm: TTabForm
       '    i.endfactvolume,'
       
         '    (select volume from calcoutcomes(:session_id, i.tanknum,i.ho' +
-        'senum)) as calc'
+        'senum)) as calc,'
+      '    i.startcounter as stcnt,'
+      '    endcounter'
       '    from iotankshoses i'
       '    join sessions s on s.id = i.session_id'
       '    join wares w on w.code = i.warecode'
@@ -12876,7 +12966,15 @@ inherited TabForm: TTabForm
     ParamData = <
       item
         Name = 'SESSION_ID'
+        DataType = ftInteger
         ParamType = ptInput
       end>
+  end
+  object FuelPopupMenu: TPopupMenu
+    Left = 28
+    Top = 285
+    object Add1: TMenuItem
+      Caption = 'Change'
+    end
   end
 end

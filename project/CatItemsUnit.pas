@@ -11,7 +11,8 @@ uses
   JvDataSource, System.ImageList, Vcl.ImgList, Vcl.Menus, System.Actions,
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
-  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar;
+  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
+  JvDBUltimGrid;
 
 type
   TCatItemsForm = class(TFormWithGrid)
@@ -42,9 +43,9 @@ begin
     try
       Open;
 //      FetchAll;
-      Transaction.Commit;
-      JvDBGrid.Columns[0].Title.Caption := 'Код';
-      JvDBGrid.Columns[1].Title.Caption := 'Наименование';
+        JvDBGrid.Columns[0].Title.Caption := 'Код';
+        JvDBGrid.Columns[1].Title.Caption := 'Наименование';
+        Transaction.Commit;
     except
       Transaction.Rollback;
     end;

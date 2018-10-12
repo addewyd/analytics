@@ -11,17 +11,17 @@ uses
   Vcl.ToolWin, JvToolBar, JvDataSource, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, JvDBUltimGrid;
 
 type
   TFormWithGrid = class(TBaseForm)
-    JvDBGrid: TJvDBGrid;
     JvDBGridFooter: TJvDBGridFooter;
     JvDS: TJvDataSource;
     FDQuery: TFDQuery;
     RefreshAction: TAction;
     N1: TMenuItem;
     ToolButton2: TToolButton;
+    JvDBGrid: TJvDBUltimGrid;
     procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }

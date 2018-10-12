@@ -3,23 +3,30 @@ inherited FormWithGrid: TFormWithGrid
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    object ToolButton2: TToolButton [0]
-      Left = 0
+    object ToolButton2: TToolButton
+      Left = 23
       Top = 0
       Action = RefreshAction
       ParentShowHint = False
       ShowHint = True
-    end
-    inherited ToolButton1: TToolButton
-      Left = 23
-      ExplicitLeft = 23
     end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 243
     ExplicitTop = 243
   end
-  object JvDBGrid: TJvDBGrid [2]
+  object JvDBGridFooter: TJvDBGridFooter [2]
+    Left = 0
+    Top = 262
+    Width = 418
+    Height = 19
+    SizeGrip = True
+    Visible = False
+    Columns = <>
+    DataSource = JvDS
+    DBGrid = JvDBGrid
+  end
+  object JvDBGrid: TJvDBUltimGrid [3]
     Left = 0
     Top = 29
     Width = 418
@@ -32,24 +39,20 @@ inherited FormWithGrid: TFormWithGrid
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    AutoAppend = False
     IniStorage = JvFS
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
     SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+    CanDelete = False
     EditControls = <>
     RowsHeight = 17
     TitleRowHeight = 17
-  end
-  object JvDBGridFooter: TJvDBGridFooter [3]
-    Left = 0
-    Top = 262
-    Width = 418
-    Height = 19
-    SizeGrip = True
-    Visible = False
-    Columns = <>
-    DataSource = JvDS
-    DBGrid = JvDBGrid
+    Columns = <
+      item
+        Expanded = False
+        Visible = True
+      end>
   end
   inherited JvFS: TJvFormStorage
     StoredValues = <
@@ -73,7 +76,7 @@ inherited FormWithGrid: TFormWithGrid
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

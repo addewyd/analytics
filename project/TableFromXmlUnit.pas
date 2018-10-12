@@ -14,7 +14,7 @@ uses
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvExControls, JvStaticText, Vcl.StdCtrls, JvExStdCtrls, JvCombobox,
   JvDBCombobox, Vcl.ExtCtrls, JvExExtCtrls, JvExtComponent, JvPanel, JvDBLookup,
-  JvCheckBox, JvDateTimePicker;
+  JvCheckBox, JvDateTimePicker, JvDBUltimGrid;
 
 type
   TTableFromXmlForm = class(TFormWithGrid)

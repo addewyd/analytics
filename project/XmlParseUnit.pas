@@ -256,14 +256,170 @@ end;
 
 // ......................................................................
 
+function GetSnFromFile(fname: String) : integer;
+var
+  doc : IXmlDocument;
+  n: IDomNode;
+  d: IDOMDocument;
+  nL: IDOMNodeList;
+  i, len: Integer;
+  attrs: IDOMNamedNodeMap;
+  csn: String;
+begin
+  result := $7ffffff;
+  doc := LoadXMLDocument(fname);
+//  n := doc.DocumentElement.DOMNode;
+  d := doc.DOMDocument;
+  nL := d.getElementsByTagName('Session');
+  len := nL.length;
+  for i:= 0 to len - 1 do
+  begin
+    n := nL.item[i];
+    attrs := n.attributes;
+    try
+      csn := attrs.getNamedItem('SessionNum').nodeValue;
+      result := StrToIntDef(csn, Result);
+      AddToLog(format('SN in %s is %d', [ExtractFileName(fname), Result]));
+    except
+      on e: Exception do
+      begin
+        AddToLog(format('No SN in %s', [ExtractFileName(fname)]));
+        Exit;
+      end;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
+function IsAllowedLoadinThisSession(azs, s: String;
+  var requiredfile: String; var sn: Integer) : boolean;
+var
+  cfilepath, csql, cfile: String;
+  files: TStringDynArray;
+  fnames: TstringList;
+  i, len, rc, ind, rcsn: Integer;
+begin
+  Result := false;
+  cfilepath := ExtractFilePath(CurrentFile);
+  cfile := ExtractFileName(CurrentFile);
+  files := TDirectory.GetFiles(cfilepath, 'close*.xml', TSearchOption.soTopDirectoryOnly);
+  csql := 'select id, sessionnum from sessions where azscode = :azs order by startdatetime';
+
+  fnames := TStringList.Create;
+  try
+    len := Length(files);
+    if len < 1 then
+    begin
+      // it is impossible
+      requiredfile := 'it is impossible!';
+      sn := -1;
+      AddToLog('it is impossible!');
+      exit;
+    end;
+
+    for i := 0 to len - 1 do
+    begin
+      fnames.Add(ExtractFileName(files[i]));
+
+    end;
+
+    fnames.Sort;
+
+    with DM.FDQuery do
+    begin
+      Sql.Text := csql;
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'azs';
+          DataType := ftString;
+          ParamType := ptInput;
+
+        end;
+      end;
+      ParamByName('azs').AsString := azs;
+      Prepare;
+      Open;
+      rc := RecordCount;
+      Last;
+    end;
+
+    if rc > 0 then
+    begin
+      rcsn := DM.FDQuery.FieldByName('sessionnum').AsInteger;
+      ind := -1;
+      if fnames.Find(cfile, ind) then
+      begin
+        // SessionNum in cfile (really CurrentFile) must be last + 1
+        // or < last (if session counter had been reset)
+        //csn := sn; // GetSnFromFile(CurrentFile);
+        if (sn = rcsn + 1) or (sn < rcsn) then
+        begin
+          sn := rcsn;
+          result := true;
+          exit;
+        end
+        else
+        begin
+          if ind = len -1 then
+          begin
+            // it was last file, therefore it was already loaded
+            AddToLog('it was last file');
+          end
+          else
+          begin
+            requiredfile := fnames[ind + 1];
+            sn := rcsn + 1;
+            AddToLog(Format('required file %s', [requiredfile]));
+          end;
+
+        end;
+
+      end
+      else
+      begin
+        requiredfile := 'it is impossible!';
+        sn := -1;
+        exit;
+
+      end;
+    end
+    else
+    begin
+      requiredfile := fnames[0];
+      if cfile = requiredfile then
+      begin
+        AddToLog('First session file');
+        Result := true;
+        Exit;
+      end;
+
+      sn := 1;
+    end;
+
+  finally
+    fnames.Free;
+  end;
+
+
+end;
+
+// .............................................................................
+
 procedure ParseSessionFile(Doc: IDOMDocument);
 var
   nL, nL1: IDOMNodeList;
   n, n0, n1: IDOMNode;
   attrs: IDOMNamedNodeMap;
   s, sql, nname, d0, d1, d2, un, azs, pcode: String;
-  i, j, rc, id: integer;
+  i, j, rc, id, sn: integer;
   td0, td1, td2: TDateTime;
+  ia: boolean;
+  requiredfile: String;
 begin
 
   if not MainForm.isWinOpen('mlog') then
@@ -304,9 +460,21 @@ begin
     n := nL1.item[j];
     attrs := n.attributes;
 
-    // <Session SessionNum="406" StartDateTime="31.05.2018 23:58:59" EndDateTime="01.06.2018 7:06:52"
-    // UserName="Семенова М.С.">
     s := attrs.getNamedItem('SessionNum').nodeValue;
+
+    requiredfile := ExtractFileName(currentfile);
+    sn := StrToIntDef(s, 0);
+//    sn := sn - 1;
+    ia := IsAllowedLoadinThisSession(azs, s, requiredfile, sn);
+    if not ia then
+    begin
+      //
+      ErrorMessageBox(MainForm,
+        Format('Session not in order, load %s first (supposed SessionNum is %d)',
+          [requiredfile, sn]));
+      Continue;
+    end;
+
     d1 := attrs.getNamedItem('StartDateTime').nodeValue;
     d2 := attrs.getNamedItem('EndDateTime').nodeValue;
     un := attrs.getNamedItem('UserName').nodeValue;
@@ -315,6 +483,7 @@ begin
     td2 := VarToDateTime(d2);
     DateTimeToString(d1, 'yyyy-mm-dd hh:nn:ss', td1);
     DateTimeToString(d2, 'yyyy-mm-dd hh:nn:ss', td2);
+
 
     // .....................
     // move it to separate proc
@@ -1296,7 +1465,6 @@ begin
   // load orders first
   orderpath := ExtractFilePath(CurrentFile);
   files := TDirectory.GetFiles(orderpath, 'order*.xml', TSearchOption.soTopDirectoryOnly);
-
   len := Length(files);
   AddToLog(Format('Order files count: %d',[len]));
   cnt := 0;

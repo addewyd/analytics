@@ -11,7 +11,8 @@ uses
   JvDataSource, System.ImageList, Vcl.ImgList, Vcl.Menus, System.Actions,
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
-  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar;
+  JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
+  JvDBUltimGrid;
 
 type
   TCatGSMForm = class(TFormWithGrid)

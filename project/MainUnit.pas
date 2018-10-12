@@ -398,6 +398,7 @@ procedure TMainForm.FormActivate(Sender: TObject);
 begin
   //
   JVFS.RestoreFormPlacement();
+//  DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
   try
     with
     DM.FDConnection.Params do

@@ -6,7 +6,7 @@ object DM: TDM
     Left = 104
     Top = 48
     Bitmap = {
-      494C01017E018001280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180012C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12716,10 +12716,12 @@ object DM: TDM
       'User_Name=sysdba'
       'Password=masterkey'
       
-        'Database=localhost:C:\Users\user\Documents\topaz\analytics\proje' +
-        'ct\Win32\Debug\db\SHRFS.FDB'
+        'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
+        'ebug\db\SHRFS.FDB'
       'Protocol=TCPIP'
-      'ConnectionDef=FDConnection')
+      'DriverID=FB'
+      'Server=localhost')
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransaction
