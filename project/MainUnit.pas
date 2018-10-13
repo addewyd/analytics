@@ -375,6 +375,8 @@ begin
         try
           ExecSQL('delete from inoutgsm');
           AddToLog('deleted from inoutgsm');
+          ExecSQL('delete from iotankshoses');
+          AddToLog('deleted from iotankshoses');
           Transaction.Commit;
         except
           Transaction.Rollback;

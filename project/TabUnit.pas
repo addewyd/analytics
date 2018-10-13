@@ -11,7 +11,9 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid;
+  JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid,
+  Vcl.ExtCtrls, JvExExtCtrls, JvSplitter, JvDBGridFooter, JvExtComponent,
+  JvPanel;
 
 type
   TTabForm = class(TBaseForm)
@@ -28,16 +30,28 @@ type
     ToolButton3: TToolButton;
     DSIOTH: TJvDataSource;
     QueryIOTH: TFDQuery;
-    IOTHGrid: TJvDBUltimGrid;
-    GridInOutGSM: TJvDBUltimGrid;
     FuelPopupMenu: TPopupMenu;
     Add1: TMenuItem;
+    DSRealPM: TJvDataSource;
+    QueryRealPM: TFDQuery;
+    JvPanel2: TJvPanel;
+    GridFooterInOut: TJvDBGridFooter;
+    GridInOutGSM: TJvDBUltimGrid;
+    JvPanel1: TJvPanel;
+    IOTHGrid: TJvDBUltimGrid;
+    Spl01: TJvSplitter;
+    RealPMFooter: TJvDBGridFooter;
+    RealPMGrid: TJvDBUltimGrid;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure GridInOutGSMEditChange(Sender: TObject);
+    procedure RealPMFooterCalculate(Sender: TJvDBGridFooter;
+      const FieldName: string; var CalcValue: Variant);
+    procedure GridFooterInOutCalculate(Sender: TJvDBGridFooter;
+      const FieldName: string; var CalcValue: Variant);
   private
     { Private declarations }
     dirty: boolean;
@@ -46,6 +60,7 @@ type
     session_id: Integer;
     procedure ShowGSMData();
     procedure ShowIOTHData();
+    procedure ShowPMData();
   end;
 
 var
@@ -78,6 +93,31 @@ begin
   end;
 
 end;
+
+// .............................................................................
+
+procedure TTabForm.ShowPMData();
+begin
+  with QueryRealPM do
+  begin
+    if Active then Close;
+
+    Transaction.StartTransaction;
+    try
+
+      Open;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+//      Transaction.Rollback;
+//        raise
+      end;
+    end;
+  end;
+
+end;
+
 
 // .............................................................................
 
@@ -123,6 +163,25 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
+begin
+  inherited;
+//  AddToLog(FieldName);
+  CalcValue := 'F: ' + FieldName;
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterInOutCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
+begin
+  inherited;
+  CalcValue := 'F: ' + FieldName;
+end;
+
+// .............................................................................
+
 procedure TTabForm.RollbackActionExecute(Sender: TObject);
 begin
   inherited;
@@ -151,6 +210,7 @@ begin
   begin
 //
   end;
+//  JVFS.SaveFormPlacement;
 
 end;
 
@@ -192,9 +252,13 @@ end;
 // .............................................................................
 
 procedure TTabForm.FormCreate(Sender: TObject);
+  var
+    i: Integer;
 begin
   inherited;
   dirty := false;
+//  JvFS.RestoreFormPlacement;
+
 
   session_id := 209;
 
@@ -231,10 +295,10 @@ begin
 
   ShowIOTHData;
   ShowGSMData;
-
+  ShowPMData;
 end;
 
-// .............................................................................
+// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
