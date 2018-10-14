@@ -41,7 +41,6 @@ begin
 //    Transaction := DM.FDConnection.Transaction;
     Transaction.StartTransaction;
     try
-//      SQL.Text := 'select azscode, sessionnum, startdatetime, username from sessions';
       Open;
       FetchAll;
       Transaction.Commit;

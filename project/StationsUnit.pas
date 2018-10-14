@@ -16,12 +16,12 @@ uses
 
 type
   TStationsForm = class(TFormWithGrid)
-    FDUpdSQL: TFDUpdateSQL;
     UpdateAction: TAction;
     Update1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure UpdateActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -37,6 +37,13 @@ implementation
 
 uses DmUnit;
 
+procedure TStationsForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  inherited;
+  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Commit;
+  if FDQuery.Transaction.Active then FDQuery.Transaction.Commit;
+end;
+
 procedure TStationsForm.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -45,8 +52,8 @@ begin
     Transaction.StartTransaction;
     try
       Open;
-      FetchAll;
-      Transaction.Commit;
+      //FetchAll;
+      //Transaction.Commit;
     except
       on e: exception do
       begin
@@ -60,7 +67,7 @@ end;
 procedure TStationsForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-
+         //
 end;
 
 /// ............................................................................
@@ -68,20 +75,22 @@ end;
 procedure TStationsForm.UpdateActionExecute(Sender: TObject);
 begin
   inherited;
+  {
   with FDQuery do
   begin
-    Transaction.StartTransaction;
+    UpdateTransaction.StartTransaction;
     try
       ApplyUpdates;
-      Transaction.Commit;
+      UpdateTransaction.Commit;
     except
       on e: exception do
       begin
-        Transaction.Rollback;
+        UpdateTransaction.Rollback;
         ErrorMessageBox(self, e.message);
       end;
     end;
   end;
+  }
 end;
 
 end.

@@ -12721,11 +12721,12 @@ object DM: TDM
       'Protocol=TCPIP'
       'DriverID=FB'
       'Server=localhost')
+    ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
     Connected = True
     LoginPrompt = False
-    Transaction = FDTransaction
-    UpdateTransaction = FDTransaction
+    Transaction = FDTransactionUpd
+    UpdateTransaction = FDTransactionUpd
     Left = 296
     Top = 56
   end
@@ -13028,5 +13029,11 @@ object DM: TDM
     UpdateTransaction = FDTransactionH_r
     Left = 296
     Top = 232
+  end
+  object FDTransactionUpd: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Connection = FDConnection
+    Left = 296
+    Top = 120
   end
 end

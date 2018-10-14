@@ -1,61 +1,60 @@
 inherited TabForm: TTabForm
   Caption = 'Tabs'
   ClientHeight = 532
-  ClientWidth = 672
+  ClientWidth = 735
   OnCloseQuery = FormCloseQuery
-  ExplicitWidth = 688
+  ExplicitWidth = 751
   ExplicitHeight = 591
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    Width = 672
+    Width = 735
     ExplicitWidth = 672
-    object ToolButton2: TToolButton [0]
-      Left = 0
+    object ToolButton2: TToolButton
+      Left = 23
       Top = 0
       Action = CommitAction
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton3: TToolButton [1]
-      Left = 23
+    object ToolButton3: TToolButton
+      Left = 46
       Top = 0
       Action = RollbackAction
       ParentShowHint = False
       ShowHint = True
     end
-    inherited ToolButton1: TToolButton
-      Left = 46
-      ExplicitLeft = 46
-    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 513
-    Width = 672
+    Width = 735
     ExplicitTop = 513
     ExplicitWidth = 672
   end
   object Pages: TJvPageControl [2]
     Left = 0
     Top = 29
-    Width = 672
+    Width = 735
     Height = 484
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
+    ExplicitWidth = 672
     object TabSheet1: TTabSheet
-      Caption = 'TabSheet1'
+      Caption = #1025#1084#1082#1086#1089#1090#1080' '#1090#1086#1087#1083#1080#1074#1072' '#1080' '#1088#1091#1082#1072#1074#1072' '#1058#1056#1050
+      ExplicitWidth = 664
       object JvPanel1: TJvPanel
         Left = 0
         Top = 0
-        Width = 664
+        Width = 727
         Height = 456
         Align = alClient
         TabOrder = 0
+        ExplicitWidth = 664
         object Spl01: TJvSplitter
           Left = 1
           Top = 138
-          Width = 662
+          Width = 725
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -64,7 +63,7 @@ inherited TabForm: TTabForm
         object IOTHGrid: TJvDBUltimGrid
           Left = 1
           Top = 1
-          Width = 662
+          Width = 725
           Height = 137
           Align = alTop
           DataSource = DSIOTH
@@ -75,7 +74,9 @@ inherited TabForm: TTabForm
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           AutoAppend = False
+          AutoSort = False
           IniStorage = JvFS
+          OnEditChange = IOTHGridEditChange
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -86,15 +87,16 @@ inherited TabForm: TTabForm
           Columns = <
             item
               Expanded = False
-              FieldName = 'STDT'
+              FieldName = 'FUELNAME'
+              PopupMenu = FuelPopupMenu
+              ReadOnly = True
+              Title.Caption = #1043#1057#1052
+              Width = 60
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'FUELNAME'
-              PopupMenu = FuelPopupMenu
-              ReadOnly = True
-              Width = 60
+              FieldName = 'STDT'
               Visible = True
             end
             item
@@ -175,12 +177,17 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'MASS'
               Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'ID'
+              Visible = True
             end>
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
           Top = 436
-          Width = 662
+          Width = 725
           Height = 19
           SizeGrip = True
           Columns = <
@@ -199,11 +206,12 @@ inherited TabForm: TTabForm
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
+          ExplicitWidth = 662
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
           Top = 141
-          Width = 662
+          Width = 725
           Height = 295
           Align = alClient
           DataSource = DSRealPM
@@ -217,6 +225,7 @@ inherited TabForm: TTabForm
           TitleFont.Style = []
           AutoAppend = False
           IniStorage = JvFS
+          OnEditChange = RealPMGridEditChange
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -265,19 +274,21 @@ inherited TabForm: TTabForm
       end
     end
     object TabSheet2: TTabSheet
-      Caption = 'TabSheet2'
+      Caption = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1080' '#1087#1088#1080#1093#1086#1076' '#1043#1057#1052
       ImageIndex = 1
+      ExplicitWidth = 664
       object JvPanel2: TJvPanel
         Left = 0
         Top = 0
-        Width = 664
+        Width = 727
         Height = 456
         Align = alClient
         TabOrder = 0
+        ExplicitWidth = 664
         object GridFooterInOut: TJvDBGridFooter
           Left = 1
           Top = 436
-          Width = 662
+          Width = 725
           Height = 19
           SizeGrip = True
           Columns = <
@@ -287,11 +298,12 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
+          ExplicitWidth = 662
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
           Top = 1
-          Width = 662
+          Width = 725
           Height = 435
           Align = alClient
           DataSource = DSInOut
@@ -302,6 +314,7 @@ inherited TabForm: TTabForm
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           AutoAppend = False
+          IniStorage = JvFS
           OnEditChange = GridInOutGSMEditChange
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -315,80 +328,80 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'SDATE'
-              Width = 56
+              Width = 62
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'DIR'
-              Width = 49
+              Width = 54
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'FUELNAME'
               ReadOnly = True
-              Width = 84
+              Width = 91
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'CLIENTNAME'
-              Width = 88
+              Width = 98
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PAYMENTMODE'
-              Width = 53
+              Width = 59
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'EI'
-              Width = 46
+              Width = 51
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'VOLUME'
-              Width = 46
+              Width = 51
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'AMOUNT'
-              Width = 25
+              Width = 27
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'DENSITY'
-              Width = 28
+              Width = 30
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PRICE'
-              Width = 25
+              Width = 27
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'SUMM'
-              Width = 46
+              Width = 51
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'NDS'
-              Width = 49
+              Width = 54
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'WHOLE'
-              Width = 38
+              Width = 41
               Visible = True
             end>
         end
@@ -397,10 +410,12 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
       ImageIndex = 2
+      ExplicitWidth = 664
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
+      ExplicitWidth = 664
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -436,7 +451,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13123,7 +13138,7 @@ inherited TabForm: TTabForm
   object QueryInOut: TFDQuery
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransactionUpd
     FetchOptions.AssignedValues = [evAutoClose]
     FetchOptions.AutoClose = False
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
@@ -13178,7 +13193,7 @@ inherited TabForm: TTabForm
   end
   object QueryIOTH: TFDQuery
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
+    Transaction = DM.FDTransactionUpd
     UpdateTransaction = DM.FDTransaction
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
     UpdateOptions.EnableDelete = False
@@ -13187,7 +13202,7 @@ inherited TabForm: TTabForm
     SQL.Strings = (
       'select'
       '    i.id,'
-      '   cast(s.startdatetime as date) as stdt,'
+      '    cast(s.startdatetime as date) as stdt,'
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.hosenum,'
@@ -13209,7 +13224,7 @@ inherited TabForm: TTabForm
       '    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)'
       '   and azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
-    Left = 348
+    Left = 356
     Top = 85
     ParamData = <
       item
@@ -13239,7 +13254,7 @@ inherited TabForm: TTabForm
   object QueryRealPM: TFDQuery
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransactionUpd
     SQL.Strings = (
       'select'
       '    i.session_id,'

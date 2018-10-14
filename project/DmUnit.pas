@@ -29,6 +29,7 @@ type
     FDQueryForINOUTGSM: TFDQuery;
     FDQueryForIOTANKSHOSES: TFDQuery;
     OptQuery: TFDQuery;
+    FDTransactionUpd: TFDTransaction;
   private
     { Private declarations }
   public

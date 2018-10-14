@@ -54,6 +54,8 @@ type
       const FieldName: string; var CalcValue: Variant);
     procedure GridFooterInOutCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
+    procedure IOTHGridEditChange(Sender: TObject);
+    procedure RealPMGridEditChange(Sender: TObject);
   private
     { Private declarations }
     dirty: boolean;
@@ -441,6 +443,20 @@ procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
   //
   dirty := true;
+end;
+
+
+procedure TTabForm.IOTHGridEditChange(Sender: TObject);
+begin
+  inherited;
+  dirty := true;
+//
+end;
+
+procedure TTabForm.RealPMGridEditChange(Sender: TObject);
+begin
+  inherited;
+//
 end;
 
 
