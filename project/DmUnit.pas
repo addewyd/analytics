@@ -25,10 +25,10 @@ type
     FDConnection: TFDConnection;
     FDTransaction: TFDTransaction;
     FDTransactionH_r: TFDTransaction;
-    FDCH_r: TFDConnection;
     FDManager: TFDManager;
     FDQueryForINOUTGSM: TFDQuery;
     FDQueryForIOTANKSHOSES: TFDQuery;
+    OptQuery: TFDQuery;
   private
     { Private declarations }
   public

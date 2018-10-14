@@ -9,7 +9,8 @@ uses
   Vcl.StdCtrls, JvExStdCtrls, JvEdit, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, JvDBLookup, Data.DB,
-  JvDataSource, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  JvDataSource, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvAppStorage,
+  JvAppRegistryStorage, JvComponentBase, JvFormPlacement;
 
 type
   TSimpleReportDialog = class(TForm)
@@ -23,6 +24,8 @@ type
     FDQueryAZS: TFDQuery;
     DSAzs: TJvDataSource;
     LookupAzs: TJvDBLookupEdit;
+    FormStorage: TJvFormStorage;
+    AppStorage: TJvAppRegistryStorage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure OkButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -34,6 +37,9 @@ type
 
 var
   SimpleReportDialog: TSimpleReportDialog;
+
+//  'simplereport', srd.LookupAzs.LookupValue,
+  //        srd.DateStartEdit.Date, srd.DateEndEdit.Date
 
 implementation
 

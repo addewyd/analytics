@@ -42,6 +42,8 @@ type
     Spl01: TJvSplitter;
     RealPMFooter: TJvDBGridFooter;
     RealPMGrid: TJvDBUltimGrid;
+    UpdateIOTHSQL: TFDUpdateSQL;
+    QuerySST: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -58,9 +60,14 @@ type
   public
     { Public declarations }
     session_id: Integer;
+    sst: String;
+    //azscode: String;
+    procedure ShowAllData();
+
     procedure ShowGSMData();
     procedure ShowIOTHData();
     procedure ShowPMData();
+    function GetStartSession :String;
   end;
 
 var
@@ -72,21 +79,107 @@ implementation
 
 uses DmUnit, MainUnit, YNUnit;
 
+
+function TTabForm.GetStartSession :String;
+begin
+  result := '2000-01-01 00:00:00';
+//  last_sessions_count
+try
+  with QuerySST do
+  begin
+    Transaction.StartTransaction;
+    with Params  do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'cnt';
+          DataType := ftInteger;
+          ParamType := ptInput;
+      end;
+      with Add do
+      begin
+          Name := 'azs';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('cnt').AsInteger := last_sessions_count;
+    ParamByName('azs').AsString := current_azscode;
+    Prepare;
+    Open;
+    First;
+    if not EOF then
+    begin
+      //First;
+      Result := FieldByName('startdatetime').AsString;
+    end;
+
+    Close;
+    Transaction.Commit;
+  end;
+except
+  on e: Exception do
+  begin
+    QuerySST.Transaction.Rollback;
+    AddToLog(e.Message);
+  end;
+
+end;
+
+end;
+// .............................................................................
+
+procedure TTabForm.ShowAllData();
+begin
+  sst := GetStartSession();
+  ShowIOTHData;
+  ShowGSMData;
+  ShowPMData;
+  GridInOutGSM.Refresh;
+  IOTHGrid.Refresh;
+  RealPMGrid.Refresh;
+
+end;
+
+// .............................................................................
+
 procedure TTabForm.ShowGSMData();
 begin
+
   with QueryInOut do
   begin
     if Active then Close;
 
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'start_session_t';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+      with Add do
+      begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('start_session_t').AsString := sst;
+    ParamByName('azscode').AsString := current_azscode;
+
     Transaction.StartTransaction;
     try
-
+      Prepare;
       Open;
+//      Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//      Transaction.Rollback;
+//        Transaction.Rollback;
 //        raise
       end;
     end;
@@ -101,16 +194,35 @@ begin
   with QueryRealPM do
   begin
     if Active then Close;
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'start_session_t';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+      with Add do
+      begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('start_session_t').AsString := sst;
+    ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
-
+      Prepare;
       Open;
+//      Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//      Transaction.Rollback;
+//        Transaction.Rollback;
 //        raise
       end;
     end;
@@ -126,16 +238,35 @@ begin
   with QueryIOTH do
   begin
     if Active then Close;
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := 'start_session_t';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+      with Add do
+      begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName('start_session_t').AsString := sst;
+    ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
-
+      Prepare;
       Open;
+//      Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//      Transaction.Rollback;
+//        Transaction.Rollback;
 //        raise
       end;
     end;
@@ -148,27 +279,77 @@ end;
 procedure TTabForm.CommitActionExecute(Sender: TObject);
 begin
   inherited;
-  with QueryInOut do
-  begin
-    if Transaction.Active then
+  try
+    with QueryInOut do
     begin
-      Transaction.Commit;
-      dirty := false;
-      ShowIOTHData;
-      ShowGSMData;
+      if Transaction.Active then
+      begin
+        Transaction.Commit;
+      end;
     end;
-
+    with QueryIOTH do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Commit;
+      end;
+    end;
+    with QueryRealPM do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Commit;
+      end;
+    end;
+    dirty := false;
+  except
+    on e: Exception do
+    begin
+      AddToLog(e.Message);
+    end;
   end;
+
+  ShowAllData;
 end;
 
 // .............................................................................
 
-procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
-  const FieldName: string; var CalcValue: Variant);
+procedure TTabForm.RollbackActionExecute(Sender: TObject);
 begin
   inherited;
-//  AddToLog(FieldName);
-  CalcValue := 'F: ' + FieldName;
+  try
+    with QueryInOut do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+      end;
+
+    end;
+    with QueryIOTH do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+      end;
+
+    end;
+    with QueryRealPM do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+      end;
+
+    end;
+    dirty := false;
+  except
+    on e: Exception do
+    begin
+      AddToLog(e.Message);
+    end;
+  end;
+  ShowAllData;
 end;
 
 // .............................................................................
@@ -182,23 +363,12 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.RollbackActionExecute(Sender: TObject);
+procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
 begin
   inherited;
-  with QueryInOut do
-  begin
-    if Transaction.Active then
-    begin
-      Transaction.Rollback;
-      dirty := false;
-      ShowGSMData;
-      ShowIOTHData;
-      GridInOutGSM.Refresh;
-      IOTHGrid.Refresh;
-    end;
-
-  end;
-
+//  AddToLog(FieldName);
+  CalcValue := 'F: ' + FieldName;
 end;
 
 // .............................................................................
@@ -236,11 +406,15 @@ begin
       if  mr = mrOk then
       begin
         QueryInOut.Transaction.Commit;
+        QueryIOTH.Transaction.Commit;
+        QueryRealPM.Transaction.Commit;
         CanClose := true;
       end;
       if  mr = mrAbort then
       begin
         QueryInOut.Transaction.Rollback;
+        QueryIOTH.Transaction.Rollback;
+        QueryRealPM.Transaction.Rollback;
         CanClose := true;
       end;
     end;
@@ -254,48 +428,11 @@ end;
 procedure TTabForm.FormCreate(Sender: TObject);
   var
     i: Integer;
+    sst: String;
 begin
   inherited;
   dirty := false;
-//  JvFS.RestoreFormPlacement;
-
-
-  session_id := 209;
-
-  with QueryInOut do
-  begin
-    with Params do
-    begin
-      Clear;
-      with Add do
-      begin
-          Name := 'session_id';
-          DataType := ftInteger;
-          ParamType := ptInput;
-      end;
-    end;
-    ParamByName('session_id').AsInteger := session_id;
-  end;
-
-  with QueryIOTH do
-  begin
-    with Params do
-    begin
-      Clear;
-      with Add do
-      begin
-          Name := 'session_id';
-          DataType := ftInteger;
-          ParamType := ptInput;
-      end;
-    end;
-    ParamByName('session_id').AsInteger := session_id;
-  end;
-
-
-  ShowIOTHData;
-  ShowGSMData;
-  ShowPMData;
+  ShowAllData;
 end;
 
 // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -308,5 +445,3 @@ end;
 
 
 end.
-
-

@@ -27,14 +27,18 @@ object MainForm: TMainForm
     Panels = <
       item
         Text = 'db'
-        Width = 260
+        Width = 120
       end
       item
         Width = 240
       end
       item
         Text = 'HTTP'
-        Width = 140
+        Width = 200
+      end
+      item
+        Text = 'azs'
+        Width = 150
       end>
   end
   object ToolBar1: TToolBar

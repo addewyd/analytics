@@ -167,6 +167,8 @@ var
 begin
 
   res := '';
+  len := 0;
+  cnt := 0;
   CoInitialize(nil);
   flist := TStringList.Create;
   vlist := TStringList.Create;
@@ -229,7 +231,7 @@ begin
     flist.Free;
     CoUninitialize;
   end;
-  res := Format('Inserted %d of %drecords', [cnt, len]);
+  res := Format('Inserted %d of %d records', [cnt, len]);
   TThread.Queue(nil,
     procedure
     begin

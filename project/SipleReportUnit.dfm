@@ -116,7 +116,25 @@ object SimpleReportDialog: TSimpleReportDialog
   object DSAzs: TJvDataSource
     AutoEdit = False
     DataSet = FDQueryAZS
-    Left = 99
+    Left = 187
     Top = 58
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = AppStorage
+    AppStoragePath = '%FORM_NAME%'
+    StoredProps.Strings = (
+      'DateStartEdit.Date'
+      'DateEndEdit.Date')
+    StoredValues = <>
+    Left = 80
+    Top = 112
+  end
+  object AppStorage: TJvAppRegistryStorage
+    StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
+    StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
+    Root = 'Software\Shrfs'
+    SubStorages = <>
+    Left = 32
+    Top = 128
   end
 end

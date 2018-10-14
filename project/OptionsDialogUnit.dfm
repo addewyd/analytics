@@ -4,8 +4,8 @@ object OptionsDialog: TOptionsDialog
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 269
-  ClientWidth = 428
+  ClientHeight = 377
+  ClientWidth = 432
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object OptionsDialog: TOptionsDialog
   TextHeight = 13
   object OkButton: TButton
     Left = 248
-    Top = 228
+    Top = 332
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -27,8 +27,8 @@ object OptionsDialog: TOptionsDialog
     TabOrder = 0
   end
   object CancelButton: TButton
-    Left = 342
-    Top = 228
+    Left = 349
+    Top = 332
     Width = 71
     Height = 25
     Cancel = True
@@ -151,6 +151,70 @@ object OptionsDialog: TOptionsDialog
       Width = 202
       Height = 89
       TabOrder = 2
+    end
+  end
+  object JvPanel3: TJvPanel
+    Left = 8
+    Top = 232
+    Width = 412
+    Height = 89
+    Alignment = taRightJustify
+    TabOrder = 4
+    object UserNameText: TJvStaticText
+      Left = 12
+      Top = 8
+      Width = 120
+      Height = 17
+      AutoSize = False
+      Caption = 'un'
+      Layout = tlTop
+      TabOrder = 0
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object JvStaticText5: TJvStaticText
+      Left = 12
+      Top = 32
+      Width = 97
+      Height = 17
+      Caption = 'Last sessions count'
+      Layout = tlTop
+      TabOrder = 1
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object LscEdit: TJvSpinEdit
+      Left = 116
+      Top = 30
+      Width = 101
+      Height = 21
+      Alignment = taRightJustify
+      MaxValue = 60.000000000000000000
+      MinValue = 1.000000000000000000
+      Value = 1.000000000000000000
+      TabOrder = 2
+    end
+    object JvStaticText6: TJvStaticText
+      Left = 12
+      Top = 64
+      Width = 47
+      Height = 17
+      Caption = #1050#1086#1076' '#1040#1047#1057
+      Layout = tlTop
+      TabOrder = 3
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object AzsEdit: TJvEdit
+      Left = 116
+      Top = 61
+      Width = 101
+      Height = 21
+      TabOrder = 4
+      Text = ''
     end
   end
 end

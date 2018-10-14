@@ -12721,6 +12721,7 @@ object DM: TDM
       'Protocol=TCPIP'
       'DriverID=FB'
       'Server=localhost')
+    TxOptions.AutoStop = False
     Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
@@ -12736,25 +12737,9 @@ object DM: TDM
     Top = 56
   end
   object FDTransactionH_r: TFDTransaction
-    Options.AutoStart = False
-    Options.AutoStop = False
-    Connection = FDCH_r
-    Left = 288
-    Top = 160
-  end
-  object FDCH_r: TFDConnection
-    ConnectionName = 'fdh_r'
-    Params.Strings = (
-      'DriverID=FB'
-      'CharacterSet=UTF8'
-      'Password=masterkey'
-      'Port=3050'
-      'User_Name=SYSDBA')
-    LoginPrompt = False
-    Transaction = FDTransactionH_r
-    UpdateTransaction = FDTransactionH_r
-    Left = 280
-    Top = 216
+    Connection = FDConnection
+    Left = 376
+    Top = 232
   end
   object FDManager: TFDManager
     FormatOptions.AssignedValues = [fvMapRules]
@@ -13036,5 +13021,12 @@ object DM: TDM
         Name = 'SESSION_ID'
         ParamType = ptInput
       end>
+  end
+  object OptQuery: TFDQuery
+    Connection = FDConnection
+    Transaction = FDTransactionH_r
+    UpdateTransaction = FDTransactionH_r
+    Left = 296
+    Top = 232
   end
 end

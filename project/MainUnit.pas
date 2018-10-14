@@ -10,7 +10,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, FireDAC.Comp.Client, Data.DB, Vcl.ComCtrls,
   Vcl.ToolWin, Vcl.AppEvnts, System.ImageList, Vcl.ImgList,
-  Registry,
+  Registry, Math,
 
   FStorage, AboutUnit, DmUnit, JvDataSource, Vcl.Grids, Vcl.DBGrids,
   JvExDBGrids, JvDBGrid, FireDAC.Phys.FB, FireDAC.Phys.FBDef, JvBaseDlg,
@@ -134,6 +134,8 @@ type
   end;
 
 Procedure AddToLog(msg: String);
+Procedure LoadUserOptions(user_id: Integer);
+Procedure SaveUserOptions(user_id: Integer; def: boolean);
 
 var
   MainForm: TMainForm;
@@ -147,7 +149,14 @@ var
   IPAS: TStringList;
 
   user_id: Integer;
+  user_login: String;
   user_role: Integer;
+  current_azscode: String;
+
+  last_sessions_count: Integer;
+const
+  last_sessions_count_def: Integer = 14;
+  azscode_def: string = '';
 
 implementation
 
@@ -210,6 +219,8 @@ begin
   //  ARequestInfo.PostStream
 end;
 
+/// ............................................................................
+
 procedure TMainForm.HTTPServerException(AContext: TIdContext;
   AException: Exception);
 begin
@@ -230,6 +241,165 @@ begin
     MLogForm := TMlogForm.Create(MainForm, 'mlog');
 
   MLogForm.mlog.Lines.Add(msg);
+end;
+
+// .............................................................................
+
+Procedure LoadUserOptions(user_id: Integer);
+begin
+  try
+    with DM.OptQuery do
+    begin
+      sql.Text := 'select o.user_id, u.login, opname1, optvalue1, opname2, optvalue2 ' +
+        '  from useroptions o ' + '  join users u on u.id = o.user_id ' +
+        ' where u.id = :user_id ';
+
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'user_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+
+        end;
+      end;
+      ParamByName('user_id').AsInteger := user_id;
+      Open;
+      if RecordCount < 1 then
+      begin
+        SaveUserOptions(user_id, true);
+      end
+      else
+      begin
+        user_login := FieldByName('login').AsString;
+        last_sessions_count := StrToIntDef(FieldByName('optvalue1')
+          .AsString, last_sessions_count_def);
+        current_azscode := FieldByName('optvalue2').AsString;
+      end;
+    end;
+  except
+    on E: Exception do
+    begin
+      AddToLog(E.Message);
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
+Procedure SaveUserOptions(user_id: Integer; Def: boolean);
+begin
+  if Def then
+  begin
+    last_sessions_count := last_sessions_count_def;
+    current_azscode := azscode_def;
+    with DM.OptQuery do
+    begin
+      sql.Text :=
+        'insert into USEROPTIONS '+
+        '(user_id,opname1,optvalue1,optfullname1) values ' +
+        '(:user_id,:opname1,:optvalue1,:optfullname1)';
+
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'user_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optvalue1';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'opname1';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optfullname1';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optvalue2';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'opname2';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optfullname2';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('user_id').AsInteger := user_id;
+      ParamByName('optvalue1').AsString := IntToStr(last_sessions_count);
+      ParamByName('opname1').AsString := 'last_sessions_count';
+      ParamByName('optfullname1').AsString := 'Last sessions count';
+      ParamByName('optvalue2').AsString := current_azscode;
+      ParamByName('opname2').AsString := 'AzsCode';
+      ParamByName('optfullname2').AsString := 'Azs Code';
+      ExecSQL;
+    end;
+  end;
+  try
+    with DM.OptQuery do
+    begin
+      sql.Text :=
+        'update useroptions set optvalue1 = :optvalue1, optvalue2 = :optvalue2 where user_id=:user_id';
+
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'user_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+
+        end;
+        with Add do
+        begin
+          Name := 'optvalue1';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optvalue2';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('user_id').AsInteger := user_id;
+      ParamByName('optvalue1').AsString := IntToStr(last_sessions_count);
+      ParamByName('optvalue2').AsString := current_azscode;
+      ExecSQL;
+    end;
+  except
+    on E: Exception do
+    begin
+      AddToLog(E.Message);
+    end;
+  end;
+
 end;
 
 // .............................................................................
@@ -422,6 +592,8 @@ begin
 
     DM.FDConnection.Open;
     StatusBar1.Panels[0].Text := ExtractFileName(dbname);
+    LoadUserOptions(user_id);
+    StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
 
   except
     on e: exception do
@@ -440,6 +612,9 @@ procedure TMainForm.FormClick(Sender: TObject);
 begin
 //
 end;
+
+// .............................................................................
+
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -460,7 +635,6 @@ begin
 
   user_id := 1; // admin
   user_role := 1; // admin
-
 
   IPAS := TStringList.Create;
 
@@ -513,7 +687,6 @@ begin
 end;
 
 // .............................................................................
-
 
 procedure TMainForm.LoadFileActionExecute(Sender: TObject);
   var filename: String;
@@ -583,6 +756,11 @@ begin
       od.HTTPCheckBox.Checked :=  HTTPServiceOn;
 
       od.IPAMemo.Enabled :=  HTTPServiceOn;
+
+      od.UserNameText.Caption := user_login + ' options:';
+      od.LscEdit.Value := last_sessions_count;
+      od.AzsEdit.Text := current_azscode;
+
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
@@ -611,7 +789,10 @@ begin
           reg.WriteString('options', format('IP%d', [i]), ip) ;
           IPAS.Add(ip);
         end;
-
+        last_sessions_count := Ceil(od.LscEdit.Value);
+        current_azscode := od.AzsEdit.Text;
+        SaveUserOptions(user_id, false);
+        StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
 
       end;
     finally

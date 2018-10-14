@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, JvExStdCtrls, JvEdit,
   JvExControls, JvStaticText, JvCheckBox, Registry, Vcl.ExtCtrls, JvExExtCtrls,
-  JvExtComponent, JvItemsPanel, JvMemo, JvHtControls, JvPanel;
+  JvExtComponent, JvItemsPanel, JvMemo, JvHtControls, JvPanel, Vcl.Mask,
+  JvExMask, JvSpin;
 
 type
   TOptionsDialog = class(TForm)
@@ -23,6 +24,12 @@ type
     JvStaticText3: TJvStaticText;
     IPAMemo: TMemo;
     JvStaticText4: TJvStaticText;
+    JvPanel3: TJvPanel;
+    UserNameText: TJvStaticText;
+    JvStaticText5: TJvStaticText;
+    LscEdit: TJvSpinEdit;
+    JvStaticText6: TJvStaticText;
+    AzsEdit: TJvEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
   private
