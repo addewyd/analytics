@@ -44,6 +44,9 @@ type
     RealPMGrid: TJvDBUltimGrid;
     UpdateIOTHSQL: TFDUpdateSQL;
     QuerySST: TFDQuery;
+    TransInOut: TFDTransaction;
+    TransIOTH: TFDTransaction;
+    TransPM: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -56,9 +59,12 @@ type
       const FieldName: string; var CalcValue: Variant);
     procedure IOTHGridEditChange(Sender: TObject);
     procedure RealPMGridEditChange(Sender: TObject);
+    procedure QueryIOTHAfterPost(DataSet: TDataSet);
   private
     { Private declarations }
-    dirty: boolean;
+    dirtyGSM: boolean;
+    dirtyIOTH: boolean;
+    dirtyPM: boolean;
   public
     { Public declarations }
     session_id: Integer;
@@ -69,6 +75,7 @@ type
     procedure ShowGSMData();
     procedure ShowIOTHData();
     procedure ShowPMData();
+    procedure UpdateState(q: TFDQuery);
     function GetStartSession :String;
   end;
 
@@ -81,6 +88,18 @@ implementation
 
 uses DmUnit, MainUnit, YNUnit;
 
+procedure TTabForm.UpdateState(q: TFDQuery);
+begin
+  // HZ!!!
+//  q.UpdateTransaction.Commit;
+  AddToLog(q.Name + ' need update');
+  WITH Q DO
+  begin
+//
+  end;
+end;
+
+// .............................................................................
 
 function TTabForm.GetStartSession :String;
 begin
@@ -135,8 +154,8 @@ end;
 procedure TTabForm.ShowAllData();
 begin
   sst := GetStartSession();
-  ShowIOTHData;
   ShowGSMData;
+  ShowIOTHData;
   ShowPMData;
   GridInOutGSM.Refresh;
   IOTHGrid.Refresh;
@@ -232,7 +251,6 @@ begin
 
 end;
 
-
 // .............................................................................
 
 procedure TTabForm.ShowIOTHData();
@@ -279,31 +297,57 @@ end;
 // .............................................................................
 
 procedure TTabForm.CommitActionExecute(Sender: TObject);
+  var
+    cmt: boolean;
 begin
   inherited;
+  cmt := false;
   try
-    with QueryInOut do
-    begin
-      if Transaction.Active then
-      begin
-        Transaction.Commit;
-      end;
-    end;
+
     with QueryIOTH do
     begin
       if Transaction.Active then
       begin
-        Transaction.Commit;
+        if dirtyIOTH then
+        begin
+          Transaction.Commit;
+          cmt := true;
+          UpdateState(QueryIOTH);
+          dirtyIOTH := false;
+        end;
       end;
     end;
+
     with QueryRealPM do
     begin
       if Transaction.Active then
       begin
-        Transaction.Commit;
+        if dirtyPM then
+        begin
+          Transaction.Commit;
+          cmt := true;
+          UpdateState(QueryRealPM);
+          dirtyPM := false;
+        end;
       end;
     end;
-    dirty := false;
+
+    with QueryInOut do
+    begin
+      if Transaction.Active then
+      begin
+        if dirtyGSM then
+        begin
+          Transaction.Commit;
+          cmt := true;
+          UpdateState(QueryInOut);
+          dirtyGSM := false;
+        end;
+      end;
+    end;
+
+//    if cmt then DM.FDTransaction.Commit;
+
   except
     on e: Exception do
     begin
@@ -317,14 +361,19 @@ end;
 // .............................................................................
 
 procedure TTabForm.RollbackActionExecute(Sender: TObject);
+  var
+    cmt: boolean;
 begin
   inherited;
+  cmt := false;
   try
     with QueryInOut do
     begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
+          cmt := true;
+        dirtyGSM := false;
       end;
 
     end;
@@ -333,6 +382,8 @@ begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
+          cmt := true;
+        dirtyIOTH := false;
       end;
 
     end;
@@ -340,11 +391,14 @@ begin
     begin
       if Transaction.Active then
       begin
-        Transaction.Rollback;
+//        Transaction.Rollback;
+          cmt := true;
+        dirtyPM := false;
       end;
 
     end;
-    dirty := false;
+  //  if cmt  then DM.FDTransaction.Rollback;
+
   except
     on e: Exception do
     begin
@@ -394,10 +448,10 @@ procedure TTabForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     mr: Integer;
 begin
   inherited;
-  if QueryInOut.Transaction.Active then
-  begin
+  //if QueryInOut.Transaction.Active then
+  //begin
 
-    CanClose := not dirty;
+    CanClose := not (dirtyGSM or dirtyIOTH or dirtyPM);
 
     if not CanClose then
     begin
@@ -407,21 +461,25 @@ begin
       mr := yn.ShowModal;
       if  mr = mrOk then
       begin
-        QueryInOut.Transaction.Commit;
-        QueryIOTH.Transaction.Commit;
-        QueryRealPM.Transaction.Commit;
+        if QueryInOut.Transaction.Active then QueryInOut.Transaction.Commit;
+        if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Commit;
+        if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Commit;
+
+        if dirtyGSM then UpdateState(QueryInOut);
+        if dirtyIOTH then UpdateState(QueryIOTH);
+        if dirtyPM then UpdateState(QueryRealPM);
         CanClose := true;
       end;
       if  mr = mrAbort then
       begin
-        QueryInOut.Transaction.Rollback;
-        QueryIOTH.Transaction.Rollback;
-        QueryRealPM.Transaction.Rollback;
+        if QueryInOut.Transaction.Active then QueryInOut.Transaction.Rollback;
+        if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Rollback;
+        if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Rollback;
         CanClose := true;
       end;
     end;
 
-  end;
+  //end;
 
 end;
 
@@ -433,7 +491,9 @@ procedure TTabForm.FormCreate(Sender: TObject);
     sst: String;
 begin
   inherited;
-  dirty := false;
+  dirtyGSM := false;
+  dirtyIOTH := false;
+  dirtyPM := false;
   ShowAllData;
 end;
 
@@ -442,21 +502,32 @@ end;
 procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
   //
-  dirty := true;
+  dirtyGSM := true;
 end;
 
+// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 procedure TTabForm.IOTHGridEditChange(Sender: TObject);
 begin
   inherited;
-  dirty := true;
+  dirtyIOTH := true;
 //
 end;
+
+// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+procedure TTabForm.QueryIOTHAfterPost(DataSet: TDataSet);
+begin
+  inherited;
+//  AddToLog('aftwr post');
+end;
+
+// .............................................................................
 
 procedure TTabForm.RealPMGridEditChange(Sender: TObject);
 begin
   inherited;
-//
+  dirtyPM := true;
 end;
 
 

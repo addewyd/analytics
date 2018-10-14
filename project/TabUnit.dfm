@@ -13137,11 +13137,11 @@ inherited TabForm: TTabForm
   end
   object QueryInOut: TFDQuery
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransactionUpd
+    Transaction = TransInOut
+    UpdateTransaction = TransInOut
     FetchOptions.AssignedValues = [evAutoClose]
     FetchOptions.AutoClose = False
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
@@ -13192,9 +13192,10 @@ inherited TabForm: TTabForm
     Top = 85
   end
   object QueryIOTH: TFDQuery
+    AfterPost = QueryIOTHAfterPost
     Connection = DM.FDConnection
-    Transaction = DM.FDTransactionUpd
-    UpdateTransaction = DM.FDTransaction
+    Transaction = TransIOTH
+    UpdateTransaction = TransIOTH
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
@@ -13224,8 +13225,8 @@ inherited TabForm: TTabForm
       '    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)'
       '   and azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
-    Left = 356
-    Top = 85
+    Left = 412
+    Top = 93
     ParamData = <
       item
         Name = 'START_SESSION_T'
@@ -13253,8 +13254,8 @@ inherited TabForm: TTabForm
   end
   object QueryRealPM: TFDQuery
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransactionUpd
+    Transaction = TransPM
+    UpdateTransaction = TransPM
     SQL.Strings = (
       'select'
       '    i.session_id,'
@@ -13340,7 +13341,7 @@ inherited TabForm: TTabForm
       '  HOSETYPE, LASTUSER_ID, UPDATED_AT, STATE'
       'FROM IOTANKSHOSES'
       'WHERE ID = :ID')
-    Left = 428
+    Left = 660
     Top = 85
   end
   object QuerySST: TFDQuery
@@ -13366,5 +13367,26 @@ inherited TabForm: TTabForm
         Name = 'AZS'
         ParamType = ptInput
       end>
+  end
+  object TransInOut: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 492
+    Top = 141
+  end
+  object TransIOTH: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 476
+    Top = 93
+  end
+  object TransPM: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 564
+    Top = 253
   end
 end

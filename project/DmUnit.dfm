@@ -12723,7 +12723,6 @@ object DM: TDM
       'Server=localhost')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
-    Connected = True
     LoginPrompt = False
     Transaction = FDTransactionUpd
     UpdateTransaction = FDTransactionUpd
