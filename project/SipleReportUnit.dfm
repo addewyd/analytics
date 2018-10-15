@@ -121,7 +121,7 @@ object SimpleReportDialog: TSimpleReportDialog
   end
   object FormStorage: TJvFormStorage
     AppStorage = AppStorage
-    AppStoragePath = '%FORM_NAME%'
+    AppStoragePath = '%FORM_NAME%\'
     StoredProps.Strings = (
       'DateStartEdit.Date'
       'DateEndEdit.Date')

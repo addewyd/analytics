@@ -151,6 +151,7 @@ var
   user_id: Integer;
   user_login: String;
   user_role: Integer;
+  user_fio: String;
   current_azscode: String;
 
   last_sessions_count: Integer;
@@ -164,7 +165,7 @@ implementation
 
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
-  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit;
+  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit;
 
 
 // .............................................................................
@@ -265,6 +266,7 @@ begin
         end;
       end;
       ParamByName('user_id').AsInteger := user_id;
+      Prepare;
       Open;
       if RecordCount < 1 then
       begin
@@ -273,7 +275,7 @@ begin
       end
       else
       begin
-        user_login := FieldByName('login').AsString;
+        //user_login := FieldByName('login').AsString;
         last_sessions_count := StrToIntDef(FieldByName('optvalue1')
           .AsString, last_sessions_count_def);
         current_azscode := FieldByName('optvalue2').AsString;
@@ -356,6 +358,7 @@ begin
       ParamByName('optvalue2').AsString := current_azscode;
       ParamByName('opname2').AsString := 'AzsCode';
       ParamByName('optfullname2').AsString := 'Azs Code';
+      Prepare;
       ExecSQL;
     end;
   end;
@@ -391,6 +394,7 @@ begin
       ParamByName('user_id').AsInteger := user_id;
       ParamByName('optvalue1').AsString := IntToStr(last_sessions_count);
       ParamByName('optvalue2').AsString := current_azscode;
+      prepare;
       ExecSQL;
     end;
   except
@@ -567,10 +571,47 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
   var
     oParams : TFDPhysFBConnectionDefParams;
+    tsd: TSelectUser;
+    br: Integer;
+    uid, urole: Integer;
+    login, fio: String;
 begin
-  //
+
   JVFS.RestoreFormPlacement();
-//  DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
+
+  tsd := TSelectUser.Create(self);
+  tsd.FDQuery.Transaction.StartTransaction;
+  tsd.FDQuery.Open;
+  tsd.FDQuery.First;
+
+  br := tsd.ShowModal;
+  if br = mrCancel then
+  begin
+    Application.Terminate;
+  end;
+
+// AddToLog(
+//  tsd.combo.LookupValue + ' ' + IntToStr(tsd.uid));
+
+  uid := StrToIntDef(tsd.combo.LookupValue, 0);
+  urole := tsd.urole;
+  login := tsd.login;
+  fio := tsd.fio;
+
+  user_role := urole;
+  user_login := login;
+  user_fio := fio;
+  user_id := uid;
+
+  Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ']';
+
+  if uid < 1 then
+  begin
+    ErrorMessageBox(self, 'Не выбрано');
+    Application.Terminate;
+  end;
+
+  //DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
   try
     with
     DM.FDConnection.Params do
@@ -581,7 +622,7 @@ begin
       if embed then Add('Protocol=Local')
       else Add('Protocol=TCPIP');
       Add('User_Name=SYSDBA');
-      Add('Password=masterkey');
+      Add('Password=electro');
       Add('SQLDialect=3');
       if embed then Add('Server=')
       else Add('server=' + host);

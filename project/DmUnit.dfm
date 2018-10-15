@@ -12714,7 +12714,7 @@ object DM: TDM
     Params.Strings = (
       'CharacterSet=UTF8'
       'User_Name=sysdba'
-      'Password=masterkey'
+      'Password=electro'
       
         'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
         'ebug\db\SHRFS.FDB'
@@ -12723,6 +12723,7 @@ object DM: TDM
       'Server=localhost')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransactionUpd
     UpdateTransaction = FDTransactionUpd

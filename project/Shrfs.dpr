@@ -26,7 +26,8 @@ uses
   PaymentModesUnit in 'PaymentModesUnit.pas' {PaymentModesForm},
   HttpServiceUnit in 'HttpServiceUnit.pas',
   OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog},
-  TabUnit in 'TabUnit.pas' {TabForm};
+  TabUnit in 'TabUnit.pas' {TabForm},
+  SelectUserUnit in 'SelectUserUnit.pas' {SelectUser};
 
 {$R *.res}
 
