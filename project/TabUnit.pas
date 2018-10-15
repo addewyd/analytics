@@ -303,6 +303,11 @@ begin
       begin
         Fieldname := 'pmode';
       end;
+      with Add do
+      begin
+        Fieldname := 'volume';
+        Title.Caption := 'ฮแ๚ธ์';
+      end;
     end;
 
     len := warelist.Count;
