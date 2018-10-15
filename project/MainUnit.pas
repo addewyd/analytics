@@ -262,7 +262,6 @@ begin
           Name := 'user_id';
           DataType := ftInteger;
           ParamType := ptInput;
-
         end;
       end;
       ParamByName('user_id').AsInteger := user_id;
@@ -270,6 +269,7 @@ begin
       if RecordCount < 1 then
       begin
         SaveUserOptions(user_id, true);
+        LoadUserOptions(user_id);
       end
       else
       begin
@@ -300,8 +300,8 @@ begin
     begin
       sql.Text :=
         'insert into USEROPTIONS '+
-        '(user_id,opname1,optvalue1,optfullname1) values ' +
-        '(:user_id,:opname1,:optvalue1,:optfullname1)';
+        '(user_id,opname1,optvalue1,optfullname1,opname2,optvalue2,optfullname2) values ' +
+        '(:user_id,:opname1,:optvalue1,:optfullname1,:opname2,:optvalue2,:optfullname2)';
 
       with Params do
       begin

@@ -47,6 +47,7 @@ type
     TransInOut: TFDTransaction;
     TransIOTH: TFDTransaction;
     TransPM: TFDTransaction;
+    QueryWL: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -65,6 +66,9 @@ type
     dirtyGSM: boolean;
     dirtyIOTH: boolean;
     dirtyPM: boolean;
+    warelist: TStringList;
+    procedure LoadWareList;
+    function GenPMSql: String;
   public
     { Public declarations }
     session_id: Integer;
@@ -97,6 +101,71 @@ begin
   begin
 //
   end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.LoadWareList;
+begin
+  warelist.Clear;
+
+  with QueryWL do
+  begin
+    Transaction.StartTransaction;
+    Open;
+    while not Eof do
+    begin
+      warelist.Add(FieldByName('code').AsString +'='+
+        FieldByName('name').AsString);
+      Next;
+    end;
+//    Close;
+//    Transaction.Commit;
+  end;
+
+end;
+
+// .............................................................................
+
+function TTabForm.GenPMSql: String;
+  var th, tf, tm: String;
+    len, i: Integer;
+begin
+  result := '';
+
+  th :=
+'select' +
+'    i.session_id,' +
+'    cast(s.startdatetime as date) as stdt,' +
+'    i.payment_code,' +
+'    p.name as pmode,' +
+
+'    sum(i.volume) as volume,';
+
+  len := warelist.Count;
+  for i := 0 to len - 1 do
+  begin
+    tm :=
+    '(select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code ' +
+    '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
+    '        and i1.direction=0 ' +
+    '        and i1.payment_code = i.payment_code) ' +
+    '    as volume_' + IntToStr(i) + ',';
+    th := th + tm;
+  end;
+tf := ' 0 as nol' +
+'    from inoutgsm i' +
+'    join sessions s on s.id=i.session_id' +
+'    join paymentmodes p on i.payment_code = p.code' +
+
+'    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)' +
+'   and azscode=:azscode' +
+'   and  i.direction = 0' +
+' group by session_id,stdt,payment_code, pmode' +
+' order by stdt';
+
+  result := th + tf;
+
 end;
 
 // .............................................................................
@@ -211,10 +280,55 @@ end;
 // .............................................................................
 
 procedure TTabForm.ShowPMData();
+  var
+    i, len: Integer;
+    k, v : string;
 begin
+
+  LoadWareList();
+
+  with RealPMGrid do
+  begin
+    with Columns do
+    begin
+      with Add do
+      begin
+        Fieldname := 'stdt';
+      end;
+      with Add do
+      begin
+        Fieldname := 'payment_code';
+      end;
+      with Add do
+      begin
+        Fieldname := 'pmode';
+      end;
+    end;
+
+    len := warelist.Count;
+    for i := 0 to len - 1 do
+    begin
+
+      k := warelist.Names[i];
+      v := warelist.ValueFromIndex[i];
+      with Columns do
+      begin
+        with Add do
+        begin
+          FieldName := 'volume_' + IntToStr(i);
+          Title.Caption := v;
+        end;
+      end;
+    end;
+
+  end;
+
   with QueryRealPM do
   begin
     if Active then Close;
+
+    SQL.Text := GenPMSql();
+
     with Params do
     begin
       Clear;
@@ -432,6 +546,7 @@ end;
 procedure TTabForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   inherited;
+  warelist.Free;
   if QueryInOut.Transaction.Active then
   begin
 //
@@ -491,6 +606,7 @@ procedure TTabForm.FormCreate(Sender: TObject);
     sst: String;
 begin
   inherited;
+  warelist := TStringList.Create;
   dirtyGSM := false;
   dirtyIOTH := false;
   dirtyPM := false;

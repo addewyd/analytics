@@ -84,105 +84,6 @@ inherited TabForm: TTabForm
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
-          Columns = <
-            item
-              Expanded = False
-              FieldName = 'FUELNAME'
-              PopupMenu = FuelPopupMenu
-              ReadOnly = True
-              Title.Caption = #1043#1057#1052
-              Width = 60
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'STDT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'TANKNUM'
-              ReadOnly = True
-              Visible = True
-            end
-            item
-              Alignment = taRightJustify
-              Expanded = False
-              FieldName = 'STARTFUELVOLUME'
-              Visible = True
-            end
-            item
-              Alignment = taRightJustify
-              Expanded = False
-              FieldName = 'ENDFACTVOLUME'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'HOSENUM'
-              ReadOnly = True
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'CALC'
-              ReadOnly = True
-              Title.Caption = #1054#1090#1087#1091#1089#1082
-              Title.Font.Charset = DEFAULT_CHARSET
-              Title.Font.Color = clWindowText
-              Title.Font.Height = -11
-              Title.Font.Name = 'Tahoma'
-              Title.Font.Style = [fsBold, fsItalic]
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'CALCIN'
-              Title.Caption = #1055#1088#1080#1085#1103#1090#1086
-              Title.Font.Charset = DEFAULT_CHARSET
-              Title.Font.Color = clWindowText
-              Title.Font.Height = -11
-              Title.Font.Name = 'Tahoma'
-              Title.Font.Style = [fsBold, fsItalic]
-              Visible = True
-            end
-            item
-              Alignment = taRightJustify
-              Expanded = False
-              FieldName = 'STCNT'
-              Visible = True
-            end
-            item
-              Alignment = taRightJustify
-              Expanded = False
-              FieldName = 'ECNT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'TEMPERATURE'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'HEIGHT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'WATER'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'MASS'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ID'
-              Visible = True
-            end>
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
@@ -232,44 +133,6 @@ inherited TabForm: TTabForm
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
-          Columns = <
-            item
-              Expanded = False
-              FieldName = 'STDT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'PAYMENT_CODE'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'PMODE'
-              Width = 115
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'VOLUME_AI92'
-              Width = 73
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'VOLUME_AI95'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'VOLUME_DT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'VOLUME_DTF'
-              Visible = True
-            end>
         end
       end
     end
@@ -13388,5 +13251,15 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Left = 564
     Top = 253
+  end
+  object QueryWL: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = DM.FDTransaction
+    UpdateTransaction = DM.FDTransaction
+    ResourceOptions.AssignedValues = [rvMacroExpand]
+    SQL.Strings = (
+      'select * from wares order by code')
+    Left = 132
+    Top = 429
   end
 end
