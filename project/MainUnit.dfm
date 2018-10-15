@@ -237,7 +237,7 @@ object MainForm: TMainForm
         Action = ClearDBAction
         GroupIndex = 42
       end
-      object N10: TMenuItem
+      object ClearSData: TMenuItem
         Action = DelSessionsAction
         GroupIndex = 44
       end
@@ -366,6 +366,7 @@ object MainForm: TMainForm
     end
     object SessDataAction: TAction
       Caption = #1044#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
+      Enabled = False
       Hint = #1044#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
       ImageIndex = 86
       OnExecute = SessDataActionExecute

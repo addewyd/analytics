@@ -30,8 +30,14 @@ type
     LscEdit: TJvSpinEdit;
     JvStaticText6: TJvStaticText;
     AzsEdit: TJvEdit;
+    SePanel: TJvPanel;
+    JvStaticText7: TJvStaticText;
+    JvStaticText8: TJvStaticText;
+    dbuSEReDIT: TJvEdit;
+    dbpASSeDIT: TJvEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,11 +51,20 @@ implementation
 
 {$R *.dfm}
 
-uses DmUnit;
+uses DmUnit, MainUnit;
 
 procedure TOptionsDialog.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TOptionsDialog.FormCreate(Sender: TObject);
+begin
+//
+  if user_role = 1 then // admin role
+  begin
+    SePanel.Visible := true;
+  end;
 end;
 
 procedure TOptionsDialog.JvCheckBox1Click(Sender: TObject);

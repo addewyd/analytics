@@ -94,7 +94,7 @@ type
     N9: TMenuItem;
     ToolButton18: TToolButton;
     DelSessionsAction: TAction;
-    N10: TMenuItem;
+    ClearSData: TMenuItem;
     ToolButton19: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
@@ -125,7 +125,7 @@ type
     procedure DelSessionsActionExecute(Sender: TObject);
   private
     { Private declarations }
-    gdbname: String;
+//    gdbname: String;
   public
     { Public declarations }
     function GetMdiForm(formname: string): TForm;
@@ -153,7 +153,7 @@ var
   user_role: Integer;
   user_fio: String;
   current_azscode: String;
-
+  db_pass, db_user: String;
   last_sessions_count: Integer;
 const
   last_sessions_count_def: Integer = 14;
@@ -579,6 +579,33 @@ begin
 
   JVFS.RestoreFormPlacement();
 
+  TRY
+    with DM.FDConnection.Params do
+    begin
+      Clear;
+      Add('Database=' + dbname);
+      Add('DriverID=FB');
+      if embed then Add('Protocol=Local')
+      else Add('Protocol=TCPIP');
+      Add('User_Name=' + db_user);
+      Add('Password=' + db_pass);
+      Add('SQLDialect=3');
+      if embed then Add('Server=')
+      else Add('server=' + host);
+      Add('CharacterSet=UTF8');
+      //Add('lc_ctype=UTF8');
+
+    end;
+
+    DM.FDConnection.Open;
+
+  except
+    on e: Exception do
+    begin
+      ErrorMessageBox2(self, [e.Message, 'Set correct db location', 'And restart App, please']);
+    end;
+  END;
+
   tsd := TSelectUser.Create(self);
   tsd.FDQuery.Transaction.StartTransaction;
   tsd.FDQuery.Open;
@@ -603,7 +630,8 @@ begin
   user_fio := fio;
   user_id := uid;
 
-  Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ']';
+  Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ' ' +
+    IntToStr(user_role) + ']';
 
   if uid < 1 then
   begin
@@ -611,27 +639,14 @@ begin
     Application.Terminate;
   end;
 
+  if user_role <> 1 then
+  begin
+    ClearDB1.Visible := False;
+    ClearSData.Visible := False;
+  end;
+
   //DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
   try
-    with
-    DM.FDConnection.Params do
-    begin
-      Clear;
-      Add('Database=' + dbname);
-      Add('DriverID=FB');
-      if embed then Add('Protocol=Local')
-      else Add('Protocol=TCPIP');
-      Add('User_Name=SYSDBA');
-      Add('Password=electro');
-      Add('SQLDialect=3');
-      if embed then Add('Server=')
-      else Add('server=' + host);
-      Add('CharacterSet=UTF8');
-      //Add('lc_ctype=UTF8');
-
-    end;
-
-    DM.FDConnection.Open;
     StatusBar1.Panels[0].Text := ExtractFileName(dbname);
     LoadUserOptions(user_id);
     StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
@@ -674,17 +689,19 @@ procedure TMainForm.FormCreate(Sender: TObject);
     SubKey: string = 'Software\Shrfs';
 begin
 
-  user_id := 1; // admin
-  user_role := 1; // admin
+  //user_id := 1; // admin
+  //user_role := 1; // admin
 
   IPAS := TStringList.Create;
 
   reg := TRegIniFile.Create(SubKey);
   try
-    db := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+    db := reg.ReadString('options', 'db', '\db\');
     host := reg.ReadString('options', 'host', 'localhost'{,'94.181.67.31'});
     embed := reg.ReadBool('options', 'embedded', false);
     HTTPServiceOn := reg.ReadBool('options', 'httpservice', true);
+    db_pass := reg.ReadString('options', 'dbpass', 'masterkey');
+    db_user := reg.ReadString('options', 'dbuser', 'SYSDBA');
 
       IPAS.Clear;
       len := 6;
@@ -698,7 +715,7 @@ begin
 
     Exepath := ExtractFilePath(Application.ExeName);
     if embed then
-      dbname := (*Exepath + *)db
+      dbname := db
     else
       dbname := db;
     Application.Title := 'Shrfs';
@@ -770,9 +787,12 @@ begin
     try
       od := TOptionsDialog.Create(self);
 
-      dbloc := reg.ReadString('options', 'db', '\db\shrfs.fdb');
+      dbloc := reg.ReadString('options', 'db', '\db\');
       host := reg.ReadString('options', 'host', 'localhost');
       embed := reg.ReadBool('options', 'embedded', false);
+      db_pass := reg.ReadString('options', 'dbpass', 'masterkey');
+      db_user := reg.ReadString('options', 'dbuser', 'SYSDBA');
+      dbname := dbloc;
 
       od.IPAMemo.Lines.Clear;
       IPAS.Clear;
@@ -801,14 +821,24 @@ begin
       od.UserNameText.Caption := user_login + ' options:';
       od.LscEdit.Value := last_sessions_count;
       od.AzsEdit.Text := current_azscode;
+      od.dbpassedit.Text := db_pass;
+      od.dbuseredit.text := db_user;
 
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
+        dbname := dbloc;
         host := od.HostEdit.Text;
         embed := od.JvCheckBox1.Checked;
         HTTPServiceOn := od.HTTPCheckBox.Checked;
         HTTPServer.Active := HTTPServiceOn;
+        if user_role = 1 then
+        begin
+          db_pass := od.dbpassedit.Text;
+          db_user := od.dbuseredit.text;
+          reg.WriteString('options', 'dbpass', db_pass);
+          reg.WriteString('options', 'dbuser', db_user);
+        end;
 
         reg.WriteString('options', 'db', dbloc);
         if Trim(host) <> 'local' then

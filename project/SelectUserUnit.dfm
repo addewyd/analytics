@@ -58,7 +58,9 @@ object SelectUser: TSelectUser
     Connection = DM.FDConnection
     Transaction = DM.FDTransaction
     SQL.Strings = (
-      'select id, login, password, fio, role from users order by id')
+      
+        'select id, login, password, fio, role as urole from users order ' +
+        'by id')
     Left = 120
     Top = 88
   end

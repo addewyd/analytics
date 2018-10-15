@@ -4,7 +4,7 @@ object OptionsDialog: TOptionsDialog
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 377
+  ClientHeight = 457
   ClientWidth = 432
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,11 +15,12 @@ object OptionsDialog: TOptionsDialog
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object OkButton: TButton
-    Left = 248
-    Top = 332
+    Left = 256
+    Top = 424
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -28,7 +29,7 @@ object OptionsDialog: TOptionsDialog
   end
   object CancelButton: TButton
     Left = 349
-    Top = 332
+    Top = 424
     Width = 71
     Height = 25
     Cancel = True
@@ -155,10 +156,14 @@ object OptionsDialog: TOptionsDialog
   end
   object JvPanel3: TJvPanel
     Left = 8
-    Top = 232
+    Top = 228
     Width = 412
-    Height = 89
+    Height = 95
     Alignment = taRightJustify
+    BevelEdges = []
+    BevelOuter = bvNone
+    BorderWidth = 1
+    BorderStyle = bsSingle
     TabOrder = 4
     object UserNameText: TJvStaticText
       Left = 12
@@ -214,6 +219,58 @@ object OptionsDialog: TOptionsDialog
       Width = 101
       Height = 21
       TabOrder = 4
+      Text = ''
+    end
+  end
+  object SePanel: TJvPanel
+    Left = 8
+    Top = 333
+    Width = 412
+    Height = 74
+    BevelEdges = []
+    BevelOuter = bvNone
+    BorderWidth = 1
+    BorderStyle = bsSingle
+    TabOrder = 5
+    Visible = False
+    object JvStaticText7: TJvStaticText
+      Left = 8
+      Top = 11
+      Width = 41
+      Height = 17
+      Caption = 'DB user'
+      Layout = tlTop
+      TabOrder = 0
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object JvStaticText8: TJvStaticText
+      Left = 8
+      Top = 43
+      Width = 66
+      Height = 17
+      Caption = 'DB password'
+      Layout = tlTop
+      TabOrder = 1
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object dbuSEReDIT: TJvEdit
+      Left = 116
+      Top = 8
+      Width = 101
+      Height = 21
+      TabOrder = 2
+      Text = ''
+    end
+    object dbpASSeDIT: TJvEdit
+      Left = 116
+      Top = 40
+      Width = 101
+      Height = 21
+      TabOrder = 3
       Text = ''
     end
   end

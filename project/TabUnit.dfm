@@ -13032,8 +13032,9 @@ inherited TabForm: TTabForm
       '   join paymentmodes p on p.code=i.payment_code'
       ''
       
-        '      where s.startdatetime >= cast(:start_session_t as TIMESTAM' +
-        'P)'
+        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
+        'AMP)*/'
+      '      s.id = :session_id'
       '      and azscode=:azscode'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname')
@@ -13041,7 +13042,7 @@ inherited TabForm: TTabForm
     Top = 141
     ParamData = <
       item
-        Name = 'START_SESSION_T'
+        Name = 'SESSION_ID'
         ParamType = ptInput
       end
       item
@@ -13085,15 +13086,16 @@ inherited TabForm: TTabForm
       '    from iotankshoses i'
       '    join sessions s on s.id = i.session_id'
       '    join wares w on w.code = i.warecode'
-      '    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)'
+      '    where '
+      '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
+      '   s.id = :session_id'
       '   and azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
     Left = 412
     Top = 93
     ParamData = <
       item
-        Name = 'START_SESSION_T'
-        DataType = ftTimeStamp
+        Name = 'SESSION_ID'
         ParamType = ptInput
       end
       item

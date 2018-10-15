@@ -39,8 +39,9 @@ uses DmUnit;
 
 procedure TSelectUser.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FDQuery.Locate('id', combo.LookupValue, []);
   uid := FDQuery.FieldByName('id').AsInteger;
-  urole := FDQuery.FieldByName('role').AsInteger;
+  urole := FDQuery.FieldByName('urole').AsInteger;
   login := FDQuery.FieldByName('login').AsString;
   fio := FDQuery.FieldByName('fio').AsString;
   Action := caFree;

@@ -12715,15 +12715,11 @@ object DM: TDM
       'CharacterSet=UTF8'
       'User_Name=sysdba'
       'Password=electro'
-      
-        'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
-        'ebug\db\SHRFS.FDB'
       'Protocol=TCPIP'
       'DriverID=FB'
       'Server=localhost')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
-    Connected = True
     LoginPrompt = False
     Transaction = FDTransactionUpd
     UpdateTransaction = FDTransactionUpd

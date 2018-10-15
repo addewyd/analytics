@@ -17,6 +17,7 @@ uses
 type
   TSessionListForm = class(TFormWithGrid)
     procedure FormCreate(Sender: TObject);
+    procedure JvDBGridDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -30,6 +31,8 @@ implementation
 
 {$R *.dfm}
 
+uses HttpServiceUnit, MainUnit, TabUnit;
+
 procedure TSessionListForm.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -37,9 +40,18 @@ begin
 
   with FDQuery do
   begin
-//    Connection := DM.FDConnection;
-//    Transaction := DM.FDConnection.Transaction;
     Transaction.StartTransaction;
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'azs';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('azs').AsString := current_azscode;
     try
       Open;
       FetchAll;
@@ -48,6 +60,23 @@ begin
       Transaction.Rollback;
     end;
   end;
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.JvDBGridDblClick(Sender: TObject);
+begin
+  inherited;
+  //
+    AddToLog(FDQuery.FieldByName('sessionnum').asString);
+
+  if not MainForm.isWinOpen('tabform')
+  then
+  begin
+    TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
+  end
+  else MainForm.GetMDIForm('tabform').Show;
+
 end;
 
 end.

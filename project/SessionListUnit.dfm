@@ -27,6 +27,7 @@ inherited SessionListForm: TSessionListForm
     Height = 297
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
+    OnDblClick = JvDBGridDblClick
     Columns = <
       item
         Expanded = False
@@ -38,20 +39,21 @@ inherited SessionListForm: TSessionListForm
         Expanded = False
         FieldName = 'SESSIONNUM'
         Title.Caption = #1053#1086#1084#1077#1088' '#1089#1084#1077#1085#1099
+        Width = 89
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'STARTDATETIME'
         Title.Caption = #1053#1072#1095#1072#1083#1086
-        Width = 80
+        Width = 100
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'USERNAME'
         Title.Caption = #1054#1087#1077#1088#1072#1090#1086#1088
-        Width = 120
+        Width = 187
         Visible = True
       end>
   end
@@ -62,7 +64,7 @@ inherited SessionListForm: TSessionListForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12747,8 +12749,14 @@ inherited SessionListForm: TSessionListForm
     UpdateTransaction = DM.FDTransaction
     SQL.Strings = (
       
-        'select azscode, sessionnum, startdatetime, username from session' +
-        's'
+        'select id, azscode, sessionnum, startdatetime, username from ses' +
+        'sions'
+      '   where azscode=:azs'
       '   order by azscode, startdatetime')
+    ParamData = <
+      item
+        Name = 'AZS'
+        ParamType = ptInput
+      end>
   end
 end

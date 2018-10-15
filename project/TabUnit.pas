@@ -67,13 +67,16 @@ type
     dirtyIOTH: boolean;
     dirtyPM: boolean;
     warelist: TStringList;
+    session_id: Integer;
     procedure LoadWareList;
     function GenPMSql: String;
   public
     { Public declarations }
-    session_id: Integer;
     sst: String;
     //azscode: String;
+
+    constructor Create(pr: TComponent; fname: String; _sid: Integer); reintroduce; overload;
+
     procedure ShowAllData();
 
     procedure ShowGSMData();
@@ -91,6 +94,15 @@ implementation
 {$R *.dfm}
 
 uses DmUnit, MainUnit, YNUnit;
+
+constructor TTabForm.Create(pr: TComponent; fname: String; _sid: Integer);
+begin
+  inherited create(pr, fname);
+  session_id := _sid;
+
+end;
+
+// .............................................................................
 
 procedure TTabForm.UpdateState(q: TFDQuery);
 begin
@@ -158,7 +170,8 @@ tf := ' 0 as nol' +
 '    join sessions s on s.id=i.session_id' +
 '    join paymentmodes p on i.payment_code = p.code' +
 
-'    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)' +
+'    where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
+'   s.id = :session_id ' +
 '   and azscode=:azscode' +
 '   and  i.direction = 0' +
 ' group by session_id,stdt,payment_code, pmode' +
@@ -246,8 +259,8 @@ begin
       Clear;
       with Add do
       begin
-          Name := 'start_session_t';
-          DataType := ftString;
+          Name := 'session_id';
+          DataType := ftInteger;
           ParamType := ptInput;
       end;
       with Add do
@@ -257,7 +270,8 @@ begin
           ParamType := ptInput;
       end;
     end;
-    ParamByName('start_session_t').AsString := sst;
+//    ParamByName('start_session_t').AsString := sst;
+    ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
@@ -339,8 +353,8 @@ begin
       Clear;
       with Add do
       begin
-          Name := 'start_session_t';
-          DataType := ftString;
+          Name := 'session_id';
+          DataType := ftInteger;
           ParamType := ptInput;
       end;
       with Add do
@@ -350,7 +364,7 @@ begin
           ParamType := ptInput;
       end;
     end;
-    ParamByName('start_session_t').AsString := sst;
+    ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
@@ -380,10 +394,18 @@ begin
     with Params do
     begin
       Clear;
+      (*
       with Add do
       begin
           Name := 'start_session_t';
           DataType := ftString;
+          ParamType := ptInput;
+      end;
+      *)
+      with Add do
+      begin
+          Name := 'session_id';
+          DataType := ftInteger;
           ParamType := ptInput;
       end;
       with Add do
@@ -393,7 +415,8 @@ begin
           ParamType := ptInput;
       end;
     end;
-    ParamByName('start_session_t').AsString := sst;
+//    ParamByName('start_session_t').AsString := sst;
+    ParamByName('session_id').Asinteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
@@ -615,6 +638,7 @@ begin
   dirtyGSM := false;
   dirtyIOTH := false;
   dirtyPM := false;
+  Caption := 'TabForm AZS ' + current_azscode + ' sid ' +  IntToStr(session_id);
   ShowAllData;
 end;
 
