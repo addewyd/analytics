@@ -4,8 +4,8 @@ object YNForm: TYNForm
   ActiveControl = Button2
   BorderStyle = bsDialog
   Caption = '?'
-  ClientHeight = 174
-  ClientWidth = 287
+  ClientHeight = 284
+  ClientWidth = 348
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,13 +15,17 @@ object YNForm: TYNForm
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
+  DesignSize = (
+    348
+    284)
   PixelsPerInch = 96
   TextHeight = 13
   object Memo1: TMemo
     Left = 0
-    Top = 8
-    Width = 281
-    Height = 121
+    Top = 0
+    Width = 348
+    Height = 233
+    Align = alTop
     Alignment = taCenter
     BevelEdges = []
     BevelInner = bvNone
@@ -34,33 +38,42 @@ object YNForm: TYNForm
     TabOrder = 0
   end
   object OKButton: TButton
-    Left = 116
-    Top = 141
+    Left = 177
+    Top = 251
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = 'OK'
     ModalResult = 1
     TabOrder = 1
+    ExplicitLeft = 116
+    ExplicitTop = 141
   end
   object Button2: TButton
-    Left = 204
-    Top = 141
+    Left = 265
+    Top = 251
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Cancel'
     Default = True
     ModalResult = 2
     TabOrder = 2
+    ExplicitLeft = 204
+    ExplicitTop = 141
   end
   object ButtonForget: TButton
-    Left = 26
-    Top = 141
+    Left = 87
+    Top = 251
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = 'Forget'
     ModalResult = 3
     TabOrder = 3
     Visible = False
+    ExplicitLeft = 26
+    ExplicitTop = 141
   end
 end

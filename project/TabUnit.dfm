@@ -141,6 +141,8 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'FUELNAME'
+              PopupMenu = FuelPopupMenu
+              Title.Caption = #1075#1089#1084
               Width = 40
               Visible = True
             end
@@ -13142,6 +13144,7 @@ inherited TabForm: TTabForm
   end
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH
+    OnFieldChanged = DSIOTHFieldChanged
     Left = 276
     Top = 85
   end
@@ -13155,6 +13158,7 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
+    UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
       'select'
       '    i. id,'
@@ -13174,7 +13178,8 @@ inherited TabForm: TTabForm
       '    temperature,'
       '    height,'
       '    mass,'
-      '    water'
+      '    water,'
+      '    warecode'
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -13201,8 +13206,8 @@ inherited TabForm: TTabForm
   object FuelPopupMenu: TPopupMenu
     Left = 84
     Top = 125
-    object Add1: TMenuItem
-      Caption = 'Change'
+    object ggg1: TMenuItem
+      Caption = 'ggg'
     end
   end
   object DSRealPM: TJvDataSource
@@ -13338,7 +13343,6 @@ inherited TabForm: TTabForm
     Top = 141
   end
   object TransIOTH: TFDTransaction
-    Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
     Left = 476

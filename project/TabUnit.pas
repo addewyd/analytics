@@ -13,7 +13,8 @@ uses
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid,
   Vcl.ExtCtrls, JvExExtCtrls, JvSplitter, JvDBGridFooter, JvExtComponent,
-  JvPanel, Vcl.StdCtrls;
+  JvPanel, Vcl.StdCtrls, JvExStdCtrls, JvCombobox, JvDBCombobox, JvExControls,
+  JvDBLookup;
 
 type
   TTabForm = class(TBaseForm)
@@ -31,7 +32,6 @@ type
     DSIOTH: TJvDataSource;
     QueryIOTH: TFDQuery;
     FuelPopupMenu: TPopupMenu;
-    Add1: TMenuItem;
     DSRealPM: TJvDataSource;
     QueryRealPM: TFDQuery;
     JvPanel2: TJvPanel;
@@ -51,6 +51,7 @@ type
     SetPrevSessionData1: TMenuItem;
     IOTHGrid: TJvDBUltimGrid;
     RButton: TButton;
+    ggg1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -74,6 +75,8 @@ type
     procedure IOTHGridColExit(Sender: TObject);
     procedure QueryIOTHBeforeInsert(DataSet: TDataSet);
     procedure RButtonClick(Sender: TObject);
+    procedure DSIOTHFieldChanged(Sender: TObject; Field: TField);
+    procedure FPMClick(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: boolean;
@@ -87,7 +90,7 @@ type
     { Public declarations }
     sst: String;
     //azscode: String;
-
+    FuelCombo: TJVDBLookUpCombo;
     constructor Create(pr: TComponent; fname: String; _sid: Integer); reintroduce; overload;
 
     procedure ShowAllData();
@@ -113,6 +116,21 @@ begin
   inherited create(pr, fname);
   session_id := _sid;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.DSIOTHFieldChanged(Sender: TObject; Field: TField);
+  var
+    f, fname: String;
+begin
+  inherited;
+  fname := Field.FieldName;
+  f := Field.AsString;
+  if fname = 'FUELNAME' then
+  begin
+    AddToLog(fname + ' ' + f);
+  end;
 end;
 
 // .............................................................................
@@ -147,6 +165,52 @@ begin
 //    Close;
 //    Transaction.Commit;
   end;
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.FPMClick(Sender: TObject);
+  var
+    cap, old_warecode, old, wareccode_new: String;
+    sql, tanknum: String;
+    session_id, ind: Integer;
+    tm: TMenuItem;
+
+
+begin
+  inherited;
+  tm :=  (Sender as TMenuItem);
+  old_warecode := QueryIOTH.FieldByName('warecode').AsString;
+  tanknum := QueryIOTH.FieldByName('tanknum').AsString;
+  session_id := QueryIOTH.FieldByName('session_id').AsInteger;
+  old := QueryIOTH.FieldByName('fuelname').AsString;
+  cap := tm.Caption;
+  ind := FuelPopupMenu.Items.IndexOf(tm);
+  wareccode_new := warelist.Names[ind];
+
+  AddToLog(Format('cap %s old wc %s old %s new %s', [cap, old_warecode, old, wareccode_new]));
+
+  //
+  //  now update iotankshoses with new warecode
+  //   upd key: session_id, tanknum, warecode
+
+  sql := 'update iotankshoses set warecode := :warecode_new ' +
+      ' where session_id = :session_id and tanknum = :tanknum and warecode = :old_warecode';
+
+
+  YNForm := TYNForm.Create(self);
+//  YNForm.Height := 400;
+  YNForm.Memo1.Font.Size := 18;
+  with YNForm.Memo1.Lines do
+  begin
+    Add('Do you really want to change');
+    Add(Format('%s to %s', [old, cap]));
+    Add(Format('codes %s to %s', [old_warecode, wareccode_new]));
+    Add(Format('At session id %d', [session_id]));
+    Add('???');
+  end;
+  YNForm.ShowModal;
 
 end;
 
@@ -252,9 +316,12 @@ begin
   AddTolog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
 end;
 
+// .............................................................................
+
 procedure TTabForm.ShowAllData();
 begin
   sst := GetStartSession();
+  LoadWareList;
   ShowGSMData;
   ShowIOTHData;
   ShowPMData;
@@ -318,7 +385,7 @@ procedure TTabForm.ShowPMData();
     k, v : string;
 begin
 
-  LoadWareList();
+//  LoadWareList();
 
   with RealPMGrid do
   begin
@@ -406,7 +473,25 @@ end;
 // .............................................................................
 
 procedure TTabForm.ShowIOTHData();
+  var
+    i: Integer;
+    tm: TMenuItem;
 begin
+
+
+  FuelPopupMenu.Items.Clear;
+  for i := 0 to warelist.Count - 1 do
+  begin
+    tm :=TMenuItem.Create(FuelPopupMenu);
+    tm.Caption := warelist.ValueFromIndex[i];
+
+    tm.Name := 'fpm_' + IntToStr(i);
+    //tm.Parent := FuelPopupMenu;
+    tm.OnClick := FPMClick;
+    FuelPopupMenu.Items.Add(tm);
+  end;
+
+
   with QueryIOTH do
   begin
     if Active then Close;
@@ -651,6 +736,7 @@ procedure TTabForm.FormCreate(Sender: TObject);
   var
     i: Integer;
     sst: String;
+    tm: TmenuItem;
 begin
   inherited;
   warelist := TStringList.Create;
@@ -658,6 +744,17 @@ begin
   dirtyIOTH := false;
   dirtyPM := false;
   Caption := 'TabForm AZS ' + current_azscode + ' sid ' +  IntToStr(session_id);
+
+  FuelCombo := TJvDBLookupCombo.Create(self);
+  with FuelCombo do
+  begin
+    Parent := Self;
+    Visible := false;
+    LookupSource := IOTHGrid.DataSource;
+    DataField := 'FUELNAME';
+
+  end;
+
   ShowAllData;
 end;
 
