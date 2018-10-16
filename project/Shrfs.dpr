@@ -27,7 +27,8 @@ uses
   HttpServiceUnit in 'HttpServiceUnit.pas',
   OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog},
   TabUnit in 'TabUnit.pas' {TabForm},
-  SelectUserUnit in 'SelectUserUnit.pas' {SelectUser};
+  SelectUserUnit in 'SelectUserUnit.pas' {SelectUser},
+  WindowListUnit in 'WindowListUnit.pas' {WinListDlg};
 
 {$R *.res}
 

@@ -9,7 +9,8 @@ inherited TabForm: TTabForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 735
-    ExplicitWidth = 672
+    ExplicitTop = -6
+    ExplicitWidth = 735
     object ToolButton2: TToolButton
       Left = 23
       Top = 0
@@ -29,7 +30,7 @@ inherited TabForm: TTabForm
     Top = 513
     Width = 735
     ExplicitTop = 513
-    ExplicitWidth = 672
+    ExplicitWidth = 735
   end
   object Pages: TJvPageControl [2]
     Left = 0
@@ -39,10 +40,8 @@ inherited TabForm: TTabForm
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
-    ExplicitWidth = 672
     object TabSheet1: TTabSheet
       Caption = #1025#1084#1082#1086#1089#1090#1080' '#1090#1086#1087#1083#1080#1074#1072' '#1080' '#1088#1091#1082#1072#1074#1072' '#1058#1056#1050
-      ExplicitWidth = 664
       object JvPanel1: TJvPanel
         Left = 0
         Top = 0
@@ -50,7 +49,6 @@ inherited TabForm: TTabForm
         Height = 456
         Align = alClient
         TabOrder = 0
-        ExplicitWidth = 664
         object Spl01: TJvSplitter
           Left = 1
           Top = 138
@@ -59,31 +57,6 @@ inherited TabForm: TTabForm
           Cursor = crVSplit
           Align = alTop
           ExplicitWidth = 224
-        end
-        object IOTHGrid: TJvDBUltimGrid
-          Left = 1
-          Top = 1
-          Width = 725
-          Height = 137
-          Align = alTop
-          DataSource = DSIOTH
-          TabOrder = 0
-          TitleFont.Charset = DEFAULT_CHARSET
-          TitleFont.Color = clWindowText
-          TitleFont.Height = -11
-          TitleFont.Name = 'Tahoma'
-          TitleFont.Style = []
-          AutoAppend = False
-          AutoSort = False
-          IniStorage = JvFS
-          OnEditChange = IOTHGridEditChange
-          SelectColumnsDialogStrings.Caption = 'Select columns'
-          SelectColumnsDialogStrings.OK = '&OK'
-          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-          CanDelete = False
-          EditControls = <>
-          RowsHeight = 17
-          TitleRowHeight = 17
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
@@ -107,7 +80,6 @@ inherited TabForm: TTabForm
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
-          ExplicitWidth = 662
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -133,13 +105,135 @@ inherited TabForm: TTabForm
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
+          Columns = <
+            item
+              Expanded = False
+              Visible = True
+            end>
+        end
+        object IOTHGrid: TJvDBUltimGrid
+          Left = 1
+          Top = 1
+          Width = 725
+          Height = 137
+          Align = alTop
+          DataSource = DSIOTH
+          TabOrder = 0
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          OnCellClick = IOTHGridCellClick
+          OnColExit = IOTHGridColExit
+          OnDrawDataCell = IOTHGridDrawDataCell
+          OnDrawColumnCell = IOTHGridDrawColumnCell
+          OnEditButtonClick = IOTHGridEditButtonClick
+          AutoAppend = False
+          IniStorage = JvFS
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
+          Columns = <
+            item
+              Expanded = False
+              FieldName = 'FUELNAME'
+              Width = 40
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'STARTFUELVOLUME'
+              PopupMenu = StartVPMenu
+              Title.Caption = #1053#1072#1095' '#1054#1073#1098#1105#1084
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'TANKNUM'
+              ReadOnly = True
+              Width = 20
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CALC'
+              ReadOnly = True
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CALCIN'
+              ReadOnly = True
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'ENDFACTVOLUME'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'HOSENUM'
+              ReadOnly = True
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'STCNT'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'ECNT'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'TEMPERATURE'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'HEIGHT'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'MASS'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'WATER'
+              Visible = True
+            end
+            item
+              ButtonStyle = cbsNone
+              Expanded = False
+              FieldName = 'R'
+              Width = 24
+              Visible = True
+            end>
+        end
+        object RButton: TButton
+          Left = 19
+          Top = 27
+          Width = 56
+          Height = 20
+          Caption = 'R'
+          TabOrder = 3
+          Visible = False
+          OnClick = RButtonClick
         end
       end
     end
     object TabSheet2: TTabSheet
       Caption = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1080' '#1087#1088#1080#1093#1086#1076' '#1043#1057#1052
       ImageIndex = 1
-      ExplicitWidth = 664
       object JvPanel2: TJvPanel
         Left = 0
         Top = 0
@@ -147,7 +241,6 @@ inherited TabForm: TTabForm
         Height = 456
         Align = alClient
         TabOrder = 0
-        ExplicitWidth = 664
         object GridFooterInOut: TJvDBGridFooter
           Left = 1
           Top = 436
@@ -161,7 +254,6 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
-          ExplicitWidth = 662
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -273,12 +365,10 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
       ImageIndex = 2
-      ExplicitWidth = 664
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
-      ExplicitWidth = 664
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -314,7 +404,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13056,6 +13146,7 @@ inherited TabForm: TTabForm
     Top = 85
   end
   object QueryIOTH: TFDQuery
+    BeforeInsert = QueryIOTHBeforeInsert
     AfterPost = QueryIOTHAfterPost
     Connection = DM.FDConnection
     Transaction = TransIOTH
@@ -13066,17 +13157,18 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
     SQL.Strings = (
       'select'
-      '    i.id,'
+      '    i. id,'
+      '    i.session_id,'
       '    cast(s.startdatetime as date) as stdt,'
       '    w.name as fuelname,'
       '    i.tanknum,'
-      '    i.hosenum,'
       '    i.startfuelvolume,'
-      '    i.endfactvolume,'
+      '    (select volume from calcincomes(s.id, i.tanknum)) as calcin,'
       
         '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
         ' as calc,'
-      '    (select volume from calcincomes(s.id, i.tanknum)) as calcin,'
+      '    i.endfactvolume,'
+      '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
       '    temperature,'
@@ -13084,8 +13176,8 @@ inherited TabForm: TTabForm
       '    mass,'
       '    water'
       '    from iotankshoses i'
-      '    join sessions s on s.id = i.session_id'
-      '    join wares w on w.code = i.warecode'
+      '      join sessions s on s.id = i.session_id'
+      '      join wares w on w.code = i.warecode'
       '    where '
       '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
       '   s.id = :session_id'
@@ -13096,6 +13188,7 @@ inherited TabForm: TTabForm
     ParamData = <
       item
         Name = 'SESSION_ID'
+        DataType = ftInteger
         ParamType = ptInput
       end
       item
@@ -13134,28 +13227,28 @@ inherited TabForm: TTabForm
         '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
         'code=i1.ware_code'
       '        where w1.code='#39'00000000001'#39
-      '            and i1.direction=0'
+      '            and i1.direction=0  and i1.session_id=:session_id'
       '            and i1.payment_code = i.payment_code)'
       '        as volume_ai92,'
       
         '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
         'code=i1.ware_code'
       '        where w1.code='#39'00000000030'#39
-      '            and i1.direction=0'
+      '            and i1.direction=0 and i1.session_id=:session_id'
       '            and i1.payment_code = i.payment_code)'
       '        as volume_ai95,'
       
         '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
         'code=i1.ware_code'
       '        where w1.code='#39'00000000041'#39
-      '            and i1.direction=0'
+      '            and i1.direction=0 and i1.session_id=:session_id'
       '            and i1.payment_code = i.payment_code)'
       '        as volume_dt,'
       
         '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
         'code=i1.ware_code'
       '        where w1.code='#39'00000000042'#39
-      '            and i1.direction=0'
+      '            and i1.direction=0 and i1.session_id=:session_id'
       '            and i1.payment_code = i.payment_code)'
       '        as volume_dtf'
       ''
@@ -13172,6 +13265,10 @@ inherited TabForm: TTabForm
     Left = 500
     Top = 253
     ParamData = <
+      item
+        Name = 'SESSION_ID'
+        ParamType = ptInput
+      end
       item
         Name = 'START_SESSION_T'
         ParamType = ptInput
@@ -13263,5 +13360,13 @@ inherited TabForm: TTabForm
       'select * from wares order by code')
     Left = 132
     Top = 429
+  end
+  object StartVPMenu: TPopupMenu
+    Left = 156
+    Top = 125
+    object SetPrevSessionData1: TMenuItem
+      Caption = 'Set Prev Session Data'
+      OnClick = SetPrevSessionData1Click
+    end
   end
 end

@@ -51,7 +51,6 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    OnClick = ToolBar1Click
     object ToolButton3: TToolButton
       Left = 0
       Top = 0
@@ -131,8 +130,13 @@ object MainForm: TMainForm
       Action = WindowTileVertical1
       ImageIndex = 15
     end
-    object dtb1: TToolButton
+    object ToolButton20: TToolButton
       Left = 292
+      Top = 0
+      Action = WindowListAction
+    end
+    object dtb1: TToolButton
+      Left = 315
       Top = 0
       Width = 23
       Caption = 'dtb1'
@@ -140,7 +144,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 315
+      Left = 338
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -148,19 +152,19 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 323
+      Left = 346
       Top = 0
       Margins.Left = 20
       Margins.Right = 20
       Action = ClearDBAction
     end
     object ToolButton19: TToolButton
-      Left = 346
+      Left = 369
       Top = 0
       Action = DelSessionsAction
     end
     object dtb2: TToolButton
-      Left = 369
+      Left = 392
       Top = 0
       Width = 23
       Caption = 'dtb2'
@@ -168,7 +172,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton17: TToolButton
-      Left = 392
+      Left = 415
       Top = 0
       Width = 9
       Caption = 'ToolButton17'
@@ -176,7 +180,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 401
+      Left = 424
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
@@ -261,6 +265,22 @@ object MainForm: TMainForm
     object About1: TMenuItem
       Action = AboutAction
       GroupIndex = 50
+    end
+    object Window1: TMenuItem
+      Caption = 'Window'
+      GroupIndex = 50
+      object Cascade1: TMenuItem
+        Action = WindowCascade1
+      end
+      object ileVertically1: TMenuItem
+        Action = WindowTileVertical1
+      end
+      object ileHorizontally1: TMenuItem
+        Action = WindowTileHorizontal1
+      end
+      object WindowList1: TMenuItem
+        Action = WindowListAction
+      end
     end
   end
   object ActionList: TActionList
@@ -376,6 +396,12 @@ object MainForm: TMainForm
       Hint = #1059#1076#1072#1083#1080#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1089#1084#1077#1085
       ImageIndex = 280
       OnExecute = DelSessionsActionExecute
+    end
+    object WindowListAction: TAction
+      Caption = 'Window List'
+      Hint = 'Window List'
+      ImageIndex = 71
+      OnExecute = WindowListActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

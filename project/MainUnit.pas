@@ -96,6 +96,13 @@ type
     DelSessionsAction: TAction;
     ClearSData: TMenuItem;
     ToolButton19: TToolButton;
+    Window1: TMenuItem;
+    Cascade1: TMenuItem;
+    ileVertically1: TMenuItem;
+    ileHorizontally1: TMenuItem;
+    WindowListAction: TAction;
+    ToolButton20: TToolButton;
+    WindowList1: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -119,10 +126,10 @@ type
     procedure HTTPServerCommandOther(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HTTPServerException(AContext: TIdContext; AException: Exception);
-    procedure ToolBar1Click(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure SessDataActionExecute(Sender: TObject);
     procedure DelSessionsActionExecute(Sender: TObject);
+    procedure WindowListActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -165,7 +172,8 @@ implementation
 
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
-  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit;
+  PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
+  WindowListUnit;
 
 
 // .............................................................................
@@ -941,9 +949,9 @@ begin
   else GetMDIForm('stations').Show;
 end;
 
-procedure TMainForm.ToolBar1Click(Sender: TObject);
+procedure TMainForm.WindowListActionExecute(Sender: TObject);
 begin
-
+  TWinListDlg.Create(self).ShowModal;
 end;
 
 // .............................................................................

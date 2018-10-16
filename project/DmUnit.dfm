@@ -12717,11 +12717,14 @@ object DM: TDM
       'Password=electro'
       'Protocol=TCPIP'
       'DriverID=FB'
-      'Server=localhost')
+      'Server=localhost'
+      
+        'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
+        'ebug\db\SHRFSPS.FDB')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
     LoginPrompt = False
-    Transaction = FDTransactionUpd
+    Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
     Left = 296
     Top = 56

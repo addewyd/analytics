@@ -13,7 +13,7 @@ uses
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid,
   Vcl.ExtCtrls, JvExExtCtrls, JvSplitter, JvDBGridFooter, JvExtComponent,
-  JvPanel;
+  JvPanel, Vcl.StdCtrls;
 
 type
   TTabForm = class(TBaseForm)
@@ -38,7 +38,6 @@ type
     GridFooterInOut: TJvDBGridFooter;
     GridInOutGSM: TJvDBUltimGrid;
     JvPanel1: TJvPanel;
-    IOTHGrid: TJvDBUltimGrid;
     Spl01: TJvSplitter;
     RealPMFooter: TJvDBGridFooter;
     RealPMGrid: TJvDBUltimGrid;
@@ -48,6 +47,10 @@ type
     TransIOTH: TFDTransaction;
     TransPM: TFDTransaction;
     QueryWL: TFDQuery;
+    StartVPMenu: TPopupMenu;
+    SetPrevSessionData1: TMenuItem;
+    IOTHGrid: TJvDBUltimGrid;
+    RButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -61,6 +64,16 @@ type
     procedure IOTHGridEditChange(Sender: TObject);
     procedure RealPMGridEditChange(Sender: TObject);
     procedure QueryIOTHAfterPost(DataSet: TDataSet);
+    procedure SetPrevSessionData1Click(Sender: TObject);
+    procedure IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure IOTHGridCellClick(Column: TColumn);
+    procedure IOTHGridDrawDataCell(Sender: TObject; const Rect: TRect;
+      Field: TField; State: TGridDrawState);
+    procedure IOTHGridEditButtonClick(Sender: TObject);
+    procedure IOTHGridColExit(Sender: TObject);
+    procedure QueryIOTHBeforeInsert(DataSet: TDataSet);
+    procedure RButtonClick(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: boolean;
@@ -161,7 +174,7 @@ begin
     '(select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code ' +
     '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
     '        and i1.direction=0 ' +
-    '        and i1.payment_code = i.payment_code) ' +
+    '        and i1.payment_code = i.payment_code and i1.session_id=:session_id) ' +
     '    as volume_' + IntToStr(i) + ',';
     th := th + tm;
   end;
@@ -232,6 +245,12 @@ end;
 
 end;
 // .............................................................................
+
+procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
+begin
+  inherited;
+  AddTolog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
+end;
 
 procedure TTabForm.ShowAllData();
 begin
@@ -642,7 +661,7 @@ begin
   ShowAllData;
 end;
 
-// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+// .............................................................................
 
 procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
@@ -650,7 +669,78 @@ begin
   dirtyGSM := true;
 end;
 
-// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+// .............................................................................
+
+procedure TTabForm.IOTHGridCellClick(Column: TColumn);
+begin
+  inherited;
+  if column.FieldName  = 'R' then
+  begin
+//    ErrorMessageBox(self,'R pressed ' + QueryIOTH.FieldByName('id').AsString);
+  end
+  else AddToLog(QueryIOTH.FieldByName(Column.FieldName).AsString);
+end;
+
+// .............................................................................
+
+procedure TTabForm.IOTHGridColExit(Sender: TObject);
+begin
+  inherited;
+//  if IOTHGrid.SelectedField.FieldName = 'R' then
+  //    RButton.Visible := false;
+end;
+
+// .............................................................................
+
+procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  inherited;
+//  IOTHGrid.
+//    Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
+//        WrapText(Column.Title.Caption, 20));
+  if (gdFocused in State) then
+  begin
+    if (Column.FieldName = 'R') then
+    begin
+      RButton.Left := Rect.Left + IOTHGrid.Left;
+      RButton.Top := Rect.Top + IOTHGrid.top;
+      RButton.Width := Rect.Right - Rect.Left + 2;
+      RButton.Visible := True;
+    end;
+  end;
+
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.IOTHGridDrawDataCell(Sender: TObject; const Rect: TRect;
+  Field: TField; State: TGridDrawState);
+begin
+  inherited;
+//
+end;
+
+// .............................................................................
+
+procedure TTabForm.IOTHGridEditButtonClick(Sender: TObject);
+begin
+  inherited;
+//
+    ErrorMessageBox(self, Sender.ClassName);
+end;
+
+// .............................................................................
+
+procedure TTabForm.RButtonClick(Sender: TObject);
+begin
+  inherited;
+  dirtyIOTH := true;
+  AddToLog(QueryIOTH.FieldByName('id').AsString);
+end;
+
+// .............................................................................
 
 procedure TTabForm.IOTHGridEditChange(Sender: TObject);
 begin
@@ -659,12 +749,20 @@ begin
 //
 end;
 
-// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+// .............................................................................
 
 procedure TTabForm.QueryIOTHAfterPost(DataSet: TDataSet);
 begin
   inherited;
 //  AddToLog('aftwr post');
+end;
+
+// .............................................................................
+
+procedure TTabForm.QueryIOTHBeforeInsert(DataSet: TDataSet);
+begin
+  inherited;
+  Abort;
 end;
 
 // .............................................................................
