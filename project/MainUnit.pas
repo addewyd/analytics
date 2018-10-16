@@ -949,9 +949,50 @@ begin
   else GetMDIForm('stations').Show;
 end;
 
+// .............................................................................
+
 procedure TMainForm.WindowListActionExecute(Sender: TObject);
+  var
+    dlg:TWinListDlg;
+    i, len: integer;
+    c, f: String;
+    sl : TstringList;
 begin
-  TWinListDlg.Create(self).ShowModal;
+  len := MDIChildCount;
+  dlg := TWinListDlg.Create(self);
+  with dlg do
+  begin
+    wlist.Clear;
+    for i := 0 to len - 1 do
+    begin
+      c := (MainForm.mdichildren[i] as TBaseForm).Caption;
+      f := (MainForm.mdichildren[i] as TBaseForm).formName;
+      wlist.AddItem(IntToStr(i) + ',' + f + ',' + c,
+        MainForm.mdichildren[i]);
+    end;
+
+    ShowModal;
+    //if not isWinOpen('tableslist') then
+    sl := TStringList.Create;
+    try
+      sl.CommaText := dlg.scapt;
+      if sl.Count > 2 then
+      begin
+        AddToLog(sl[1]);
+
+        if isWinOpen(sl[1]) then
+        begin
+          ShowWindow(GetMDIForm(sl[1]).Handle, SW_RESTORE);
+          GetMDIForm(sl[1]).Show;
+        end;
+
+      end;
+    finally
+      sl.free;
+    end;
+
+
+  end;
 end;
 
 // .............................................................................

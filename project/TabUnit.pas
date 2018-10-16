@@ -699,7 +699,7 @@ begin
 //  IOTHGrid.
 //    Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
 //        WrapText(Column.Title.Caption, 20));
-  if (gdFocused in State) then
+  if (gdFocused in State)  then
   begin
     if (Column.FieldName = 'R') then
     begin
