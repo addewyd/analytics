@@ -6,7 +6,7 @@ object DM: TDM
     Left = 104
     Top = 48
     Bitmap = {
-      494C01017E018001300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12723,6 +12723,7 @@ object DM: TDM
         'ebug\db\SHRFSPS.FDB')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -12773,6 +12774,7 @@ object DM: TDM
       '    CONTRACT_ID,'
       '    PAYMENT_CODE,'
       '    WARE_CODE,'
+      '    TANKNUM,'
       '    AMOUNT,'
       '    EI,'
       '    VOLUME,'
@@ -12793,6 +12795,7 @@ object DM: TDM
       '    c.id as contract_id,'
       '    pmec,'
       '    a.fuelextcode,'
+      '    a.tanknum,'
       '    sum(amount) as amount,'
       '    '#39't'#39' as ei,'
       '    sum(volume) as volume,'
@@ -12935,6 +12938,7 @@ object DM: TDM
       '        direction,'
       '        contract_id,'
       '        fuelextcode,'
+      '        tanknum,'
       '        pmec,'
       '        price,'
       '        density,'

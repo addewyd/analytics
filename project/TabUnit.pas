@@ -52,6 +52,8 @@ type
     IOTHGrid: TJvDBUltimGrid;
     RButton: TButton;
     ggg1: TMenuItem;
+    GenUpdQuery: TFDQuery;
+    GenUpdTrans: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -162,8 +164,8 @@ begin
         FieldByName('name').AsString);
       Next;
     end;
-//    Close;
-//    Transaction.Commit;
+    Close;
+    Transaction.Commit;
   end;
 
 end;
@@ -171,16 +173,15 @@ end;
 // .............................................................................
 
 procedure TTabForm.FPMClick(Sender: TObject);
-  var
-    cap, old_warecode, old, wareccode_new: String;
-    sql, tanknum: String;
-    session_id, ind: Integer;
-    tm: TMenuItem;
-
+var
+  cap, old_warecode, old, wareccode_new: String;
+  sqlt, tanknum: String;
+  session_id, ind: Integer;
+  tm: TMenuItem;
 
 begin
   inherited;
-  tm :=  (Sender as TMenuItem);
+  tm := (Sender as TMenuItem);
   old_warecode := QueryIOTH.FieldByName('warecode').AsString;
   tanknum := QueryIOTH.FieldByName('tanknum').AsString;
   session_id := QueryIOTH.FieldByName('session_id').AsInteger;
@@ -189,18 +190,18 @@ begin
   ind := FuelPopupMenu.Items.IndexOf(tm);
   wareccode_new := warelist.Names[ind];
 
-  AddToLog(Format('cap %s old wc %s old %s new %s', [cap, old_warecode, old, wareccode_new]));
+  AddToLog(Format('cap %s old wc %s old %s new %s', [cap, old_warecode, old,
+    wareccode_new]));
 
   //
-  //  now update iotankshoses with new warecode
-  //   upd key: session_id, tanknum, warecode
+  // now update iotankshoses with new warecode
+  // upd key: session_id, tanknum, warecode
 
-  sql := 'update iotankshoses set warecode := :warecode_new ' +
-      ' where session_id = :session_id and tanknum = :tanknum and warecode = :old_warecode';
-
+  sqlt := 'update iotankshoses set warecode = :warecode_new ' +
+    ' where session_id = :session_id and tanknum = :tanknum and warecode = :old_warecode';
 
   YNForm := TYNForm.Create(self);
-//  YNForm.Height := 400;
+  // YNForm.Height := 400;
   YNForm.Memo1.Font.Size := 18;
   with YNForm.Memo1.Lines do
   begin
@@ -210,7 +211,121 @@ begin
     Add(Format('At session id %d', [session_id]));
     Add('???');
   end;
-  YNForm.ShowModal;
+  if YNForm.ShowModal = mrOk then
+  begin
+    if dirtyGSM then
+    begin
+      if QueryInOut.Transaction.Active then QueryInOut.Transaction.Commit;
+      dirtyGSM := false;
+    end;
+    if dirtyPM then
+    begin
+      if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Commit;
+      dirtyPM := false;
+    end;
+    if dirtyIOTH then
+    begin
+      if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Commit;
+      dirtyIOTH := false;
+    end;
+
+    try
+      with GenUpdQuery do
+      begin
+        Sql.Text := sqlt;
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'warecode_new';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'old_warecode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tanknum';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+        end;
+        ParamByName('session_id').AsInteger := session_id;
+        ParamByName('warecode_new').AsString := wareccode_new;
+        ParamByName('old_warecode').AsString := old_warecode;
+        ParamByName('tanknum').AsString := tanknum;
+        Transaction.StartTransaction;
+        Prepare;
+        ExecSQL;
+
+      end;
+
+      sqlt := 'update inoutgsm set ware_code = :warecode_new ' +
+        ' where session_id = :session_id and tanknum = :tanknum and ware_code = :old_warecode';
+
+      with GenUpdQuery do
+      begin
+        Sql.Text := sqlt;
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'warecode_new';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'old_warecode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tanknum';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+        end;
+        ParamByName('session_id').AsInteger := session_id;
+        ParamByName('warecode_new').AsString := wareccode_new;
+        ParamByName('old_warecode').AsString := old_warecode;
+        ParamByName('tanknum').AsString := tanknum;
+        Transaction.StartTransaction;
+        Prepare;
+        ExecSQL;
+
+      end;
+    except
+      on e: Exception do
+      begin
+        GenUpdQuery.Transaction.Rollback;
+        AddToLog(e.Message);
+        Exit;
+      end;
+
+    end;
+    GenUpdQuery.Transaction.Commit;
+    ShowAllData;
+  end;
 
 end;
 
@@ -339,6 +454,7 @@ begin
   with QueryInOut do
   begin
     if Active then Close;
+    if Transaction.Active then Transaction.Commit;
 
     with Params do
     begin
@@ -385,12 +501,13 @@ procedure TTabForm.ShowPMData();
     k, v : string;
 begin
 
-//  LoadWareList();
+  LoadWareList();
 
   with RealPMGrid do
   begin
     with Columns do
     begin
+      Clear;
       with Add do
       begin
         Fieldname := 'stdt';

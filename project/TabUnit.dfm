@@ -264,12 +264,18 @@ inherited TabForm: TTabForm
           Height = 435
           Align = alClient
           DataSource = DSInOut
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
-          TitleFont.Style = []
+          TitleFont.Style = [fsBold]
           AutoAppend = False
           IniStorage = JvFS
           OnEditChange = GridInOutGSMEditChange
@@ -334,6 +340,7 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'DENSITY'
+              Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
               Width = 30
               Visible = True
             end
@@ -13313,7 +13320,8 @@ inherited TabForm: TTabForm
   end
   object QuerySST: TFDQuery
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
+    Transaction = GenUpdTrans
+    UpdateTransaction = GenUpdTrans
     SQL.Strings = (
       'select first 1 startdatetime from ('
       'select first :cnt'
@@ -13357,8 +13365,8 @@ inherited TabForm: TTabForm
   end
   object QueryWL: TFDQuery
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransaction
+    Transaction = GenUpdTrans
+    UpdateTransaction = GenUpdTrans
     ResourceOptions.AssignedValues = [rvMacroExpand]
     SQL.Strings = (
       'select * from wares order by code')
@@ -13372,5 +13380,19 @@ inherited TabForm: TTabForm
       Caption = 'Set Prev Session Data'
       OnClick = SetPrevSessionData1Click
     end
+  end
+  object GenUpdQuery: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = GenUpdTrans
+    UpdateTransaction = GenUpdTrans
+    Left = 84
+    Top = 229
+  end
+  object GenUpdTrans: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 164
+    Top = 229
   end
 end
