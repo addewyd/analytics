@@ -677,6 +677,7 @@ begin
           cmt := true;
           UpdateState(QueryIOTH);
           dirtyIOTH := false;
+          ShowIOTHData;
         end;
       end;
     end;
@@ -691,6 +692,7 @@ begin
           cmt := true;
           UpdateState(QueryRealPM);
           dirtyPM := false;
+          ShowPMData;
         end;
       end;
     end;
@@ -704,6 +706,7 @@ begin
           Transaction.Commit;
           cmt := true;
           UpdateState(QueryInOut);
+          ShowGSMData;
           dirtyGSM := false;
         end;
       end;
@@ -718,7 +721,7 @@ begin
     end;
   end;
 
-  ShowAllData;
+  //ShowAllData;
 end;
 
 // .............................................................................
@@ -736,7 +739,9 @@ begin
       begin
         Transaction.Rollback;
           cmt := true;
+          ShowGSMData;
         dirtyGSM := false;
+
       end;
 
     end;
@@ -746,6 +751,7 @@ begin
       begin
         Transaction.Rollback;
           cmt := true;
+        ShowIOTHData;
         dirtyIOTH := false;
       end;
 
@@ -756,6 +762,7 @@ begin
       begin
 //        Transaction.Rollback;
           cmt := true;
+          ShowPMData;
         dirtyPM := false;
       end;
 
@@ -768,7 +775,7 @@ begin
       AddToLog(e.Message);
     end;
   end;
-  ShowAllData;
+  //ShowAllData;
 end;
 
 // .............................................................................
