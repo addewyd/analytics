@@ -57,6 +57,7 @@ type
     GenUpdQuery: TFDQuery;
     GenUpdTrans: TFDTransaction;
     GenUpdTransUPD: TFDTransaction;
+    QueryRealPmSum: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -89,15 +90,18 @@ type
     dirtyPM: Boolean;
     warelist: TStringList;
     session_id: Integer;
+    sessionnum: Integer;
     procedure LoadWareList;
-    function GenPMSql: String;
+    function GenPMSql(var sumsql: string): String;
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
   public
     { Public declarations }
     sst: String;
+    startdate: String;
     // azscode: String;
     FuelCombo: TJVDBLookUpCombo;
-    constructor Create(pr: TComponent; fname: String; _sid: Integer);
+    constructor Create(pr: TComponent; fname: String;
+      _sid, _snum: Integer; _sdt: String);
       reintroduce; overload;
 
     procedure ShowAllData();
@@ -118,10 +122,13 @@ implementation
 
 uses DmUnit, MainUnit, YNUnit;
 
-constructor TTabForm.Create(pr: TComponent; fname: String; _sid: Integer);
+constructor TTabForm.Create(pr: TComponent; fname: String;
+  _sid, _snum: Integer; _sdt: String);
 begin
   inherited Create(pr, fname);
   session_id := _sid;
+  sessionnum := _snum;
+  startdate := _sdt;
 
 end;
 
@@ -365,12 +372,16 @@ end;
 
 // .............................................................................
 
-function TTabForm.GenPMSql: String;
+function TTabForm.GenPMSql(var sumsql: String): String;
 var
   th, tf, tm: String;
+  sumth, sumtf, sumtm: String;
   len, i: Integer;
+  st: String;
 begin
   result := '';
+
+  sumth := 'select ';
 
   th := 'select' + '    i.session_id,' +
     '    cast(s.startdatetime as date) as stdt,' + '    i.payment_code,' +
@@ -381,21 +392,30 @@ begin
   len := warelist.Count;
   for i := 0 to len - 1 do
   begin
-    tm := '(select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+    st := IntToStr(i);
+    tm := 'coalesce((select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
-      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id) '
-      + '    as volume_' + IntToStr(i) + ',';
+      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
+      + '0)  as volume_' + st + ',';
     th := th + tm;
+
+    sumtm := sumtm + ' sum(volume_' + st + ') as volume_' + st + ',';
+
   end;
+  sumtf := ' 0 as nol' + '    from (';
   tf := ' 0 as nol' + '    from inoutgsm i' +
     '    join sessions s on s.id=i.session_id' +
     '    join paymentmodes p on i.payment_code = p.code' +
 
     '    where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
     '   s.id = :session_id ' + '   and i.azscode=:azscode' +
-    '   and  i.direction = 0' + ' group by session_id,stdt,payment_code, pmode'
+    '   and  i.direction = 0' +
+    ' group by session_id,stdt,payment_code, pmode'
     + ' order by stdt';
+
+  sumsql := sumth + sumtm + sumtf + th + tf  + ')';
+//  AddToLog(sumsql);
 
   result := th + tf;
 
@@ -529,11 +549,11 @@ end;
 procedure TTabForm.ShowPMData();
 var
   i, len: Integer;
-  k, v: string;
+  k, v, sumsql, sqlt: string;
 begin
 
   LoadWareList();
-
+  RealPMFooter.Columns.Clear;
   with RealPMGrid do
   begin
     with Columns do
@@ -572,16 +592,27 @@ begin
           Title.Caption := v;
         end;
       end;
+      with RealPMFooter.Columns do
+      begin
+        with add do
+        begin
+          FieldName := 'volume_' + IntToStr(i);
+          Alignment := taRightJustify;
+        end;
+      end;
     end;
 
   end;
+
+  sqlt := GenPMSql(sumsql);
+  QueryRealPmSum.SQL.Text := sumsql;
 
   with QueryRealPM do
   begin
     if Active then
       Close;
 
-    Sql.Text := GenPMSql();
+    Sql.Text := sqlt;
 
     with Params do
     begin
@@ -599,13 +630,22 @@ begin
         ParamType := ptInput;
       end;
     end;
+
+    QueryRealPmSum.Params.Assign(Params);
+
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
+
+    QueryRealPmSum.ParamByName('session_id').AsInteger := session_id;
+    QueryRealPmSum.ParamByName('azscode').AsString := current_azscode;
+
 
     Transaction.StartTransaction;
     try
       Prepare;
       Open;
+      QueryRealPmSum.Prepare;
+      QueryRealPmSum.Open;
       // Transaction.Commit;
     except
       on e: Exception do
@@ -822,10 +862,22 @@ end;
 
 procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
   const FieldName: string; var CalcValue: Variant);
+
+var
+  i: Integer;
+  f: String;
 begin
   inherited;
   // AddToLog(FieldName);
-  CalcValue := 'F: ' + FieldName;
+  f := FieldName;
+  with QueryRealPmSum do
+  begin
+    if Active and (not eof) then
+    begin
+      CalcValue := FieldByName(f).AsExtended;
+    end;
+  end;
+
 end;
 
 // .............................................................................
@@ -907,8 +959,10 @@ begin
   dirtyGSM := false;
   dirtyIOTH := false;
   dirtyPM := false;
-  Caption := 'TabForm AZS ' + current_azscode + ' sid ' + IntToStr(session_id);
+  Caption := Format('TabForm AZS ' +
+    ' %s session %d start %s' , [current_azscode, sessionnum, startdate]);
 
+  // ??? no need
   FuelCombo := TJVDBLookUpCombo.Create(self);
   with FuelCombo do
   begin

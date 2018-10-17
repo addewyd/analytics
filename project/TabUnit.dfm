@@ -64,19 +64,7 @@ inherited TabForm: TTabForm
           Width = 725
           Height = 19
           SizeGrip = True
-          Columns = <
-            item
-              FieldName = 'VOLUME_AI92'
-            end
-            item
-              FieldName = 'VOLUME_AI95'
-            end
-            item
-              FieldName = 'VOLUME_DT'
-            end
-            item
-              FieldName = 'VOLUME_DTF'
-            end>
+          Columns = <>
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
@@ -13275,8 +13263,8 @@ inherited TabForm: TTabForm
       '   and  i.direction = 0'
       'group by session_id,stdt,payment_code, pmode'
       'order by stdt')
-    Left = 492
-    Top = 261
+    Left = 516
+    Top = 253
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -13334,7 +13322,7 @@ inherited TabForm: TTabForm
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 564
+    Left = 596
     Top = 253
   end
   object QueryWL: TFDQuery
@@ -13376,5 +13364,12 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Left = 252
     Top = 229
+  end
+  object QueryRealPmSum: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = TransPM
+    UpdateTransaction = TransPM
+    Left = 508
+    Top = 317
   end
 end

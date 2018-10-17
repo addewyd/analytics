@@ -19,7 +19,7 @@ inherited SessionListForm: TSessionListForm
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 326
     Width = 551
-    ExplicitTop = 326
+    ExplicitTop = 320
     ExplicitWidth = 551
   end
   inherited JvDBGrid: TJvDBUltimGrid
@@ -12748,9 +12748,11 @@ inherited SessionListForm: TSessionListForm
     Transaction = DM.FDTransaction
     UpdateTransaction = DM.FDTransactionUpd
     SQL.Strings = (
-      
-        'select id, azscode, sessionnum, startdatetime, username from ses' +
-        'sions'
+      'select '
+      '   id, '
+      '   azscode,'
+      '   sessionnum, startdatetime, '
+      '   cast(startdatetime as date) as sdt, username from sessions'
       '   where azscode=:azs'
       '              and startdatetime >= cast(:sst as timestamp)'
       '   order by azscode, startdatetime')

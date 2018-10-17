@@ -92,18 +92,23 @@ begin
   if not MainForm.isWinOpen('tabform')
   then
   begin
-    TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
+//    TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
   end
   else
   begin
     tb := MainForm.GetMDIForm('tabform');
     tb.Close;
     MainForm.RemoveComponent(tb);
-    TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
-    //MainForm.GetMDIForm('tabform').Show;
   end;
+  TTabForm.Create(MainForm, 'tabform',
+      FDQuery.FieldByName('id').asInteger,
+      FDQuery.FieldByName('sessionnum').asInteger,
+      FDQuery.FieldByName('sdt').asString
+      );
 
 end;
+
+// .............................................................................
 
 procedure TSessionListForm.RefreshActionExecute(Sender: TObject);
 begin
