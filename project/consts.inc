@@ -1,0 +1,3 @@
+﻿
+const
+  WM_WARECHANGED = WM_USER + 1;
