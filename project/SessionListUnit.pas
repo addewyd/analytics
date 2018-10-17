@@ -31,16 +31,15 @@ implementation
 
 {$R *.dfm}
 
-uses HttpServiceUnit, MainUnit, TabUnit;
+uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1;
+
 
 procedure TSessionListForm.FormCreate(Sender: TObject);
 begin
   inherited;
   //MainMenu.Items[0].Caption := formname;
-
   with FDQuery do
   begin
-    Transaction.StartTransaction;
     with Params do
     begin
       Clear;
@@ -52,19 +51,16 @@ begin
       end;
     end;
     ParamByName('azs').AsString := current_azscode;
-    try
-      Open;
-      FetchAll;
-      Transaction.Commit;
-    except
-      Transaction.Rollback;
-    end;
   end;
+  LoadData;
+  JvDBGrid.Refresh;
 end;
 
 // .............................................................................
 
 procedure TSessionListForm.JvDBGridDblClick(Sender: TObject);
+  var
+    tb: TForm;
 begin
   inherited;
   //
@@ -75,7 +71,14 @@ begin
   begin
     TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
   end
-  else MainForm.GetMDIForm('tabform').Show;
+  else
+  begin
+    tb := MainForm.GetMDIForm('tabform');
+    tb.Close;
+    MainForm.RemoveComponent(tb);
+    TTabForm.Create(MainForm, 'tabform', FDQuery.FieldByName('id').asInteger);
+    //MainForm.GetMDIForm('tabform').Show;
+  end;
 
 end;
 

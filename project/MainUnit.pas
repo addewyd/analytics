@@ -22,6 +22,8 @@ uses
   IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
   IdLogFile, Xml.omnixmldom, Xml.adomxmldom;
 
+{$Include 'consts.inc'}
+
 type
   TMainForm = class(TForm)
     MainMenuM: TMainMenu;
@@ -137,6 +139,7 @@ type
     { Public declarations }
     function GetMdiForm(formname: string): TForm;
     function isWinOpen(formname: String): boolean;
+    procedure SendMsgs(Msg: TMessage);
 
   end;
 
@@ -1005,5 +1008,19 @@ begin
   end
   else GetMDIForm('tableslist').Show;
 end;
+
+// .............................................................................
+
+procedure TMainForm.SendMsgs(Msg: TMessage);
+  var i: Integer;
+begin
+  for i := 0 to MdiChildCount -1 do
+  begin
+    MDIChildren[i].WindowProc(msg);
+  end;
+  TMessage(msg).result := 1;
+end;
+
+
 
 end.

@@ -27,6 +27,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure LoadData;
   end;
 
 var
@@ -36,10 +37,42 @@ implementation
 
 {$R *.dfm}
 
+procedure TFormWithGrid.LoadData;
+begin
+
+  with FDQuery do
+  begin
+  {
+    if Connection.Connected then
+    begin
+      Connection.Close;
+    end;
+    Connection.Open;
+ }
+    if Active then
+    begin
+      Close;
+    end;
+
+    Transaction.StartTransaction;
+    try
+      Open;
+      FetchAll;
+      Transaction.Commit;
+    except
+      Transaction.Rollback;
+    end;
+  end;
+
+end;
+
+
 procedure TFormWithGrid.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
 //
+  LoadData;
+  JvDBGrid.Refresh;
 end;
 
 end.

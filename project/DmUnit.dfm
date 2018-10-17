@@ -12723,7 +12723,6 @@ object DM: TDM
         'ebug\db\SHRFSPS.FDB')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
-    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -12755,7 +12754,7 @@ object DM: TDM
   object FDQueryForINOUTGSM: TFDQuery
     Connection = FDConnection
     Transaction = FDTransaction
-    UpdateTransaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvParamCreate]
@@ -12768,6 +12767,7 @@ object DM: TDM
       ''
       'insert into INOUTGSM'
       '    (SESSION_ID,'
+      '     AZSCODE,'
       '     TBL,'
       '    DIRECTION,'
       '    CLIENT_CODE,'
@@ -12789,6 +12789,7 @@ object DM: TDM
       ''
       'select'
       '    sid,'
+      '    azscode,'
       '    tbl,'
       '    dir as direction,'
       '    partnerextcode,'
@@ -12934,6 +12935,7 @@ object DM: TDM
       '    where sid = :session_id'
       '    group by'
       '        sid,'
+      '        azscode,'
       '        tbl,'
       '        direction,'
       '        contract_id,'
@@ -12959,11 +12961,12 @@ object DM: TDM
   object FDQueryForIOTANKSHOSES: TFDQuery
     Connection = FDConnection
     Transaction = FDTransaction
-    UpdateTransaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
     SQL.Strings = (
       'insert into iotankshoses'
       '('
-      '    session_id, '
+      '    session_id,'
+      '    azscode, '
       '    tanknum,'
       '    startfuelvolume,'
       '    endfactvolume,'
@@ -12988,6 +12991,7 @@ object DM: TDM
       ''
       'select distinct'
       '    s.id, '
+      '    s.azscode,'
       '    t.tanknum,'
       '    t.startfuelvolume,'
       '    t.endfactvolume,'
@@ -13035,6 +13039,8 @@ object DM: TDM
   end
   object FDTransactionUpd: TFDTransaction
     Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
     Connection = FDConnection
     Left = 296
     Top = 120

@@ -3,7 +3,8 @@ unit TabUnit;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, BaseFormUnit1, System.ImageList,
   Vcl.ImgList, Vcl.Menus, System.Actions, Vcl.ActnList, JvFormPlacement,
   JvComponentBase, JvAppStorage, JvAppRegistryStorage, Vcl.ComCtrls,
@@ -15,6 +16,8 @@ uses
   Vcl.ExtCtrls, JvExExtCtrls, JvSplitter, JvDBGridFooter, JvExtComponent,
   JvPanel, Vcl.StdCtrls, JvExStdCtrls, JvCombobox, JvDBCombobox, JvExControls,
   JvDBLookup;
+
+{$Include 'consts.inc'}
 
 type
   TTabForm = class(TBaseForm)
@@ -81,19 +84,21 @@ type
     procedure FPMClick(Sender: TObject);
   private
     { Private declarations }
-    dirtyGSM: boolean;
-    dirtyIOTH: boolean;
-    dirtyPM: boolean;
+    dirtyGSM: Boolean;
+    dirtyIOTH: Boolean;
+    dirtyPM: Boolean;
     warelist: TStringList;
     session_id: Integer;
     procedure LoadWareList;
     function GenPMSql: String;
+    procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
   public
     { Public declarations }
     sst: String;
-    //azscode: String;
+    // azscode: String;
     FuelCombo: TJVDBLookUpCombo;
-    constructor Create(pr: TComponent; fname: String; _sid: Integer); reintroduce; overload;
+    constructor Create(pr: TComponent; fname: String; _sid: Integer);
+      reintroduce; overload;
 
     procedure ShowAllData();
 
@@ -101,7 +106,7 @@ type
     procedure ShowIOTHData();
     procedure ShowPMData();
     procedure UpdateState(q: TFDQuery);
-    function GetStartSession :String;
+    function GetStartSession: String;
   end;
 
 var
@@ -115,7 +120,7 @@ uses DmUnit, MainUnit, YNUnit;
 
 constructor TTabForm.Create(pr: TComponent; fname: String; _sid: Integer);
 begin
-  inherited create(pr, fname);
+  inherited Create(pr, fname);
   session_id := _sid;
 
 end;
@@ -123,8 +128,8 @@ end;
 // .............................................................................
 
 procedure TTabForm.DSIOTHFieldChanged(Sender: TObject; Field: TField);
-  var
-    f, fname: String;
+var
+  f, fname: String;
 begin
   inherited;
   fname := Field.FieldName;
@@ -140,11 +145,11 @@ end;
 procedure TTabForm.UpdateState(q: TFDQuery);
 begin
   // HZ!!!
-//  q.UpdateTransaction.Commit;
+  // q.UpdateTransaction.Commit;
   AddToLog(q.Name + ' need update');
-  WITH Q DO
+  WITH q DO
   begin
-//
+    //
   end;
 end;
 
@@ -160,8 +165,8 @@ begin
     Open;
     while not Eof do
     begin
-      warelist.Add(FieldByName('code').AsString +'='+
-        FieldByName('name').AsString);
+      warelist.Add(FieldByName('code').AsString + '=' + FieldByName('name')
+        .AsString);
       Next;
     end;
     Close;
@@ -195,10 +200,10 @@ begin
 
   //
   // now update iotankshoses with new warecode
-  // upd key: session_id, tanknum, warecode
+  // upd key: session_id, tanknum, warecode, azs
 
   sqlt := 'update iotankshoses set warecode = :warecode_new ' +
-    ' where session_id = :session_id and tanknum = :tanknum and warecode = :old_warecode';
+    ' where session_id >= :session_id and azscode= :azs and tanknum = :tanknum and warecode = :old_warecode';
 
   YNForm := TYNForm.Create(self);
   // YNForm.Height := 400;
@@ -215,17 +220,20 @@ begin
   begin
     if dirtyGSM then
     begin
-      if QueryInOut.Transaction.Active then QueryInOut.Transaction.Commit;
+      if QueryInOut.Transaction.Active then
+        QueryInOut.Transaction.Commit;
       dirtyGSM := false;
     end;
     if dirtyPM then
     begin
-      if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Commit;
+      if QueryRealPM.Transaction.Active then
+        QueryRealPM.Transaction.Commit;
       dirtyPM := false;
     end;
     if dirtyIOTH then
     begin
-      if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Commit;
+      if QueryIOTH.Transaction.Active then
+        QueryIOTH.Transaction.Commit;
       dirtyIOTH := false;
     end;
 
@@ -260,11 +268,18 @@ begin
             DataType := ftString;
             ParamType := ptInput;
           end;
+          with Add do
+          begin
+            Name := 'azs';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
         end;
         ParamByName('session_id').AsInteger := session_id;
         ParamByName('warecode_new').AsString := wareccode_new;
         ParamByName('old_warecode').AsString := old_warecode;
         ParamByName('tanknum').AsString := tanknum;
+        ParamByName('azs').AsString := current_azscode;
         Transaction.StartTransaction;
         Prepare;
         ExecSQL;
@@ -272,7 +287,7 @@ begin
       end;
 
       sqlt := 'update inoutgsm set ware_code = :warecode_new ' +
-        ' where session_id = :session_id and tanknum = :tanknum and ware_code = :old_warecode';
+        ' where session_id >= :session_id and azscode=:azs and tanknum = :tanknum and ware_code = :old_warecode';
 
       with GenUpdQuery do
       begin
@@ -304,16 +319,30 @@ begin
             DataType := ftString;
             ParamType := ptInput;
           end;
+          with Add do
+          begin
+            Name := 'azs';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
         end;
         ParamByName('session_id').AsInteger := session_id;
         ParamByName('warecode_new').AsString := wareccode_new;
         ParamByName('old_warecode').AsString := old_warecode;
         ParamByName('tanknum').AsString := tanknum;
+        ParamByName('azs').AsString := current_azscode;
         Transaction.StartTransaction;
         Prepare;
         ExecSQL;
 
       end;
+
+      GenUpdQuery.Transaction.Commit;
+      DM.FDConnection.Close;
+
+      ShowAllData;
+      if DM.FDConnection.Connected then
+        AddToLog('conn active');
     except
       on e: Exception do
       begin
@@ -323,8 +352,7 @@ begin
       end;
 
     end;
-    GenUpdQuery.Transaction.Commit;
-    ShowAllData;
+
   end;
 
 end;
@@ -332,42 +360,36 @@ end;
 // .............................................................................
 
 function TTabForm.GenPMSql: String;
-  var th, tf, tm: String;
-    len, i: Integer;
+var
+  th, tf, tm: String;
+  len, i: Integer;
 begin
   result := '';
 
-  th :=
-'select' +
-'    i.session_id,' +
-'    cast(s.startdatetime as date) as stdt,' +
-'    i.payment_code,' +
-'    p.name as pmode,' +
+  th := 'select' + '    i.session_id,' +
+    '    cast(s.startdatetime as date) as stdt,' + '    i.payment_code,' +
+    '    p.name as pmode,' +
 
-'    sum(i.volume) as volume,';
+    '    sum(i.volume) as volume,';
 
   len := warelist.Count;
   for i := 0 to len - 1 do
   begin
-    tm :=
-    '(select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code ' +
-    '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
-    '        and i1.direction=0 ' +
-    '        and i1.payment_code = i.payment_code and i1.session_id=:session_id) ' +
-    '    as volume_' + IntToStr(i) + ',';
+    tm := '(select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+      + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
+      '        and i1.direction=0 ' +
+      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id) '
+      + '    as volume_' + IntToStr(i) + ',';
     th := th + tm;
   end;
-tf := ' 0 as nol' +
-'    from inoutgsm i' +
-'    join sessions s on s.id=i.session_id' +
-'    join paymentmodes p on i.payment_code = p.code' +
+  tf := ' 0 as nol' + '    from inoutgsm i' +
+    '    join sessions s on s.id=i.session_id' +
+    '    join paymentmodes p on i.payment_code = p.code' +
 
-'    where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
-'   s.id = :session_id ' +
-'   and azscode=:azscode' +
-'   and  i.direction = 0' +
-' group by session_id,stdt,payment_code, pmode' +
-' order by stdt';
+    '    where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
+    '   s.id = :session_id ' + '   and i.azscode=:azscode' +
+    '   and  i.direction = 0' + ' group by session_id,stdt,payment_code, pmode'
+    + ' order by stdt';
 
   result := th + tf;
 
@@ -375,52 +397,52 @@ end;
 
 // .............................................................................
 
-function TTabForm.GetStartSession :String;
+function TTabForm.GetStartSession: String;
 begin
   result := '2000-01-01 00:00:00';
-//  last_sessions_count
-try
-  with QuerySST do
-  begin
-    Transaction.StartTransaction;
-    with Params  do
+  // last_sessions_count
+  try
+    with QuerySST do
     begin
-      Clear;
-      with Add do
+      Transaction.StartTransaction;
+      with Params do
       begin
+        Clear;
+        with Add do
+        begin
           Name := 'cnt';
           DataType := ftInteger;
           ParamType := ptInput;
-      end;
-      with Add do
-      begin
+        end;
+        with Add do
+        begin
           Name := 'azs';
           DataType := ftString;
           ParamType := ptInput;
+        end;
       end;
+      ParamByName('cnt').AsInteger := last_sessions_count;
+      ParamByName('azs').AsString := current_azscode;
+      Prepare;
+      Open;
+      First;
+      if not Eof then
+      begin
+        // First;
+        result := FieldByName('startdatetime').AsString;
+      end;
+
+      Close;
+      Transaction.Commit;
     end;
-    ParamByName('cnt').AsInteger := last_sessions_count;
-    ParamByName('azs').AsString := current_azscode;
-    Prepare;
-    Open;
-    First;
-    if not EOF then
+  except
+    on e: Exception do
     begin
-      //First;
-      Result := FieldByName('startdatetime').AsString;
+      QuerySST.Transaction.Rollback;
+      AddToLog(e.Message);
     end;
 
-    Close;
-    Transaction.Commit;
   end;
-except
-  on e: Exception do
-  begin
-    QuerySST.Transaction.Rollback;
-    AddToLog(e.Message);
-  end;
-
-end;
 
 end;
 // .............................................................................
@@ -428,14 +450,14 @@ end;
 procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
 begin
   inherited;
-  AddTolog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
+  AddToLog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
 end;
 
 // .............................................................................
 
 procedure TTabForm.ShowAllData();
 begin
-  sst := GetStartSession();
+//  sst := GetStartSession();
   LoadWareList;
   ShowGSMData;
   ShowIOTHData;
@@ -453,26 +475,28 @@ begin
 
   with QueryInOut do
   begin
-    if Active then Close;
-    if Transaction.Active then Transaction.Commit;
+    if Active then
+      Close;
+    if Transaction.Active then
+      Transaction.Commit;
 
     with Params do
     begin
       Clear;
       with Add do
       begin
-          Name := 'session_id';
-          DataType := ftInteger;
-          ParamType := ptInput;
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
       end;
       with Add do
       begin
-          Name := 'azscode';
-          DataType := ftString;
-          ParamType := ptInput;
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
       end;
     end;
-//    ParamByName('start_session_t').AsString := sst;
+    // ParamByName('start_session_t').AsString := sst;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
@@ -480,13 +504,13 @@ begin
     try
       Prepare;
       Open;
-//      Transaction.Commit;
+      // Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//        Transaction.Rollback;
-//        raise
+        // Transaction.Rollback;
+        // raise
       end;
     end;
   end;
@@ -496,9 +520,9 @@ end;
 // .............................................................................
 
 procedure TTabForm.ShowPMData();
-  var
-    i, len: Integer;
-    k, v : string;
+var
+  i, len: Integer;
+  k, v: string;
 begin
 
   LoadWareList();
@@ -510,19 +534,19 @@ begin
       Clear;
       with Add do
       begin
-        Fieldname := 'stdt';
+        FieldName := 'stdt';
       end;
       with Add do
       begin
-        Fieldname := 'payment_code';
+        FieldName := 'payment_code';
       end;
       with Add do
       begin
-        Fieldname := 'pmode';
+        FieldName := 'pmode';
       end;
       with Add do
       begin
-        Fieldname := 'volume';
+        FieldName := 'volume';
         Title.Caption := 'Îáú¸ì';
       end;
     end;
@@ -547,24 +571,25 @@ begin
 
   with QueryRealPM do
   begin
-    if Active then Close;
+    if Active then
+      Close;
 
-    SQL.Text := GenPMSql();
+    Sql.Text := GenPMSql();
 
     with Params do
     begin
       Clear;
       with Add do
       begin
-          Name := 'session_id';
-          DataType := ftInteger;
-          ParamType := ptInput;
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
       end;
       with Add do
       begin
-          Name := 'azscode';
-          DataType := ftString;
-          ParamType := ptInput;
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
       end;
     end;
     ParamByName('session_id').AsInteger := session_id;
@@ -574,13 +599,13 @@ begin
     try
       Prepare;
       Open;
-//      Transaction.Commit;
+      // Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//        Transaction.Rollback;
-//        raise
+        // Transaction.Rollback;
+        // raise
       end;
     end;
   end;
@@ -590,67 +615,66 @@ end;
 // .............................................................................
 
 procedure TTabForm.ShowIOTHData();
-  var
-    i: Integer;
-    tm: TMenuItem;
+var
+  i: Integer;
+  tm: TMenuItem;
 begin
-
 
   FuelPopupMenu.Items.Clear;
   for i := 0 to warelist.Count - 1 do
   begin
-    tm :=TMenuItem.Create(FuelPopupMenu);
+    tm := TMenuItem.Create(FuelPopupMenu);
     tm.Caption := warelist.ValueFromIndex[i];
 
     tm.Name := 'fpm_' + IntToStr(i);
-    //tm.Parent := FuelPopupMenu;
+    // tm.Parent := FuelPopupMenu;
     tm.OnClick := FPMClick;
     FuelPopupMenu.Items.Add(tm);
   end;
 
-
   with QueryIOTH do
   begin
-    if Active then Close;
+    if Active then
+      Close;
     with Params do
     begin
       Clear;
       (*
-      with Add do
-      begin
-          Name := 'start_session_t';
-          DataType := ftString;
-          ParamType := ptInput;
-      end;
+        with Add do
+        begin
+        Name := 'start_session_t';
+        DataType := ftString;
+        ParamType := ptInput;
+        end;
       *)
       with Add do
       begin
-          Name := 'session_id';
-          DataType := ftInteger;
-          ParamType := ptInput;
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
       end;
       with Add do
       begin
-          Name := 'azscode';
-          DataType := ftString;
-          ParamType := ptInput;
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
       end;
     end;
-//    ParamByName('start_session_t').AsString := sst;
-    ParamByName('session_id').Asinteger := session_id;
+    // ParamByName('start_session_t').AsString := sst;
+    ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
       Prepare;
       Open;
-//      Transaction.Commit;
+      // Transaction.Commit;
     except
       on e: Exception do
       begin
         AddToLog(e.Message);
-//        Transaction.Rollback;
-//        raise
+        // Transaction.Rollback;
+        // raise
       end;
     end;
   end;
@@ -660,8 +684,8 @@ end;
 // .............................................................................
 
 procedure TTabForm.CommitActionExecute(Sender: TObject);
-  var
-    cmt: boolean;
+var
+  cmt: Boolean;
 begin
   inherited;
   cmt := false;
@@ -712,7 +736,7 @@ begin
       end;
     end;
 
-//    if cmt then DM.FDTransaction.Commit;
+    // if cmt then DM.FDTransaction.Commit;
 
   except
     on e: Exception do
@@ -721,14 +745,14 @@ begin
     end;
   end;
 
-  //ShowAllData;
+  // ShowAllData;
 end;
 
 // .............................................................................
 
 procedure TTabForm.RollbackActionExecute(Sender: TObject);
-  var
-    cmt: boolean;
+var
+  cmt: Boolean;
 begin
   inherited;
   cmt := false;
@@ -738,8 +762,8 @@ begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
-          cmt := true;
-          ShowGSMData;
+        cmt := true;
+        ShowGSMData;
         dirtyGSM := false;
 
       end;
@@ -750,7 +774,7 @@ begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
-          cmt := true;
+        cmt := true;
         ShowIOTHData;
         dirtyIOTH := false;
       end;
@@ -760,14 +784,14 @@ begin
     begin
       if Transaction.Active then
       begin
-//        Transaction.Rollback;
-          cmt := true;
-          ShowPMData;
+        // Transaction.Rollback;
+        cmt := true;
+        ShowPMData;
         dirtyPM := false;
       end;
 
     end;
-  //  if cmt  then DM.FDTransaction.Rollback;
+    // if cmt  then DM.FDTransaction.Rollback;
 
   except
     on e: Exception do
@@ -775,7 +799,7 @@ begin
       AddToLog(e.Message);
     end;
   end;
-  //ShowAllData;
+  // ShowAllData;
 end;
 
 // .............................................................................
@@ -793,7 +817,7 @@ procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
   const FieldName: string; var CalcValue: Variant);
 begin
   inherited;
-//  AddToLog(FieldName);
+  // AddToLog(FieldName);
   CalcValue := 'F: ' + FieldName;
 end;
 
@@ -805,74 +829,83 @@ begin
   warelist.Free;
   if QueryInOut.Transaction.Active then
   begin
-//
+    //
   end;
-//  JVFS.SaveFormPlacement;
+  // JVFS.SaveFormPlacement;
 
 end;
 
 // .............................................................................
 
 procedure TTabForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-  var
-    yn: TYNForm;
-    mr: Integer;
+var
+  yn: TYNForm;
+  mr: Integer;
 begin
   inherited;
-  //if QueryInOut.Transaction.Active then
-  //begin
+  // if QueryInOut.Transaction.Active then
+  // begin
 
-    CanClose := not (dirtyGSM or dirtyIOTH or dirtyPM);
+  CanClose := not(dirtyGSM or dirtyIOTH or dirtyPM);
 
-    if not CanClose then
+  if not CanClose then
+  begin
+    yn := TYNForm.Create(self);
+    yn.ButtonForget.Visible := true;
+    yn.Memo1.Text := 'Commit changes & close?';
+    mr := yn.ShowModal;
+    if mr = mrOk then
     begin
-      yn := TYNForm.Create(self);
-      yn.ButtonForget.Visible := true;
-      yn.Memo1.Text := 'Commit changes & close?';
-      mr := yn.ShowModal;
-      if  mr = mrOk then
-      begin
-        if QueryInOut.Transaction.Active then QueryInOut.Transaction.Commit;
-        if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Commit;
-        if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Commit;
+      if QueryInOut.Transaction.Active then
+        QueryInOut.Transaction.Commit;
+      if QueryIOTH.Transaction.Active then
+        QueryIOTH.Transaction.Commit;
+      if QueryRealPM.Transaction.Active then
+        QueryRealPM.Transaction.Commit;
 
-        if dirtyGSM then UpdateState(QueryInOut);
-        if dirtyIOTH then UpdateState(QueryIOTH);
-        if dirtyPM then UpdateState(QueryRealPM);
-        CanClose := true;
-      end;
-      if  mr = mrAbort then
-      begin
-        if QueryInOut.Transaction.Active then QueryInOut.Transaction.Rollback;
-        if QueryIOTH.Transaction.Active then QueryIOTH.Transaction.Rollback;
-        if QueryRealPM.Transaction.Active then QueryRealPM.Transaction.Rollback;
-        CanClose := true;
-      end;
+      if dirtyGSM then
+        UpdateState(QueryInOut);
+      if dirtyIOTH then
+        UpdateState(QueryIOTH);
+      if dirtyPM then
+        UpdateState(QueryRealPM);
+      CanClose := true;
     end;
+    if mr = mrAbort then
+    begin
+      if QueryInOut.Transaction.Active then
+        QueryInOut.Transaction.Rollback;
+      if QueryIOTH.Transaction.Active then
+        QueryIOTH.Transaction.Rollback;
+      if QueryRealPM.Transaction.Active then
+        QueryRealPM.Transaction.Rollback;
+      CanClose := true;
+    end;
+  end;
 
-  //end;
+  // end;
 
 end;
 
 // .............................................................................
 
 procedure TTabForm.FormCreate(Sender: TObject);
-  var
-    i: Integer;
-    sst: String;
-    tm: TmenuItem;
+var
+  i: Integer;
+  sst: String;
+  tm: TMenuItem;
 begin
   inherited;
   warelist := TStringList.Create;
   dirtyGSM := false;
   dirtyIOTH := false;
   dirtyPM := false;
-  Caption := 'TabForm AZS ' + current_azscode + ' sid ' +  IntToStr(session_id);
+  Caption := 'TabForm AZS ' + current_azscode + ' sid ' + IntToStr(session_id);
 
-  FuelCombo := TJvDBLookupCombo.Create(self);
+  FuelCombo := TJVDBLookUpCombo.Create(self);
   with FuelCombo do
   begin
-    Parent := Self;
+    Parent := self;
     Visible := false;
     LookupSource := IOTHGrid.DataSource;
     DataField := 'FUELNAME';
@@ -895,11 +928,12 @@ end;
 procedure TTabForm.IOTHGridCellClick(Column: TColumn);
 begin
   inherited;
-  if column.FieldName  = 'R' then
+  if Column.FieldName = 'R' then
   begin
-//    ErrorMessageBox(self,'R pressed ' + QueryIOTH.FieldByName('id').AsString);
+    // ErrorMessageBox(self,'R pressed ' + QueryIOTH.FieldByName('id').AsString);
   end
-  else AddToLog(QueryIOTH.FieldByName(Column.FieldName).AsString);
+  else
+    AddToLog(QueryIOTH.FieldByName(Column.FieldName).AsString);
 end;
 
 // .............................................................................
@@ -907,8 +941,8 @@ end;
 procedure TTabForm.IOTHGridColExit(Sender: TObject);
 begin
   inherited;
-//  if IOTHGrid.SelectedField.FieldName = 'R' then
-  //    RButton.Visible := false;
+  // if IOTHGrid.SelectedField.FieldName = 'R' then
+  // RButton.Visible := false;
 end;
 
 // .............................................................................
@@ -917,20 +951,19 @@ procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   inherited;
-//  IOTHGrid.
-//    Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
-//        WrapText(Column.Title.Caption, 20));
-  if (gdFocused in State)  then
+  // IOTHGrid.
+  // Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
+  // WrapText(Column.Title.Caption, 20));
+  if (gdFocused in State) then
   begin
     if (Column.FieldName = 'R') then
     begin
       RButton.Left := Rect.Left + IOTHGrid.Left;
-      RButton.Top := Rect.Top + IOTHGrid.top;
+      RButton.Top := Rect.Top + IOTHGrid.Top;
       RButton.Width := Rect.Right - Rect.Left + 2;
-      RButton.Visible := True;
+      RButton.Visible := true;
     end;
   end;
-
 
 end;
 
@@ -940,7 +973,7 @@ procedure TTabForm.IOTHGridDrawDataCell(Sender: TObject; const Rect: TRect;
   Field: TField; State: TGridDrawState);
 begin
   inherited;
-//
+  //
 end;
 
 // .............................................................................
@@ -948,8 +981,8 @@ end;
 procedure TTabForm.IOTHGridEditButtonClick(Sender: TObject);
 begin
   inherited;
-//
-    ErrorMessageBox(self, Sender.ClassName);
+  //
+  ErrorMessageBox(self, Sender.ClassName);
 end;
 
 // .............................................................................
@@ -967,7 +1000,7 @@ procedure TTabForm.IOTHGridEditChange(Sender: TObject);
 begin
   inherited;
   dirtyIOTH := true;
-//
+  //
 end;
 
 // .............................................................................
@@ -975,7 +1008,7 @@ end;
 procedure TTabForm.QueryIOTHAfterPost(DataSet: TDataSet);
 begin
   inherited;
-//  AddToLog('aftwr post');
+  // AddToLog('aftwr post');
 end;
 
 // .............................................................................
@@ -992,6 +1025,12 @@ procedure TTabForm.RealPMGridEditChange(Sender: TObject);
 begin
   inherited;
   dirtyPM := true;
+end;
+
+
+procedure TTabForm.warechanged(var Msg: TMessage);
+begin
+//
 end;
 
 

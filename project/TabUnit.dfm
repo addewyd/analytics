@@ -131,6 +131,7 @@ inherited TabForm: TTabForm
           OnEditButtonClick = IOTHGridEditButtonClick
           AutoAppend = False
           IniStorage = JvFS
+          OnEditChange = IOTHGridEditChange
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -13134,7 +13135,7 @@ inherited TabForm: TTabForm
         '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
         'AMP)*/'
       '      s.id = :session_id'
-      '      and azscode=:azscode'
+      '      and i.azscode=:azscode'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname')
     Left = 412
@@ -13193,7 +13194,7 @@ inherited TabForm: TTabForm
       '    where '
       '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
       '   s.id = :session_id'
-      '   and azscode=:azscode'
+      '   and i.azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
     Left = 412
     Top = 93
@@ -13274,8 +13275,8 @@ inherited TabForm: TTabForm
       '   and  i.direction = 0'
       'group by session_id,stdt,payment_code, pmode'
       'order by stdt')
-    Left = 500
-    Top = 253
+    Left = 492
+    Top = 261
     ParamData = <
       item
         Name = 'SESSION_ID'
