@@ -25,6 +25,7 @@ type
     Trans: TFDTransaction;
     TransUPD: TFDTransaction;
     procedure RefreshActionExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,6 +41,12 @@ implementation
 {$R *.dfm}
 
 uses DmUnit;
+
+procedure TFormWithGrid.FormCreate(Sender: TObject);
+begin
+  inherited;
+//  LoadData;
+end;
 
 procedure TFormWithGrid.LoadData;
 begin
@@ -71,12 +78,13 @@ begin
 end;
 
 
+// .............................................................................
+
 procedure TFormWithGrid.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-//
+
   LoadData;
-  JvDBGrid.Refresh;
 end;
 
 end.

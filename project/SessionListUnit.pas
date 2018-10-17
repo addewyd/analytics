@@ -66,6 +66,7 @@ begin
     ParamByName('azs').AsString := current_azscode;
     ParamByName('sst').AsString := sst;
   end;
+  inherited;
   LoadData;
   JvDBGrid.Refresh;
 

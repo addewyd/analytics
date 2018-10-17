@@ -792,6 +792,7 @@ procedure TMainForm.OptionsActionExecute(Sender: TObject);
     dbloc: String;
     ip, val: String;
     len, i: Integer;
+    msg: Tmessage;
 begin
   try
     reg := TRegIniFile.Create('Software\Shrfs');
@@ -875,7 +876,8 @@ begin
         current_azscode := od.AzsEdit.Text;
         SaveUserOptions(user_id, false);
         StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
-
+        msg.Msg := WM_SESSION_ADDED;
+        SendMsgs(msg);
       end;
     finally
       reg.Free;
