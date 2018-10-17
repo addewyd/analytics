@@ -18,6 +18,7 @@ type
   TStationsForm = class(TFormWithGrid)
     UpdateAction: TAction;
     Update1: TMenuItem;
+    ToolButton3: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure UpdateActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -50,6 +51,7 @@ begin
   with FDQuery do
     begin
     Transaction.StartTransaction;
+//    UpdateTransaction.StartTransaction;
     try
       Open;
       //FetchAll;
@@ -75,7 +77,7 @@ end;
 procedure TStationsForm.UpdateActionExecute(Sender: TObject);
 begin
   inherited;
-  {
+
   with FDQuery do
   begin
     UpdateTransaction.StartTransaction;
@@ -90,7 +92,7 @@ begin
       end;
     end;
   end;
-  }
+
 end;
 
 end.

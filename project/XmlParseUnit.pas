@@ -8,6 +8,8 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   FIREDAC.Stan.Error, FIREDAC.Stan.Param,FireDAC.Phys.IBWrapper,
   XML.XMLDoc, ErrorUnit, DmUnit;
 
+{$Include 'consts.inc'}
+
 procedure ParseInputFile(Doc: IDOMDocument);
 procedure ParseSessionFile(Doc: IDOMDocument);
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
@@ -224,19 +226,25 @@ end;
 procedure ParseInputFile(Doc: IDOMDocument);
 var
   nL, nL1: IDOMNodeList;
+  msg: TMessage;
 begin
   nL := Doc.getElementsByTagName('DataPaket');
   if nL.length > 0 then
   begin
     DM.FDTransaction.StartTransaction;
+    DM.FDTransactionUPD.StartTransaction;
     try
       ParseSessionFile(doc);
+      if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Commit;
       if DM.FDTransaction.Active then DM.FDTransaction.Commit;
+      msg.Msg := WM_SESSION_ADDED;
+      MainForm.SendMsgs(msg);
     except
       on e: Exception do
       begin
+        if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Rollback;
         if DM.FDTransaction.Active then DM.FDTransaction.Rollback;
-        AddToLog(e.Message);
+        AddToLog('parse input: ' + e.Message);
         ErrorMessageBox(MainForm, e.Message);
       end;
     end;

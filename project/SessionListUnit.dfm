@@ -12752,8 +12752,37 @@ inherited SessionListForm: TSessionListForm
         'select id, azscode, sessionnum, startdatetime, username from ses' +
         'sions'
       '   where azscode=:azs'
+      '              and startdatetime >= cast(:sst as timestamp)'
       '   order by azscode, startdatetime')
     ParamData = <
+      item
+        Name = 'AZS'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SST'
+        ParamType = ptInput
+      end>
+  end
+  object QuerySST: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = Trans
+    SQL.Strings = (
+      'select first 1 startdatetime from ('
+      'select first :cnt'
+      '   startdatetime'
+      '  from sessions'
+      '  where azscode = :azs'
+      '  order by startdatetime desc'
+      '  )'
+      '  order by startdatetime asc')
+    Left = 212
+    Top = 240
+    ParamData = <
+      item
+        Name = 'CNT'
+        ParamType = ptInput
+      end
       item
         Name = 'AZS'
         ParamType = ptInput

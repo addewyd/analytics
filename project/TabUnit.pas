@@ -44,7 +44,6 @@ type
     Spl01: TJvSplitter;
     RealPMFooter: TJvDBGridFooter;
     RealPMGrid: TJvDBUltimGrid;
-    UpdateIOTHSQL: TFDUpdateSQL;
     QuerySST: TFDQuery;
     TransInOut: TFDTransaction;
     TransIOTH: TFDTransaction;
@@ -183,6 +182,7 @@ var
   sqlt, tanknum: String;
   session_id, ind: Integer;
   tm: TMenuItem;
+  msg: TMessage;
 
 begin
   inherited;
@@ -338,11 +338,12 @@ begin
       end;
 
       GenUpdQuery.Transaction.Commit;
-      DM.FDConnection.Close;
+      //DM.FDConnection.Close;
 
       ShowAllData;
-      if DM.FDConnection.Connected then
-        AddToLog('conn active');
+
+      msg.Msg := WM_WARECHANGED;
+      MainForm.SendMsgs(msg);
     except
       on e: Exception do
       begin
@@ -445,6 +446,7 @@ begin
   end;
 
 end;
+
 // .............................................................................
 
 procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
@@ -1030,7 +1032,7 @@ end;
 
 procedure TTabForm.warechanged(var Msg: TMessage);
 begin
-//
+  AddToLog('MSG');
 end;
 
 

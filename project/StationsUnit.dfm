@@ -2,6 +2,19 @@ inherited StationsForm: TStationsForm
   Caption = #1050#1086#1076#1099' '#1040#1047#1057
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvToolBar1: TJvToolBar
+    object ToolButton3: TToolButton [0]
+      Left = 0
+      Top = 0
+      Action = UpdateAction
+    end
+    inherited ToolButton2: TToolButton [1]
+    end
+    inherited ToolButton1: TToolButton [2]
+      Left = 46
+      ExplicitLeft = 46
+    end
+  end
   inherited JvDBGrid: TJvDBUltimGrid
     Columns = <
       item
@@ -38,7 +51,7 @@ inherited StationsForm: TStationsForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12718,9 +12731,8 @@ inherited StationsForm: TStationsForm
       000000000000}
   end
   inherited FDQuery: TFDQuery
+    CachedUpdates = True
     Connection = DM.FDConnection
-    Transaction = DM.FDTransaction
-    UpdateTransaction = DM.FDTransactionUpd
     SQL.Strings = (
       'select name, code, extcode from stations')
   end

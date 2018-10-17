@@ -22,6 +22,8 @@ type
     N1: TMenuItem;
     ToolButton2: TToolButton;
     JvDBGrid: TJvDBUltimGrid;
+    Trans: TFDTransaction;
+    TransUPD: TFDTransaction;
     procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
@@ -36,6 +38,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses DmUnit;
 
 procedure TFormWithGrid.LoadData;
 begin

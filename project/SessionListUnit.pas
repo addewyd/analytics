@@ -13,15 +13,21 @@ uses
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid;
+{$Include 'consts.inc'}
 
 type
   TSessionListForm = class(TFormWithGrid)
+    QuerySST: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    function GetStartSession: String;
+    procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+    procedure PrepareAndLoad;
   end;
 
 var
@@ -34,10 +40,11 @@ implementation
 uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1;
 
 
-procedure TSessionListForm.FormCreate(Sender: TObject);
+procedure TSessionListForm.PrepareAndLoad;
+var
+  sst: String;
 begin
-  inherited;
-  //MainMenu.Items[0].Caption := formname;
+  sst := GetStartSession;
   with FDQuery do
   begin
     with Params do
@@ -49,11 +56,26 @@ begin
         DataType := ftString;
         ParamType := ptInput;
       end;
+        with Add do
+        begin
+          Name := 'sst';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
     end;
     ParamByName('azs').AsString := current_azscode;
+    ParamByName('sst').AsString := sst;
   end;
   LoadData;
   JvDBGrid.Refresh;
+
+end;
+
+
+procedure TSessionListForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  PrepareAndLoad;
 end;
 
 // .............................................................................
@@ -81,5 +103,71 @@ begin
   end;
 
 end;
+
+procedure TSessionListForm.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+  PrepareAndLoad;
+end;
+
+// .............................................................................
+
+function TSessionListForm.GetStartSession: String;
+begin
+  result := '2000-01-01 00:00:00';
+  // last_sessions_count
+  try
+    with QuerySST do
+    begin
+      Transaction.StartTransaction;
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'cnt';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'azs';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('cnt').AsInteger := last_sessions_count;
+      ParamByName('azs').AsString := current_azscode;
+      Prepare;
+      Open;
+      First;
+      if not Eof then
+      begin
+        // First;
+        result := FieldByName('startdatetime').AsString;
+      end;
+
+      Close;
+      Transaction.Commit;
+    end;
+  except
+    on e: Exception do
+    begin
+      QuerySST.Transaction.Rollback;
+      AddToLog(e.Message);
+    end;
+
+  end;
+
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.sessionadded(var Msg: TMessage);
+begin
+  AddToLog('SESSIONADDED');
+  PrepareAndLoad;
+end;
+
 
 end.

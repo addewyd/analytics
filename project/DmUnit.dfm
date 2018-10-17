@@ -12688,6 +12688,7 @@ object DM: TDM
   object FDQuery: TFDQuery
     Connection = FDConnection
     Transaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvParamCreate]
@@ -13041,6 +13042,7 @@ object DM: TDM
     Options.Isolation = xiSnapshot
     Options.AutoStart = False
     Options.AutoStop = False
+    Options.DisconnectAction = xdRollback
     Connection = FDConnection
     Left = 296
     Top = 120

@@ -1,3 +1,4 @@
 ﻿
 const
   WM_WARECHANGED = WM_USER + 1;
+  WM_SESSION_ADDED = WM_USER + 2;

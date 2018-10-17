@@ -12761,8 +12761,25 @@ inherited FormWithGrid: TFormWithGrid
     Top = 72
   end
   object FDQuery: TFDQuery
+    Transaction = Trans
+    UpdateTransaction = TransUPD
     FetchOptions.AssignedValues = [evUnidirectional]
-    Left = 240
+    Left = 160
+    Top = 152
+  end
+  object Trans: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 216
+    Top = 152
+  end
+  object TransUPD: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 272
     Top = 152
   end
 end

@@ -13291,34 +13291,6 @@ inherited TabForm: TTabForm
         ParamType = ptInput
       end>
   end
-  object UpdateIOTHSQL: TFDUpdateSQL
-    Connection = DM.FDConnection
-    ModifySQL.Strings = (
-      'UPDATE IOTANKSHOSES'
-      
-        'SET ID = :NEW_ID, TANKNUM = :NEW_TANKNUM, STARTFUELVOLUME = :NEW' +
-        '_STARTFUELVOLUME, '
-      
-        '  ENDFACTVOLUME = :NEW_ENDFACTVOLUME, TEMPERATURE = :NEW_TEMPERA' +
-        'TURE, '
-      '  HEIGHT = :NEW_HEIGHT, MASS = :NEW_MASS, WATER = :NEW_WATER, '
-      '  HOSENUM = :NEW_HOSENUM, STARTCOUNTER = :NEW_STARTCOUNTER, '
-      '  ENDCOUNTER = :NEW_ENDCOUNTER'
-      'WHERE ID = :OLD_ID')
-    FetchRowSQL.Strings = (
-      
-        'SELECT ID, SESSION_ID, TANKNUM, STARTFUELVOLUME, ENDFACTVOLUME, ' +
-        'DENSITY, '
-      '  TEMPERATURE, HEIGHT, MASS, WATER, DEADREST, DEADRESTLITER, '
-      
-        '  WARECODE, HOSENUM, STARTCOUNTER, ENDCOUNTER, PUMPNUM, NUMINPUM' +
-        'P, '
-      '  HOSETYPE, LASTUSER_ID, UPDATED_AT, STATE'
-      'FROM IOTANKSHOSES'
-      'WHERE ID = :ID')
-    Left = 660
-    Top = 85
-  end
   object QuerySST: TFDQuery
     Connection = DM.FDConnection
     Transaction = GenUpdTrans
@@ -13352,6 +13324,7 @@ inherited TabForm: TTabForm
     Top = 141
   end
   object TransIOTH: TFDTransaction
+    Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
     Left = 476
