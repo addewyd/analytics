@@ -13358,7 +13358,7 @@ inherited TabForm: TTabForm
   object GenUpdQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = GenUpdTrans
-    UpdateTransaction = GenUpdTrans
+    UpdateTransaction = GenUpdTransUPD
     Left = 84
     Top = 229
   end
@@ -13367,6 +13367,14 @@ inherited TabForm: TTabForm
     Options.AutoStop = False
     Connection = DM.FDConnection
     Left = 164
+    Top = 229
+  end
+  object GenUpdTransUPD: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 252
     Top = 229
   end
 end

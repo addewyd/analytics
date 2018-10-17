@@ -56,6 +56,7 @@ type
     ggg1: TMenuItem;
     GenUpdQuery: TFDQuery;
     GenUpdTrans: TFDTransaction;
+    GenUpdTransUPD: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -238,6 +239,10 @@ begin
     end;
 
     try
+
+      GenUpdQuery.Transaction.StartTransaction;
+      GenUpdQuery.UpdateTransaction.StartTransaction;
+
       with GenUpdQuery do
       begin
         Sql.Text := sqlt;
@@ -280,7 +285,6 @@ begin
         ParamByName('old_warecode').AsString := old_warecode;
         ParamByName('tanknum').AsString := tanknum;
         ParamByName('azs').AsString := current_azscode;
-        Transaction.StartTransaction;
         Prepare;
         ExecSQL;
 
@@ -331,28 +335,29 @@ begin
         ParamByName('old_warecode').AsString := old_warecode;
         ParamByName('tanknum').AsString := tanknum;
         ParamByName('azs').AsString := current_azscode;
-        Transaction.StartTransaction;
         Prepare;
         ExecSQL;
 
       end;
 
+      GenUpdQuery.UpdateTransaction.Commit;
       GenUpdQuery.Transaction.Commit;
       //DM.FDConnection.Close;
 
-      ShowAllData;
 
       msg.Msg := WM_WARECHANGED;
       MainForm.SendMsgs(msg);
     except
       on e: Exception do
       begin
+        GenUpdQuery.UpdateTransaction.Rollback;
         GenUpdQuery.Transaction.Rollback;
         AddToLog(e.Message);
-        Exit;
       end;
 
     end;
+
+    ShowAllData;
 
   end;
 
