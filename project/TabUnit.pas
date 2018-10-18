@@ -59,6 +59,8 @@ type
     GenUpdTransUPD: TFDTransaction;
     QueryRealPmSum: TFDQuery;
     IOTHFooter: TJvDBGridFooter;
+    SCNTPMenu: TPopupMenu;
+    SCNT1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -86,6 +88,9 @@ type
     procedure FPMClick(Sender: TObject);
     procedure IOTHFooterCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
+    procedure SCNT1Click(Sender: TObject);
+    procedure DSRealPMFieldChanged(Sender: TObject; Field: TField);
+    procedure DSInOutFieldChanged(Sender: TObject; Field: TField);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -137,6 +142,20 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.DSInOutFieldChanged(Sender: TObject; Field: TField);
+var
+  f, fname: String;
+begin
+  inherited;
+  fname := Field.FieldName;
+  f := Field.AsString;
+    AddToLog(fname + ' ' + f);
+    dirtyGSM := true;
+
+end;
+
+// .............................................................................
+
 procedure TTabForm.DSIOTHFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
@@ -144,10 +163,22 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-  if fname = 'FUELNAME' then
-  begin
     AddToLog(fname + ' ' + f);
-  end;
+    dirtyIOTH := true;
+end;
+
+// .............................................................................
+
+procedure TTabForm.DSRealPMFieldChanged(Sender: TObject; Field: TField);
+  var
+    f, fname: String;
+begin
+  inherited;
+  fname := Field.FieldName;
+  f := Field.AsString;
+    AddToLog(fname + ' ' + f);
+    dirtyPM := true;
+
 end;
 
 // .............................................................................
@@ -473,6 +504,14 @@ begin
 
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.SCNT1Click(Sender: TObject);
+begin
+  inherited;
+  AddToLog('SCNT');
 end;
 
 // .............................................................................
@@ -994,7 +1033,7 @@ end;
 procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
   //
-  dirtyGSM := true;
+//  dirtyGSM := true;
 end;
 
 // .............................................................................
@@ -1082,7 +1121,7 @@ end;
 procedure TTabForm.IOTHGridEditChange(Sender: TObject);
 begin
   inherited;
-  dirtyIOTH := true;
+//  dirtyIOTH := true;  // in ds.Datafield change
   //
 end;
 
@@ -1107,7 +1146,7 @@ end;
 procedure TTabForm.RealPMGridEditChange(Sender: TObject);
 begin
   inherited;
-  dirtyPM := true;
+//  dirtyPM := true;  // in ds.datafieldchange
 end;
 
 

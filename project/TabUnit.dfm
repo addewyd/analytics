@@ -130,7 +130,7 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'FUELNAME'
               PopupMenu = FuelPopupMenu
-              Title.Caption = #1075#1089#1084
+              Title.Caption = #1043#1057#1052
               Width = 40
               Visible = True
             end
@@ -138,6 +138,7 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'TANKNUM'
               ReadOnly = True
+              Title.Caption = #1025#1084#1082#1086#1089#1090#1100
               Width = 20
               Visible = True
             end
@@ -165,6 +166,7 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'ENDFACTVOLUME'
+              Title.Caption = #1060#1072#1082#1090'. '#1054#1089#1090'.'
               Visible = True
             end
             item
@@ -178,36 +180,50 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'HOSENUM'
               ReadOnly = True
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'STCNT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ECNT'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'TEMPERATURE'
+              Title.Caption = #8470' '#1056#1091#1082
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'HEIGHT'
+              Title.Caption = #1059#1088#1086#1074#1077#1085#1100
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MASS'
+              Title.Caption = #1052#1072#1089#1089#1072
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'DENSITY'
+              Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'TEMPERATURE'
+              Title.Caption = #1058#1077#1084' '#176#1057
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'WATER'
+              Title.Caption = #1042#1086#1076#1072
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'STCNT'
+              PopupMenu = SCNTPMenu
+              Title.Caption = #1057#1095'. '#1053#1072#1095#1072#1083#1086
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'ECNT'
+              Title.Caption = #1057#1095'. '#1050#1086#1085#1077#1094
               Visible = True
             end
             item
@@ -215,11 +231,6 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'R'
               Width = 24
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DENSITY'
               Visible = True
             end>
         end
@@ -13119,6 +13130,7 @@ inherited TabForm: TTabForm
   end
   object DSInOut: TJvDataSource
     DataSet = QueryInOut
+    OnFieldChanged = DSInOutFieldChanged
     Left = 348
     Top = 141
   end
@@ -13238,14 +13250,15 @@ inherited TabForm: TTabForm
       end>
   end
   object FuelPopupMenu: TPopupMenu
-    Left = 84
-    Top = 125
+    Left = 28
+    Top = 101
     object ggg1: TMenuItem
       Caption = 'ggg'
     end
   end
   object DSRealPM: TJvDataSource
     DataSet = QueryRealPM
+    OnFieldChanged = DSRealPMFieldChanged
     Left = 436
     Top = 253
   end
@@ -13374,8 +13387,8 @@ inherited TabForm: TTabForm
     Top = 429
   end
   object StartVPMenu: TPopupMenu
-    Left = 156
-    Top = 125
+    Left = 172
+    Top = 101
     object SetPrevSessionData1: TMenuItem
       Caption = 'Set Prev Session Data'
       OnClick = SetPrevSessionData1Click
@@ -13409,5 +13422,13 @@ inherited TabForm: TTabForm
     UpdateTransaction = TransPM
     Left = 508
     Top = 317
+  end
+  object SCNTPMenu: TPopupMenu
+    Left = 100
+    Top = 101
+    object SCNT1: TMenuItem
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1089' '#1087#1088#1077#1076#1099#1076#1091#1097#1077#1081' '#1089#1084#1077#1085#1099
+      OnClick = SCNT1Click
+    end
   end
 end
