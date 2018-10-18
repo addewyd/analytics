@@ -58,6 +58,7 @@ type
     GenUpdTrans: TFDTransaction;
     GenUpdTransUPD: TFDTransaction;
     QueryRealPmSum: TFDQuery;
+    IOTHFooter: TJvDBGridFooter;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -83,6 +84,8 @@ type
     procedure RButtonClick(Sender: TObject);
     procedure DSIOTHFieldChanged(Sender: TObject; Field: TField);
     procedure FPMClick(Sender: TObject);
+    procedure IOTHFooterCalculate(Sender: TJvDBGridFooter;
+      const FieldName: string; var CalcValue: Variant);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -381,7 +384,7 @@ var
 begin
   result := '';
 
-  sumth := 'select ';
+  sumth := 'select sum(volume) as volume, ';
 
   th := 'select' + '    i.session_id,' +
     '    cast(s.startdatetime as date) as stdt,' + '    i.payment_code,' +
@@ -553,7 +556,15 @@ var
 begin
 
   LoadWareList();
-  RealPMFooter.Columns.Clear;
+  with RealPMFooter.Columns do
+  begin
+    Clear;
+      with Add do
+      begin
+        FieldName := 'VOLUME';
+      end;
+  end;
+
   with RealPMGrid do
   begin
     with Columns do
@@ -573,7 +584,7 @@ begin
       end;
       with Add do
       begin
-        FieldName := 'volume';
+        FieldName := 'VOLUME';
         Title.Caption := 'Îáú¸ì';
       end;
     end;
@@ -647,6 +658,8 @@ begin
       QueryRealPmSum.Prepare;
       QueryRealPmSum.Open;
       // Transaction.Commit;
+      RealPMFooter.ReCalc;
+//      RealPMFooter.Refresh;
     except
       on e: Exception do
       begin
@@ -982,6 +995,15 @@ procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
 begin
   //
   dirtyGSM := true;
+end;
+
+// .............................................................................
+
+procedure TTabForm.IOTHFooterCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
+begin
+  inherited;
+  CalcValue := FieldName;
 end;
 
 // .............................................................................

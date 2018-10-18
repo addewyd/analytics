@@ -469,6 +469,8 @@ end;
 // .............................................................................
 
 procedure TMainForm.ClearDBActionExecute(Sender: TObject);
+  var
+    msg: TMessage;
 begin
 
   YNForm := TYNForm.Create(self);
@@ -532,6 +534,8 @@ begin
           AddToLog('deleted from sessions');
 
           Transaction.Commit;
+          msg.Msg := WM_SESSION_DELETED;
+          SendMsgs(msg);
         except
           on e: Exception do
           begin
@@ -546,6 +550,8 @@ end;
 
 
 procedure TMainForm.DelSessionsActionExecute(Sender: TObject);
+  var
+    msg: TMessage;
 begin
 //
   YNForm := TYNForm.Create(self);
@@ -563,6 +569,8 @@ begin
           ExecSQL('delete from iotankshoses');
           AddToLog('deleted from iotankshoses');
           Transaction.Commit;
+          msg.Msg := WM_SESSION_DELETED;
+          SendMsgs(msg);
         except
           Transaction.Rollback;
         end;
@@ -623,9 +631,10 @@ begin
   tsd.FDQuery.First;
 
   br := tsd.ShowModal;
-  if br = mrCancel then
+  if (br = mrCancel) or (tsd.uid < 0) then
   begin
-    Application.Terminate;
+//    Application.Terminate;
+      Self.Close;
   end;
 
 // AddToLog(

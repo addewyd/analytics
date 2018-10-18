@@ -27,6 +27,7 @@ type
     { Public declarations }
     function GetStartSession: String;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+    procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure PrepareAndLoad;
   end;
 
@@ -175,5 +176,12 @@ begin
   PrepareAndLoad;
 end;
 
+// .............................................................................
+
+procedure TSessionListForm.sessiondeleted(var Msg: TMessage);
+begin
+  AddToLog('SESSIONDELETED');
+  PrepareAndLoad;
+end;
 
 end.

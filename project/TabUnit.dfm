@@ -9,7 +9,6 @@ inherited TabForm: TTabForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 735
-    ExplicitTop = -6
     ExplicitWidth = 735
     object ToolButton2: TToolButton
       Left = 23
@@ -56,7 +55,7 @@ inherited TabForm: TTabForm
           Height = 3
           Cursor = crVSplit
           Align = alTop
-          ExplicitWidth = 224
+          ExplicitTop = 132
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
@@ -71,9 +70,9 @@ inherited TabForm: TTabForm
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
-          Top = 141
+          Top = 160
           Width = 725
-          Height = 295
+          Height = 276
           Align = alClient
           DataSource = DSRealPM
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -137,13 +136,6 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
-              FieldName = 'STARTFUELVOLUME'
-              PopupMenu = StartVPMenu
-              Title.Caption = #1053#1072#1095' '#1054#1073#1098#1105#1084
-              Visible = True
-            end
-            item
-              Expanded = False
               FieldName = 'TANKNUM'
               ReadOnly = True
               Width = 20
@@ -151,19 +143,35 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
+              FieldName = 'STARTFUELVOLUME'
+              PopupMenu = StartVPMenu
+              Title.Caption = #1053#1072#1095' '#1054#1073#1098#1105#1084
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CALC'
               ReadOnly = True
+              Title.Caption = #1054#1090#1087#1091#1089#1082
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'CALCIN'
               ReadOnly = True
+              Title.Caption = #1055#1088#1080#1085#1103#1090#1086
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'ENDFACTVOLUME'
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'FACT'
+              ReadOnly = True
+              Title.Caption = 'FACT ???'
               Visible = True
             end
             item
@@ -208,6 +216,11 @@ inherited TabForm: TTabForm
               FieldName = 'R'
               Width = 24
               Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'DENSITY'
+              Visible = True
             end>
         end
         object RButton: TButton
@@ -219,6 +232,26 @@ inherited TabForm: TTabForm
           TabOrder = 3
           Visible = False
           OnClick = RButtonClick
+        end
+        object IOTHFooter: TJvDBGridFooter
+          Left = 1
+          Top = 141
+          Width = 725
+          Height = 19
+          Align = alTop
+          SizeGrip = True
+          Columns = <
+            item
+              Alignment = taRightJustify
+              FieldName = 'CALC'
+            end
+            item
+              Alignment = taRightJustify
+              FieldName = 'FACT'
+            end>
+          DataSource = DSIOTH
+          DBGrid = IOTHGrid
+          OnCalculate = IOTHFooterCalculate
         end
       end
     end
@@ -374,6 +407,9 @@ inherited TabForm: TTabForm
     Top = 360
   end
   inherited JvFS: TJvFormStorage
+    StoredProps.Strings = (
+      'IOTHGrid.Height'
+      'Spl01.top')
     Left = 56
     Top = 360
   end
@@ -402,7 +438,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13171,11 +13207,13 @@ inherited TabForm: TTabForm
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
+      '   density,'
       '    temperature,'
       '    height,'
       '    mass,'
       '    water,'
-      '    warecode'
+      '    warecode,'
+      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact'
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'

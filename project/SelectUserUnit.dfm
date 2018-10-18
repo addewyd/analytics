@@ -15,6 +15,7 @@ object SelectUser: TSelectUser
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   DesignSize = (
     265
     243)

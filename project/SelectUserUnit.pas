@@ -19,6 +19,7 @@ type
     FDQuery: TFDQuery;
     combo: TJvDBLookupEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,13 +39,35 @@ implementation
 uses DmUnit;
 
 procedure TSelectUser.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  id: integer;
 begin
-  FDQuery.Locate('id', combo.LookupValue, []);
-  uid := FDQuery.FieldByName('id').AsInteger;
-  urole := FDQuery.FieldByName('urole').AsInteger;
-  login := FDQuery.FieldByName('login').AsString;
-  fio := FDQuery.FieldByName('fio').AsString;
+  uid := -1;
+  id := StrToIntDef(combo.LookupValue, uid);
+
+  if id > 0 then with FDQuery do
+  begin
+    if Eof then
+    begin
+  //    uid := -1;
+    end
+    else
+    begin
+      uid := FieldByName('id').AsInteger;
+      urole := FieldByName('urole').AsInteger;
+      login := FieldByName('login').AsString;
+      fio := FieldByName('fio').AsString;
+    end;
+  end;
   Action := caFree;
+end;
+
+procedure TSelectUser.FormCreate(Sender: TObject);
+begin
+  FDQuery.Transaction.StartTransaction;
+  FDQuery.Open();
+  FDQuery.First;
+  combo.Refresh;
 end;
 
 end.
