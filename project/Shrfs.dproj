@@ -177,6 +177,10 @@
             <Form>WinListDlg</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="CntReplaceUnit.pas">
+            <Form>CntReplaceDlg</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

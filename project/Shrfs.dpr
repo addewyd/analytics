@@ -28,7 +28,8 @@ uses
   OptionsDialogUnit in 'OptionsDialogUnit.pas' {OptionsDialog},
   TabUnit in 'TabUnit.pas' {TabForm},
   SelectUserUnit in 'SelectUserUnit.pas' {SelectUser},
-  WindowListUnit in 'WindowListUnit.pas' {WinListDlg};
+  WindowListUnit in 'WindowListUnit.pas' {WinListDlg},
+  CntReplaceUnit in 'CntReplaceUnit.pas' {CntReplaceDlg};
 
 {$R *.res}
 
