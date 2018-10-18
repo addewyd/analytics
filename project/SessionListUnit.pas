@@ -21,6 +21,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
+    procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -88,7 +89,7 @@ procedure TSessionListForm.JvDBGridDblClick(Sender: TObject);
 begin
   inherited;
   //
-    AddToLog(FDQuery.FieldByName('sessionnum').asString);
+  AddToLog(FDQuery.FieldByName('sessionnum').asString);
 
   if not MainForm.isWinOpen('tabform')
   then
@@ -107,6 +108,16 @@ begin
       FDQuery.FieldByName('sdt').asString
       );
 
+end;
+
+procedure TSessionListForm.JvDBGridKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if ord(Key) = VK_RETURN then
+  begin
+     Key := #0;
+     JvDBGridDblClick(Sender);
+  end;
 end;
 
 // .............................................................................

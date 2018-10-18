@@ -28,6 +28,7 @@ inherited SessionListForm: TSessionListForm
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
     OnDblClick = JvDBGridDblClick
+    OnKeyPress = JvDBGridKeyPress
     Columns = <
       item
         Expanded = False
