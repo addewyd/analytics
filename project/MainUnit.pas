@@ -634,7 +634,11 @@ begin
   if (br = mrCancel) or (tsd.uid < 0) then
   begin
 //    Application.Terminate;
+      if HTTPServer.Active then
+        HTTPServer.Active := false;
+
       Self.Close;
+      Exit;
   end;
 
 // AddToLog(
@@ -690,7 +694,6 @@ begin
 end;
 
 // .............................................................................
-
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
