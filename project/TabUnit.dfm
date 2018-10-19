@@ -75,6 +75,7 @@ inherited TabForm: TTabForm
           Height = 276
           Align = alClient
           DataSource = DSRealPM
+          DefaultDrawing = False
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           ReadOnly = True
           TabOrder = 2
@@ -83,15 +84,21 @@ inherited TabForm: TTabForm
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnDrawColumnCell = RealPMGridDrawColumnCell
           AutoAppend = False
           IniStorage = JvFS
           OnEditChange = RealPMGridEditChange
+          OnDrawColumnTitle = RealPMGridDrawColumnTitle
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
           EditControls = <>
-          RowsHeight = 17
-          TitleRowHeight = 17
+          AutoSizeRows = False
+          RowResize = True
+          RowsHeight = 34
+          TitleRowHeight = 34
+          WordWrap = True
+          WordWrapAllFields = True
           Columns = <
             item
               Expanded = False
@@ -119,6 +126,7 @@ inherited TabForm: TTabForm
           AutoAppend = False
           IniStorage = JvFS
           OnEditChange = IOTHGridEditChange
+          OnDrawColumnTitle = IOTHGridDrawColumnTitle
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -126,6 +134,7 @@ inherited TabForm: TTabForm
           AutoSizeRows = False
           RowsHeight = 17
           TitleRowHeight = 34
+          WordWrap = True
           Columns = <
             item
               Expanded = False
@@ -408,18 +417,10 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -429,7 +430,8 @@ inherited TabForm: TTabForm
   inherited JvFS: TJvFormStorage
     StoredProps.Strings = (
       'IOTHGrid.Height'
-      'Spl01.top')
+      'Spl01.top'
+      'RealPMGrid.RowsHeight')
     Left = 56
     Top = 360
   end

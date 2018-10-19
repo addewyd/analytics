@@ -1,4 +1,4 @@
-unit TabUnit;
+п»їunit TabUnit;
 
 interface
 
@@ -92,6 +92,16 @@ type
     procedure SCNT1Click(Sender: TObject);
     procedure DSRealPMFieldChanged(Sender: TObject; Field: TField);
     procedure DSInOutFieldChanged(Sender: TObject; Field: TField);
+    procedure IOTHGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
+      ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
+      IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
+      DefaultDrawSortMarker: Boolean);
+    procedure RealPMGridDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure RealPMGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
+      ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
+      IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
+      DefaultDrawSortMarker: Boolean);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -130,7 +140,7 @@ implementation
 
 {$R *.dfm}
 
-uses DmUnit, MainUnit, YNUnit, CntReplaceUnit;
+uses DmUnit, MainUnit, YNUnit, CntReplaceUnit, StrUtils;
 
 constructor TTabForm.Create(pr: TComponent; fname: String;
   _sid, _snum: Integer; _sdt: String);
@@ -408,7 +418,7 @@ end;
 
 function TTabForm.GenPMSql(var sumsql: String): String;
 var
-  th, tf, tm: String;
+  th, tf, tm, tmp: String;
   sumth, sumtf, sumtm: String;
   len, i: Integer;
   st: String;
@@ -421,7 +431,9 @@ begin
     '    cast(s.startdatetime as date) as stdt,' + '    i.payment_code,' +
     '    p.name as pmode,' +
 
-    '    sum(i.volume) as volume,';
+    '    sum(i.volume) as volume,' +
+    '    sum(i.amount) as amount,'
+    ;
 
   len := warelist.Count;
   for i := 0 to len - 1 do
@@ -432,7 +444,14 @@ begin
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
-    th := th + tm;
+
+    tmp := 'coalesce((select sum(i1.amount) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+      + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
+      '        and i1.direction=0 ' +
+      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
+      + '0)  as amount_' + st + ',';
+
+    th := th + tm + tmp;
 
     sumtm := sumtm + ' sum(volume_' + st + ') as volume_' + st + ',';
 
@@ -602,7 +621,7 @@ begin
 
       nrec := RecordCount;
 
-      crd.Text01.Caption := Format('Всего %d записей', [nrec]);
+      crd.Text01.Caption := Format('Р’СЃРµРіРѕ %d Р·Р°РїРёСЃРµР№', [nrec]);
 
       PrevRecId := -1;
 
@@ -627,7 +646,7 @@ begin
         i := FieldByName('id').AsInteger;
         if i = cur_rec_id then
         begin
-          crd.Text02.Caption := 'Нет предыдущей смены';
+          crd.Text02.Caption := 'РќРµС‚ РїСЂРµРґС‹РґСѓС‰РµР№ СЃРјРµРЅС‹';
         end
         else
         begin
@@ -674,7 +693,7 @@ begin
 
             Next;
           end;
-          crd.Text02.Caption := Format('Для замены %d записей',
+          crd.Text02.Caption := Format('Р”Р»СЏ Р·Р°РјРµРЅС‹ %d Р·Р°РїРёСЃРµР№',
             [nrec_for_repl]);
 
           // .....................................................................
@@ -829,7 +848,7 @@ begin
       with Add do
       begin
         FieldName := 'VOLUME';
-        Title.Caption := 'Объём';
+        Title.Caption := 'РћР±СЉС‘Рј';
       end;
     end;
 
@@ -1297,6 +1316,15 @@ begin
 
 end;
 
+procedure TTabForm.IOTHGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
+  ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
+  IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
+  DefaultDrawSortMarker: Boolean);
+begin
+  inherited;
+//  ACanvas.TextRect(ARect, 0, 0, AColumn.Title.Caption + '(c)');
+end;
+
 // .............................................................................
 
 procedure TTabForm.IOTHGridDrawDataCell(Sender: TObject; const Rect: TRect;
@@ -1371,9 +1399,9 @@ end
 
   YNForm := TYNForm.Create(self);
   YNForm.Memo1.Font.Height := 18;
-  YNForm.Memo1.Lines.Add('Уверены, что хотите');
-  YNForm.Memo1.Lines.Add('восстановить строку');
-  YNForm.Memo1.Lines.Add('из файла?');
+  YNForm.Memo1.Lines.Add('РЈРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ');
+  YNForm.Memo1.Lines.Add('РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС‚СЂРѕРєСѓ');
+  YNForm.Memo1.Lines.Add('РёР· С„Р°Р№Р»Р°?');
   if YNForm.ShowModal <> mrOK then
   begin
     Exit;
@@ -1480,6 +1508,65 @@ begin
 end;
 
 // .............................................................................
+
+procedure TTabForm.RealPMGridDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+
+var
+  fn, fv, fp: String;
+  p, v: Extended;
+  TextRect: TRect;
+begin
+  inherited;
+
+//  AddToLog(format('%s %d %d %d',
+  //  [Column.Title.Caption,
+    //  Rect.Top,
+      //Rect.Left,
+      //RealPMGrid.Canvas.Font.Size
+      //]));
+  fn := Column.FieldName;
+  fv := QueryRealPM.FieldByName(fn).AsString;
+
+  if LeftStr(fn, 6) = 'VOLUME' then
+  begin
+    fn := StringReplace(fn, 'VOLUME', 'AMOUNT', []);
+
+    p := QueryRealPM.FieldByName(fn).AsExtended;
+//    v := StrToextDef(fv, 0);
+
+    fp := format('в‚Ѕ %10.2f', [p]);
+  end
+  else
+  begin
+    fp := '';
+  end;
+
+  RealPMGrid.Canvas.Brush.Color := clYellow;
+  RealPMGrid.Canvas.FillRect(Rect);
+  RealPMGrid.Canvas.Pen.Color := clBlack;
+  RealPMGrid.Canvas.Font.Color := clBlack;
+  TextRect := Rect;
+
+  TextRect.Bottom := TextRect.Top + RealPMGrid.RowsHeight div 2;
+
+  RealPMGrid.Canvas.TextRect(TextRect, TextRect.Left + 2, TextRect.Top + 2, fv);
+
+  OffsetRect(TextRect, 0, RealPMGrid.RowsHeight DIV 2);
+
+  RealPMGrid.Canvas.TextRect(TextRect, TextRect.Left + 2,
+    TextRect.Top + 2,  fp);
+
+end;
+
+procedure TTabForm.RealPMGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
+  ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
+  IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
+  DefaultDrawSortMarker: Boolean);
+begin
+  inherited;
+//
+end;
 
 procedure TTabForm.RealPMGridEditChange(Sender: TObject);
 begin
