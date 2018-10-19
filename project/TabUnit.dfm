@@ -13431,4 +13431,12 @@ inherited TabForm: TTabForm
       OnClick = SCNT1Click
     end
   end
+  object RestoreIOTHRec: TFDStoredProc
+    Connection = DM.FDConnection
+    Transaction = GenUpdTrans
+    UpdateTransaction = GenUpdTransUPD
+    StoredProcName = 'RESTOREIOTHREC'
+    Left = 588
+    Top = 101
+  end
 end

@@ -61,6 +61,7 @@ type
     IOTHFooter: TJvDBGridFooter;
     SCNTPMenu: TPopupMenu;
     SCNT1: TMenuItem;
+    RestoreIOTHRec: TFDStoredProc;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -384,8 +385,6 @@ begin
 
       GenUpdQuery.UpdateTransaction.Commit;
       GenUpdQuery.Transaction.Commit;
-      //DM.FDConnection.Close;
-
 
       msg.Msg := WM_WARECHANGED;
       MainForm.SendMsgs(msg);
@@ -1319,10 +1318,129 @@ end;
 // .............................................................................
 
 procedure TTabForm.RButtonClick(Sender: TObject);
+  var
+    msg: Tmessage;
 begin
   inherited;
   dirtyIOTH := true;
-  AddToLog(QueryIOTH.FieldByName('id').AsString);
+  AddToLog('Restore original ' +QueryIOTH.FieldByName('id').AsString);
+  {
+
+  key: session_id, azscode,tanknum,hosenum
+
+    stored proc RESTOREIOTHREC
+
+DDL
+--------------------------------------------------
+create or alter procedure restoreiothrec (
+    session_id integer not null,
+    azscode varchar(10) not null,
+    tanknum varchar(10) not null,
+    hosenum integer not null)
+as
+declare variable scnt double precision not null;
+declare variable ecnt double precision not null;
+begin
+  for select distinct
+                h.startcounter,
+                h.endcounter
+                from
+                    hoses h
+                    inner join tanks t on h.tanknum = t.tanknum
+                    join sessions s on s.id = h.session_id
+
+                where t.session_id = :session_id
+                    and s.id = t.session_id
+                    and s.id = t.session_id
+                    and t.tanknum = :tanknum
+                    and h.hosenum = :hosenum
+            into :scnt, :ecnt
+    do update iotankshoses
+        set startcounter = :scnt,
+            endcounter = :ecnt
+        where
+            session_id = :session_id
+            and azscode = :azscode
+            and tanknum = :tanknum
+            and hosenum = :hosenum
+            ;
+
+  suspend;
+end
+
+  }
+
+  with RestoreIOTHRec do
+  begin
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'hosenum';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'tanknum';
+        DataType := ftWideString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftWideString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').asInteger := session_id;
+    ParamByName('hosenum').asInteger := QueryIOTH.FieldByName('hosenum').AsInteger;
+    ParamByName('tanknum').AsWideString := QueryIOTH.FieldByName('tanknum').AsWideString;
+    ParamByName('azscode').AsWideString := current_azscode;
+
+
+    if dirtyIOTH then
+    begin
+      if QueryIOTH.Transaction.Active then
+        QueryIOTH.Transaction.Commit;
+      dirtyIOTH := false;
+    end;
+
+    try
+
+      Transaction.StartTransaction;
+      UpdateTransaction.StartTransaction;
+
+      prepare;
+      ExecProc;
+      UpdateTransaction.Commit;
+      Transaction.Commit;
+
+      msg.Msg := WM_RECRESTORED;
+      MainForm.SendMsgs(msg);
+
+
+    except
+      on e: Exception do
+      begin
+        UpdateTransaction.Rollback;
+        Transaction.Rollback;
+        AddToLog(e.Message);
+      end;
+
+    end;
+
+  end;
+
+  ShowAllData;
+
 end;
 
 // .............................................................................
