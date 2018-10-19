@@ -102,6 +102,7 @@ type
     procedure LoadWareList;
     function GenPMSql(var sumsql: string): String;
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
+    procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
   public
     { Public declarations }
     sst: String;
@@ -149,7 +150,7 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-    AddToLog(fname + ' ' + f);
+    AddToLog(fname + ' DSCh ' + f);
     dirtyGSM := true;
 
 end;
@@ -163,8 +164,8 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-    AddToLog(fname + ' ' + f);
-    dirtyIOTH := true;
+  AddToLog(fname + ' DSCh ' + f);
+  dirtyIOTH := true;
 end;
 
 // .............................................................................
@@ -176,7 +177,7 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-    AddToLog(fname + ' ' + f);
+    AddToLog(fname + ' DSCh ' + f);
     dirtyPM := true;
 
 end;
@@ -509,23 +510,15 @@ end;
 // .............................................................................
 
 procedure TTabForm.SCNT1Click(Sender: TObject);
-  type Rec =
-    record
-      id, session_id: Integer;
-      prev_id, prev_session_id: Integer;
-      scnt, ecnt, prev_scnt, prev_ecnt: Extended;
-
-  end;
-
+{
+  type Rec = // In consts.inc
+}
   var
     sqlt: String;
     crd: TCntReplaceDlg;
-    i, nrec, nrec_for_repl, PrevRecId, cur_rec_id: Integer;
-
-    records: Array of Rec;
-
+    i, mr, nrec, nrec_for_repl, PrevRecId, cur_rec_id: Integer;
+    records: TRecArray;
     currec: Rec;
-
 
 begin
   inherited;
@@ -536,8 +529,10 @@ begin
 //  current_azscode
 // tanknum & hosenum (int) := q.fieldbyname
 
-    sqlt := 'select i.id, i.session_id, startcounter, endcounter' +
-      ' from iotankshoses i join sessions s on i.session_id = s.id ' +
+    sqlt := 'select i.id, i.session_id, startcounter, endcounter,' +
+      ' (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) as calc' +
+      ' from iotankshoses i join sessions s on i.session_id = s.id' +
+
       ' where s.azscode = :azscode and tanknum = :tanknum and hosenum = :hosenum' +
       ' order by i.session_id asc';
 
@@ -570,7 +565,7 @@ begin
 
   with crd.FDQuery do
   begin
-    SQL.Text := sqlt;
+    Sql.Text := sqlt;
     with Params do
     begin
       with Add do
@@ -593,120 +588,135 @@ begin
       end;
     end;
     ParamByName('azscode').AsString := current_azscode;
-    ParamByName('tanknum').AsString := QueryIOTH.FieldByName('tanknum').asString;
-    ParamByName('hosenum').AsInteger := QueryIOTH.FieldByName('hosenum').asInteger;
+    ParamByName('tanknum').AsString := QueryIOTH.FieldByName('tanknum')
+      .AsString;
+    ParamByName('hosenum').AsInteger := QueryIOTH.FieldByName('hosenum')
+      .AsInteger;
 
     crd.Text02.Caption := '';
 
     Transaction.StartTransaction;
+    try
 
-    prepare;
-    Open;
+      Prepare;
+      Open;
 
-    nrec := RecordCount;
+      nrec := RecordCount;
 
-    crd.Text01.Caption := format('Всего %d записей', [nrec]);
+      crd.Text01.Caption := Format('Всего %d записей', [nrec]);
 
-    PrevRecId := -1;
+      PrevRecId := -1;
 
-    currec.session_id := QueryIOTH.FieldByName('session_id').AsInteger;
-    currec.prev_session_id := 0;
+      currec.session_id := QueryIOTH.FieldByName('session_id').AsInteger;
+      currec.prev_session_id := 0;
 
-    currec.scnt := QueryIOTH.FieldByName('stcnt').AsExtended;
-    currec.ecnt := QueryIOTH.FieldByName('ecnt').AsExtended;
+      currec.scnt := QueryIOTH.FieldByName('stcnt').AsExtended;
+      currec.ecnt := QueryIOTH.FieldByName('ecnt').AsExtended;
 
-    currec.prev_scnt := 0;
-    currec.prev_ecnt := 0;
+      currec.prev_scnt := 0;
+      currec.prev_ecnt := 0;
 
-    cur_rec_id := QueryIOTH.FieldByName('id').asInteger;
+      cur_rec_id := QueryIOTH.FieldByName('id').AsInteger;
 
-    nrec_for_repl := 0;
+      nrec_for_repl := 0;
 
-    if nrec > 0 then
-    begin
-      SetLength(records, nrec);
-
-      First;
-      i := FieldByName('id').AsInteger;
-      if i = cur_rec_id then
+      if nrec > 0 then
       begin
-        crd.Text02.Caption := 'Нет предыдущей смены';
-      end
-      else
-      begin
-        while not eof do
+        SetLength(records, nrec);
+
+        First;
+        i := FieldByName('id').AsInteger;
+        if i = cur_rec_id then
         begin
-
-          if PrevRecId > -1 then
+          crd.Text02.Caption := 'Нет предыдущей смены';
+        end
+        else
+        begin
+          while not Eof do
           begin
-            i := FieldByName('id').AsInteger;
-            if  i >= cur_rec_id then
+
+            if PrevRecId > -1 then
             begin
+              i := FieldByName('id').AsInteger;
+              if i >= cur_rec_id then
+              begin
 
-              records[nrec_for_repl].prev_id := PrevRecId;
+                records[nrec_for_repl].prev_id := PrevRecId;
 
-              records[nrec_for_repl].id := i;
+                records[nrec_for_repl].id := i;
 
-              records[nrec_for_repl].session_id :=
-                FieldByName('session_id').AsInteger;
-              records[nrec_for_repl].scnt :=
-                FieldByName('startcounter').AsExtended;
-              records[nrec_for_repl].ecnt :=
-                FieldByName('endcounter').AsExtended;
+                records[nrec_for_repl].session_id := FieldByName('session_id')
+                  .AsInteger;
+                records[nrec_for_repl].scnt := FieldByName('startcounter')
+                  .AsExtended;
+                records[nrec_for_repl].ecnt := FieldByName('endcounter')
+                  .AsExtended;
 
-              records[nrec_for_repl].prev_session_id := currec.session_id;
-              records[nrec_for_repl].prev_scnt := currec.scnt;
-              records[nrec_for_repl].prev_ecnt := currec.ecnt;
+                records[nrec_for_repl].prev_session_id := currec.session_id;
+                records[nrec_for_repl].prev_scnt := currec.scnt;
+                records[nrec_for_repl].prev_ecnt := currec.ecnt;
 
+                records[nrec_for_repl].outcome := FieldByName('calc')
+                  .AsExtended;
 
-              nrec_for_repl := nrec_for_repl + 1;
+                nrec_for_repl := nrec_for_repl + 1;
 
+              end;
+            end
+            else
+            begin
+              //
             end;
-          end
-          else
-          begin
-          //
+
+            PrevRecId := FieldByName('id').AsInteger;
+            currec.session_id := FieldByName('session_id').AsInteger;
+            currec.scnt := FieldByName('startcounter').AsExtended;
+            currec.ecnt := FieldByName('endcounter').AsExtended;
+
+            Next;
           end;
+          crd.Text02.Caption := Format('Для замены %d записей',
+            [nrec_for_repl]);
 
-          PrevRecId := FieldByName('id').AsInteger;
-          currec.session_id := FieldByName('session_id').AsInteger;
-          currec.scnt := FieldByName('startcounter').AsExtended;
-          currec.ecnt := FieldByName('endcounter').AsExtended;
+          // .....................................................................
 
-          Next;
-        end;
-        crd.Text02.Caption := format('Для замены %d записей', [nrec_for_repl]);
+          crd.RecMemo.Lines.Clear;
+          for i := 0 to nrec_for_repl - 1 do
+          begin
+            crd.RecMemo.Lines.Add
+              (Format('previd %d id %d prevsid %d sid %d !!! ps %g pe %g s %g e %g (c %g)',
+              [records[i].prev_id, records[i].id, records[i].prev_session_id,
+              records[i].session_id, records[i].prev_scnt, records[i].prev_ecnt,
+              records[i].scnt, records[i].ecnt, records[i].outcome]));
 
-        // .....................................................................
-
-        crd.RecMemo.Lines.Clear;
-        for i := 0 to nrec_for_repl -1 do
-        begin
-          crd.RecMemo.Lines.Add(
-            format('previd %d id %d prevsid %d sid %d !!! ps %g pe %g s %g e %g',
-            [
-              records[i].prev_id,
-              records[i].id,
-              records[i].prev_session_id,
-              records[i].session_id,
-              records[i].prev_scnt,
-              records[i].prev_ecnt,
-              records[i].scnt,
-              records[i].ecnt
-            ]
-              ));
+          end;
 
         end;
 
       end;
+      Transaction.Commit
+    except
+      on e: Exception do
+      begin
+        Transaction.Rollback;
+        AddToLog(e.Message);
+        exit;
+      end;
 
     end;
 
-
   end;
 
-  crd.ShowModal;
+  crd.records := @records;
+  crd.reccount := nrec_for_repl;
+  crd.QIOTH := QueryIOTH;
 
+  mr := crd.ShowModal;
+  if mr = mrOk then
+  begin
+    AddToLog('ReplCnt mrOK');
+    ShowIOTHData;
+  end;
 
 end;
 
@@ -992,6 +1002,7 @@ begin
       begin
         if dirtyIOTH then
         begin
+          Close;
           Transaction.Commit;
           cmt := true;
           UpdateState(QueryIOTH);
@@ -1007,6 +1018,7 @@ begin
       begin
         if dirtyPM then
         begin
+          Close;
           Transaction.Commit;
           cmt := true;
           UpdateState(QueryRealPM);
@@ -1022,6 +1034,7 @@ begin
       begin
         if dirtyGSM then
         begin
+          Close;
           Transaction.Commit;
           cmt := true;
           UpdateState(QueryInOut);
@@ -1345,10 +1358,21 @@ begin
 //  dirtyPM := true;  // in ds.datafieldchange
 end;
 
+// .............................................................................
+
 
 procedure TTabForm.warechanged(var Msg: TMessage);
 begin
-  AddToLog('MSG');
+  AddToLog('MSG wareschanged');
+end;
+
+// .............................................................................
+
+procedure TTabForm.counterschanged(var Msg: TMessage);
+begin
+  AddToLog('MSG counterschanged');
+  // ShowAllData;// if called causes deadlock!
+  // ShowIOTHData; // the same
 end;
 
 
