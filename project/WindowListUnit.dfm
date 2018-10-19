@@ -30,8 +30,6 @@ object WinListDlg: TWinListDlg
     Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitLeft = 328
-    ExplicitTop = 248
   end
   object wlist: TJvTextListBox
     Left = 24
@@ -41,5 +39,6 @@ object WinListDlg: TWinListDlg
     ItemHeight = 13
     TabOrder = 1
     OnDblClick = wlistDblClick
+    OnKeyPress = wlistKeyPress
   end
 end

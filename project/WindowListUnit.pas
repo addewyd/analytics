@@ -13,6 +13,7 @@ type
     wlist: TJvTextListBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure wlistDblClick(Sender: TObject);
+    procedure wlistKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -46,6 +47,13 @@ begin
   scapt := wlist.Items[wlist.ItemIndex];
   Close;
 
+end;
+
+// .............................................................................
+
+procedure TWinListDlg.wlistKeyPress(Sender: TObject; var Key: Char);
+begin
+  wlistDblClick(sender);
 end;
 
 end.
