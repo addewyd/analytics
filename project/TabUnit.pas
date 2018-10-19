@@ -15,7 +15,7 @@ uses
   JvDataSource, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvDBUltimGrid,
   Vcl.ExtCtrls, JvExExtCtrls, JvSplitter, JvDBGridFooter, JvExtComponent,
   JvPanel, Vcl.StdCtrls, JvExStdCtrls, JvCombobox, JvDBCombobox, JvExControls,
-  JvDBLookup;
+  JvDBLookup, ExDBUGrid;
 
 {$Include 'consts.inc'}
 
@@ -1282,8 +1282,8 @@ procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
 begin
   inherited;
   // IOTHGrid.
-  // Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
-  // WrapText(Column.Title.Caption, 20));
+//   Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
+//   WrapText(Column.Title.Caption, 20));
   if (gdFocused in State) then
   begin
     if (Column.FieldName = 'R') then
@@ -1322,7 +1322,6 @@ procedure TTabForm.RButtonClick(Sender: TObject);
     msg: Tmessage;
 begin
   inherited;
-  dirtyIOTH := true;
   AddToLog('Restore original ' +QueryIOTH.FieldByName('id').AsString);
   {
 
@@ -1369,6 +1368,16 @@ begin
 end
 
   }
+
+  YNForm := TYNForm.Create(self);
+  YNForm.Memo1.Font.Height := 18;
+  YNForm.Memo1.Lines.Add('Уверены, что хотите');
+  YNForm.Memo1.Lines.Add('восстановить строку');
+  YNForm.Memo1.Lines.Add('из файла?');
+  if YNForm.ShowModal <> mrOK then
+  begin
+    Exit;
+  end;
 
   with RestoreIOTHRec do
   begin
@@ -1422,6 +1431,8 @@ end
       ExecProc;
       UpdateTransaction.Commit;
       Transaction.Commit;
+
+      dirtyIOTH := true;
 
       msg.Msg := WM_RECRESTORED;
       MainForm.SendMsgs(msg);

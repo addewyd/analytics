@@ -123,8 +123,9 @@ inherited TabForm: TTabForm
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
           EditControls = <>
+          AutoSizeRows = False
           RowsHeight = 17
-          TitleRowHeight = 17
+          TitleRowHeight = 34
           Columns = <
             item
               Expanded = False
@@ -407,10 +408,18 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -449,7 +458,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
