@@ -91,13 +91,23 @@ object MainForm: TMainForm
       Top = 0
       Action = OptionsAction
     end
-    object ToolButton4: TToolButton
+    object UsersTB: TToolButton
       Left = 184
+      Top = 0
+      Action = UsersAction
+    end
+    object ToolButton19: TToolButton
+      Left = 207
+      Top = 0
+      Action = ViewLogAction
+    end
+    object ToolButton4: TToolButton
+      Left = 230
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 207
+      Left = 253
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -105,7 +115,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton16: TToolButton
-      Left = 215
+      Left = 261
       Top = 0
       Width = 8
       Caption = 'ToolButton16'
@@ -113,30 +123,30 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 223
+      Left = 269
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 246
+      Left = 292
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 269
+      Left = 315
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
     end
     object ToolButton20: TToolButton
-      Left = 292
+      Left = 338
       Top = 0
       Action = WindowListAction
     end
     object dtb1: TToolButton
-      Left = 315
+      Left = 361
       Top = 0
       Width = 23
       Caption = 'dtb1'
@@ -144,27 +154,27 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 338
+      Left = 384
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
       ImageIndex = 142
       Style = tbsSeparator
     end
-    object ToolButton2: TToolButton
-      Left = 346
+    object DelTB: TToolButton
+      Left = 392
       Top = 0
       Margins.Left = 20
       Margins.Right = 20
       Action = ClearDBAction
     end
-    object ToolButton19: TToolButton
-      Left = 369
+    object DelSesTB: TToolButton
+      Left = 415
       Top = 0
       Action = DelSessionsAction
     end
     object dtb2: TToolButton
-      Left = 392
+      Left = 438
       Top = 0
       Width = 23
       Caption = 'dtb2'
@@ -172,7 +182,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton17: TToolButton
-      Left = 415
+      Left = 461
       Top = 0
       Width = 9
       Caption = 'ToolButton17'
@@ -180,7 +190,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 424
+      Left = 470
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
@@ -249,7 +259,15 @@ object MainForm: TMainForm
         Action = StationsAction
         GroupIndex = 44
       end
-      object XML1: TMenuItem
+      object UsersMI: TMenuItem
+        Action = UsersAction
+        GroupIndex = 44
+      end
+      object ViewLog1: TMenuItem
+        Action = ViewLogAction
+        GroupIndex = 44
+      end
+      object XMLMI: TMenuItem
         Action = XmlTablesAction
         GroupIndex = 44
       end
@@ -402,6 +420,17 @@ object MainForm: TMainForm
       Hint = 'Window List'
       ImageIndex = 71
       OnExecute = WindowListActionExecute
+    end
+    object UsersAction: TAction
+      Caption = 'Users'
+      ImageIndex = 243
+      OnExecute = UsersActionExecute
+    end
+    object ViewLogAction: TAction
+      Caption = 'View Log'
+      Hint = 'View Log'
+      ImageIndex = 355
+      OnExecute = ViewLogActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents

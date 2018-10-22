@@ -45,7 +45,7 @@ type
     JvSelectDirectory1: TJvSelectDirectory;
     XMLDoc: TXMLDocument;
     ClearDBAction: TAction;
-    ToolButton2: TToolButton;
+    DelTB: TToolButton;
     Service1: TMenuItem;
     ClearDB1: TMenuItem;
     JvAppRS: TJvAppRegistryStorage;
@@ -61,7 +61,7 @@ type
     N1: TMenuItem;
     ToolButton8: TToolButton;
     XmlTablesAction: TAction;
-    XML1: TMenuItem;
+    XMLMI: TMenuItem;
     ToolButton9: TToolButton;
     WindowCascade1: TWindowCascade;
     WindowTileHorizontal1: TWindowTileHorizontal;
@@ -97,7 +97,7 @@ type
     ToolButton18: TToolButton;
     DelSessionsAction: TAction;
     ClearSData: TMenuItem;
-    ToolButton19: TToolButton;
+    DelSesTB: TToolButton;
     Window1: TMenuItem;
     Cascade1: TMenuItem;
     ileVertically1: TMenuItem;
@@ -105,6 +105,12 @@ type
     WindowListAction: TAction;
     ToolButton20: TToolButton;
     WindowList1: TMenuItem;
+    UsersAction: TAction;
+    UsersMI: TMenuItem;
+    UsersTB: TToolButton;
+    ViewLogAction: TAction;
+    ViewLog1: TMenuItem;
+    ToolButton19: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -132,6 +138,8 @@ type
     procedure SessDataActionExecute(Sender: TObject);
     procedure DelSessionsActionExecute(Sender: TObject);
     procedure WindowListActionExecute(Sender: TObject);
+    procedure UsersActionExecute(Sender: TObject);
+    procedure ViewLogActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -176,7 +184,7 @@ implementation
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
-  WindowListUnit;
+  WindowListUnit, UsersUnit, ViewLogUnit;
 
 
 // .............................................................................
@@ -665,8 +673,12 @@ begin
 
   if user_role <> 1 then
   begin
-    ClearDB1.Visible := False;
-    ClearSData.Visible := False;
+    ClearDBAction.Visible := False;
+    DelSessionsAction.Visible := False;
+    UsersAction.Visible  := false;
+    XmlTablesAction.Visible  := false;
+    ViewLogAction.Visible  := false;
+
   end;
 
   //DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
@@ -684,6 +696,8 @@ begin
 
   end;
 
+  DM.AddLogMsg(user_id, 'Start Work');
+
 end;
 
 // .............................................................................
@@ -697,6 +711,7 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  DM.AddLogMsg(user_id, 'End Work');
   JVFS.SaveFormPlacement();
   HTTPServer.Active := false;
 end;
@@ -964,6 +979,29 @@ begin
     TStationsForm.Create(self, 'stations');
   end
   else GetMDIForm('stations').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.UsersActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('users') then
+  begin
+    TUsersForm.Create(self, 'users');
+  end
+  else GetMDIForm('users').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.ViewLogActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('viewlog') then
+  begin
+    TViewLogForm.Create(self, 'viewlog');
+  end
+  else GetMDIForm('viewlog').Show;
+
 end;
 
 // .............................................................................

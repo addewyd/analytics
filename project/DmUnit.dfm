@@ -1,12 +1,12 @@
 object DM: TDM
   OldCreateOrder = False
   Height = 324
-  Width = 462
+  Width = 608
   object imlist: TImageList
     Left = 104
     Top = 48
     Bitmap = {
-      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12721,10 +12721,11 @@ object DM: TDM
       'Server=localhost'
       
         'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
-        'ebug\db\SHRFSPS.FDB')
+        'ebug\db\SHRFS.FDB')
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -13100,5 +13101,27 @@ object DM: TDM
     Connection = FDConnection
     Left = 296
     Top = 120
+  end
+  object LogQuery: TFDQuery
+    Connection = FDConnection
+    Transaction = LogTran
+    UpdateTransaction = LogTranUpd
+    Left = 360
+    Top = 176
+  end
+  object LogTran: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = FDConnection
+    Left = 416
+    Top = 176
+  end
+  object LogTranUpd: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = FDConnection
+    Left = 472
+    Top = 176
   end
 end

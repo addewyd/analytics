@@ -102,6 +102,7 @@ type
       ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
       IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
       DefaultDrawSortMarker: Boolean);
+    procedure RButtonKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -1298,23 +1299,40 @@ end;
 
 procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
+  var
+    TextRect:TRect;
 begin
   inherited;
   // IOTHGrid.
 //   Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
 //   WrapText(Column.Title.Caption, 20));
-  if (gdFocused in State) then
+  if (Column.FieldName = 'R') then
   begin
-    if (Column.FieldName = 'R') then
+    if (gdFocused in State) then
     begin
       RButton.Left := Rect.Left + IOTHGrid.Left;
       RButton.Top := Rect.Top + IOTHGrid.Top;
       RButton.Width := Rect.Right - Rect.Left + 2;
       RButton.Visible := true;
+      RButton.SetFocus;
+    end
+    else
+    begin
+//      RButton.Focused := false;
+      RButton.Visible := false;
+      IOTHGrid.Canvas.FillRect(Rect);
+      TextRect := Rect;
+
+      TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
+
+      IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2, TextRect.Top + 2, 'R');
+
     end;
   end;
 
 end;
+
+// .............................................................................
 
 procedure TTabForm.IOTHGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
   ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
@@ -1348,6 +1366,7 @@ end;
 procedure TTabForm.RButtonClick(Sender: TObject);
   var
     msg: Tmessage;
+    bwidth: Integer;
 begin
   inherited;
   AddToLog('Restore original ' +QueryIOTH.FieldByName('id').AsString);
@@ -1396,6 +1415,14 @@ begin
 end
 
   }
+
+  bwidth := 1;
+
+  AddToLog(Format('RBT %d  %f', [RButton.Top,
+
+  ( (RButton.Top - IOTHGrid.TitleRowHeight) + bwidth) / (IOTHGrid.RowsHeight + bwidth)
+
+  ]));
 
   YNForm := TYNForm.Create(self);
   YNForm.Memo1.Font.Height := 18;
@@ -1484,6 +1511,18 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.RButtonKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if ord(Key) = VK_RETURN then
+  begin
+     Key := #0;
+     RButtonClick(Sender);
+  end;
+end;
+
+// .............................................................................
+
 procedure TTabForm.IOTHGridEditChange(Sender: TObject);
 begin
   inherited;
@@ -1525,6 +1564,34 @@ begin
       //Rect.Left,
       //RealPMGrid.Canvas.Font.Size
       //]));
+
+  RealPMGrid.Canvas.Brush.Color := clWebIvory;
+  RealPMGrid.Canvas.Font.Color := clBlue;
+  RealPMGrid.Canvas.Pen.Color := clGreen;
+
+
+  if gdFocused in State then
+  begin
+
+  end;
+
+  if gdFixed in State then
+  begin
+
+  end;
+
+
+  if gdSelected in State then
+  begin
+    RealPMGrid.Canvas.Font.Color := clBlue;
+    RealPMGrid.Canvas.Brush.Color := clWebLavenderBlush;
+
+  end
+  else
+  begin
+    RealPMGrid.Canvas.Font.Color := clBlack;
+  end;
+
   fn := Column.FieldName;
   fv := QueryRealPM.FieldByName(fn).AsString;
 
@@ -1542,10 +1609,7 @@ begin
     fp := '';
   end;
 
-  RealPMGrid.Canvas.Brush.Color := clYellow;
   RealPMGrid.Canvas.FillRect(Rect);
-  RealPMGrid.Canvas.Pen.Color := clBlack;
-  RealPMGrid.Canvas.Font.Color := clBlack;
   TextRect := Rect;
 
   TextRect.Bottom := TextRect.Top + RealPMGrid.RowsHeight div 2;
@@ -1559,14 +1623,41 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TTabForm.RealPMGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
   ARect: TRect; AColumn: TColumn; var ASortMarker: TJvDBGridBitmap;
   IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
   DefaultDrawSortMarker: Boolean);
+
+  var
+    fn: String;
+    TextRect: TRect;
+
 begin
-  inherited;
-//
+
+  fn := AColumn.FieldName;
+
+  if LeftStr(fn, 6) = 'VOLUME' then
+  begin
+
+
+    ACanvas.Brush.Color := clWebLavenderBlush;
+    ACanvas.FillRect(ARect);
+    TextRect := ARect;
+    TextRect.Bottom := TextRect.Top + RealPMGrid.TitleRowHeight div 2;
+
+    ACanvas.TextRect(TextRect, Textrect.Left + 2, 2, AColumn.Title.Caption);
+    OffsetRect(TextRect, 0, RealPMGrid.TitleRowHeight DIV 2);
+    DefaultDrawText := false;
+  end
+  else
+  begin
+//    inherited;
+  end;
 end;
+
+// .............................................................................
 
 procedure TTabForm.RealPMGridEditChange(Sender: TObject);
 begin

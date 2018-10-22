@@ -29,7 +29,9 @@ uses
   TabUnit in 'TabUnit.pas' {TabForm},
   SelectUserUnit in 'SelectUserUnit.pas' {SelectUser},
   WindowListUnit in 'WindowListUnit.pas' {WinListDlg},
-  CntReplaceUnit in 'CntReplaceUnit.pas' {CntReplaceDlg};
+  CntReplaceUnit in 'CntReplaceUnit.pas' {CntReplaceDlg},
+  UsersUnit in 'UsersUnit.pas' {UsersForm},
+  ViewLogUnit in 'ViewLogUnit.pas' {ViewLogForm};
 
 {$R *.res}
 

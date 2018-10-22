@@ -45,6 +45,8 @@ begin
   if FDQuery.Transaction.Active then FDQuery.Transaction.Commit;
 end;
 
+// .............................................................................
+
 procedure TStationsForm.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -69,7 +71,8 @@ end;
 procedure TStationsForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-         //
+  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Commit;
+  if FDQuery.Transaction.Active then FDQuery.Transaction.Commit;
 end;
 
 /// ............................................................................

@@ -30,10 +30,14 @@ type
     FDQueryForIOTANKSHOSES: TFDQuery;
     OptQuery: TFDQuery;
     FDTransactionUpd: TFDTransaction;
+    LogQuery: TFDQuery;
+    LogTran: TFDTransaction;
+    LogTranUpd: TFDTransaction;
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure AddLogMsg(user_id: integer; msg: String);
   end;
 
 var
@@ -44,6 +48,7 @@ implementation
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
+
 
 
   procedure ErrorMessageBox(f: TForm; msg: String);
@@ -85,5 +90,51 @@ implementation
     end;
 
   end;
+
+procedure TDM.AddLogMsg(user_id: integer; msg: String);
+begin
+  with LogQuery do
+  begin
+    SQL.Text := 'insert into actionlog (adate, user_id, msg) ' +
+                ' values ' +
+                '(current_timestamp, :user_id, :msg)';
+    with params do
+    begin
+      Clear;
+      with add do
+      begin
+        Name := 'user_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with add do
+      begin
+        Name := 'msg';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('user_id').AsInteger := user_id;
+    ParamByName('msg').AsString := msg;
+    Transaction.StartTransaction;
+    UpdateTransaction.StartTransaction;
+    try
+      Prepare;
+      ExecSQL;
+      UpdateTransaction.Commit;
+      Transaction.Commit;
+    except
+      on e: Exception do
+      begin
+        UpdateTransaction.Rollback;
+        Transaction.Rollback;
+        ErrorMessageBox(nil, e.Message);
+      end;
+
+    end;
+
+  end;
+end;
+
 
 end.

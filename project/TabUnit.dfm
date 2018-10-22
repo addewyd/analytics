@@ -76,7 +76,7 @@ inherited TabForm: TTabForm
           Align = alClient
           DataSource = DSRealPM
           DefaultDrawing = False
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
           ReadOnly = True
           TabOrder = 2
           TitleFont.Charset = DEFAULT_CHARSET
@@ -104,6 +104,7 @@ inherited TabForm: TTabForm
               Expanded = False
               Visible = True
             end>
+          Delphi2010OptionsMigrated = True
         end
         object IOTHGrid: TJvDBUltimGrid
           Left = 1
@@ -133,7 +134,7 @@ inherited TabForm: TTabForm
           EditControls = <>
           AutoSizeRows = False
           RowsHeight = 17
-          TitleRowHeight = 34
+          TitleRowHeight = 35
           WordWrap = True
           Columns = <
             item
@@ -149,7 +150,7 @@ inherited TabForm: TTabForm
               FieldName = 'TANKNUM'
               ReadOnly = True
               Title.Caption = #1025#1084#1082#1086#1089#1090#1100
-              Width = 20
+              Width = 29
               Visible = True
             end
             item
@@ -253,6 +254,7 @@ inherited TabForm: TTabForm
           TabOrder = 3
           Visible = False
           OnClick = RButtonClick
+          OnKeyPress = RButtonKeyPress
         end
         object IOTHFooter: TJvDBGridFooter
           Left = 1
