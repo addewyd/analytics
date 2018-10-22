@@ -14,6 +14,8 @@ uses
   JvDBUltimGrid, JvDBGridFooter, Vcl.ComCtrls, JvExComCtrls, JvStatusBar,
   Vcl.ToolWin, JvToolBar;
 
+{$I 'consts.inc'}
+
 type
   TViewLogForm = class(TFormWithGrid)
     procedure FormCreate(Sender: TObject);
@@ -21,6 +23,8 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure logadded(var Msg: TMessage); message WM_LOGADDED;
+
   end;
 
 var
@@ -31,6 +35,22 @@ implementation
 {$R *.dfm}
 
 uses DmUnit;
+
+procedure TViewLogForm.logadded(var Msg: TMessage);
+begin
+  with FDQuery do
+  begin
+    if Active then close;
+
+    SQL.Text := 'select first 80 a.adate, u.login, a.msg from actionlog a ' +
+    'join users u on a.user_id=u.id order by a.adate desc';
+    Transaction.StartTransaction;
+    Open;
+  end;
+
+end;
+
+// .............................................................................
 
 procedure TViewLogForm.FormCreate(Sender: TObject);
 begin

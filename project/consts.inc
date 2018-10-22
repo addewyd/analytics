@@ -5,6 +5,7 @@ const
   WM_SESSION_DELETED = WM_USER + 3;
   WM_COUNTERS_CHANGED = WM_USER + 4;
   WM_RECRESTORED = WM_USER + 5;
+  WM_LOGADDED = WM_USER + 5;
 
   type Rec =
     record

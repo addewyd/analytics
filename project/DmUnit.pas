@@ -3,7 +3,7 @@ unit DmUnit;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.ImageList, Vcl.ImgList, Vcl.Controls,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, System.ImageList, Vcl.ImgList, Vcl.Controls,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.Client, Data.DB,
@@ -11,6 +11,8 @@ uses
   FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
   Vcl.Forms,
   ErrorUnit;
+
+{$I 'consts.inc'}
 
   procedure ErrorMessageBox(f: TForm; msg: String);
   procedure ErrorMessageBox2(f: TForm; msg: array of String);
@@ -47,6 +49,8 @@ implementation
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
+uses MainUnit;
+
 {$R *.dfm}
 
 
@@ -57,6 +61,8 @@ implementation
     ErrorForm.Memo1.Lines.Add(msg);
     ErrorForm.ShowModal;
   end;
+
+  // ...........................................................................
 
   procedure ErrorMessageBox2(f: TForm; msg: array of String);
     var
@@ -91,7 +97,13 @@ implementation
 
   end;
 
+// ...........................................................................
+
 procedure TDM.AddLogMsg(user_id: integer; msg: String);
+var
+  m: TMessage;
+  i: Integer;
+
 begin
   with LogQuery do
   begin
@@ -123,6 +135,14 @@ begin
       ExecSQL;
       UpdateTransaction.Commit;
       Transaction.Commit;
+      m.Msg := WM_LOGADDED;
+
+  for i := 0 to MainForm.MdiChildCount -1 do
+  begin
+    MainForm.MDIChildren[i].WindowProc(m);
+  end;
+  TMessage(m).result := 1;
+
     except
       on e: Exception do
       begin

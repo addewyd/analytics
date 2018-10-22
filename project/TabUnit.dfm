@@ -50,12 +50,12 @@ inherited TabForm: TTabForm
         TabOrder = 0
         object Spl01: TJvSplitter
           Left = 1
-          Top = 138
+          Top = 204
           Width = 725
-          Height = 3
+          Height = 4
           Cursor = crVSplit
           Align = alTop
-          ExplicitTop = 132
+          ExplicitTop = 157
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
@@ -70,9 +70,9 @@ inherited TabForm: TTabForm
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
-          Top = 160
+          Top = 208
           Width = 725
-          Height = 276
+          Height = 228
           Align = alClient
           DataSource = DSRealPM
           DefaultDrawing = False
@@ -110,7 +110,7 @@ inherited TabForm: TTabForm
           Left = 1
           Top = 1
           Width = 725
-          Height = 137
+          Height = 184
           Align = alTop
           DataSource = DSIOTH
           TabOrder = 0
@@ -170,7 +170,6 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'CALCIN'
-              ReadOnly = True
               Title.Caption = #1055#1088#1080#1085#1103#1090#1086
               Visible = True
             end
@@ -178,13 +177,6 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'ENDFACTVOLUME'
               Title.Caption = #1060#1072#1082#1090'. '#1054#1089#1090'.'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'FACT'
-              ReadOnly = True
-              Title.Caption = 'FACT ???'
               Visible = True
             end
             item
@@ -238,6 +230,11 @@ inherited TabForm: TTabForm
               Visible = True
             end
             item
+              Expanded = False
+              FieldName = 'OUTCOME'
+              Visible = True
+            end
+            item
               ButtonStyle = cbsNone
               Expanded = False
               FieldName = 'R'
@@ -258,7 +255,7 @@ inherited TabForm: TTabForm
         end
         object IOTHFooter: TJvDBGridFooter
           Left = 1
-          Top = 141
+          Top = 185
           Width = 725
           Height = 19
           Align = alTop
@@ -275,6 +272,7 @@ inherited TabForm: TTabForm
           DataSource = DSIOTH
           DBGrid = IOTHGrid
           OnCalculate = IOTHFooterCalculate
+          ExplicitTop = 138
         end
       end
     end
@@ -324,7 +322,6 @@ inherited TabForm: TTabForm
           AutoAppend = False
           IniStorage = JvFS
           OnEditChange = GridInOutGSMEditChange
-          AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -335,82 +332,93 @@ inherited TabForm: TTabForm
           Columns = <
             item
               Expanded = False
-              FieldName = 'SDATE'
-              Width = 62
-              Visible = True
+              FieldName = 'ID'
+              Visible = False
             end
             item
               Expanded = False
               FieldName = 'DIR'
-              Width = 54
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'FUELNAME'
-              ReadOnly = True
-              Width = 91
+              FieldName = 'SDATE'
+              Title.Caption = #1044#1072#1090#1072
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'CLIENTNAME'
-              Width = 98
+              Title.Caption = #1050#1083#1080#1077#1085#1090
+              Width = 120
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CONTRACT'
+              Title.Caption = #1044#1086#1075#1086#1074#1086#1088
+              Width = 120
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PAYMENTMODE'
-              Width = 59
+              Title.Caption = #1042#1080#1076' '#1086#1087#1083#1072#1090#1099
+              Width = 100
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'EI'
-              Width = 51
+              FieldName = 'FUELNAME'
+              Width = 80
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'VOLUME'
-              Width = 51
+              FieldName = 'FUELCODE'
+              Width = 60
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'AMOUNT'
-              Width = 27
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'DENSITY'
-              Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
-              Width = 30
+              FieldName = 'EI'
+              Width = 12
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'VOLUME'
+              Title.Caption = #1054#1073#1098#1105#1084
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PRICE'
-              Width = 27
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'SUMM'
-              Width = 51
+              FieldName = 'DENSITY'
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'NDS'
-              Width = 54
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'SUMM'
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'WHOLE'
-              Width = 41
               Visible = True
             end>
         end
@@ -13158,13 +13166,16 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
+      ''
       'select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
       '   cast(s.startdatetime as date) as sdate,'
-      '    w.name as fuelname,'
       '    c.name as clientname,'
+      '    cn.nomer || '#39' '#39' || cn.name as contract,'
       '    p.name as paymentmode,'
+      '    w.name as fuelname,'
+      '    w.code as fuelcode,'
       '   i.amount,'
       '   i.ei,'
       '   i.volume,'
@@ -13178,6 +13189,7 @@ inherited TabForm: TTabForm
       '   join sessions s on s.id = i.session_id'
       '   join wares w on w.code=i.ware_code'
       '   join contragents c on c.code=i.client_code'
+      '   join contracts cn on cn.partner_code=c.code'
       '   join paymentmodes p on p.code=i.payment_code'
       ''
       
@@ -13187,16 +13199,19 @@ inherited TabForm: TTabForm
       '      and i.azscode=:azscode'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname')
-    Left = 412
-    Top = 141
+    Left = 428
+    Top = 149
     ParamData = <
       item
         Name = 'SESSION_ID'
+        DataType = ftInteger
         ParamType = ptInput
       end
       item
         Name = 'AZSCODE'
+        DataType = ftWideString
         ParamType = ptInput
+        Size = 10
       end>
   end
   object DSIOTH: TJvDataSource
@@ -13208,6 +13223,7 @@ inherited TabForm: TTabForm
   object QueryIOTH: TFDQuery
     BeforeInsert = QueryIOTHBeforeInsert
     AfterPost = QueryIOTHAfterPost
+    CachedUpdates = True
     Connection = DM.FDConnection
     Transaction = TransIOTH
     UpdateTransaction = TransIOTH
@@ -13224,7 +13240,10 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '    (select volume from calcincomes(s.id, i.tanknum)) as calcin,'
+      
+        '   /* (select volume from calcincomes(s.id, i.tanknum)) as calci' +
+        'n,*/'
+      '    i.invol as calcin,'
       
         '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
         ' as calc,'
@@ -13232,13 +13251,19 @@ inherited TabForm: TTabForm
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
-      '   density,'
+      '    density,'
       '    temperature,'
       '    height,'
       '    mass,'
       '    water,'
       '    warecode,'
-      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact'
+      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
+      
+        '     (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
+        ') - '
+      
+        '       (select volume from calcincomes(s.id, i.tanknum)) as outc' +
+        'ome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -13373,7 +13398,7 @@ inherited TabForm: TTabForm
     Options.AutoStop = False
     Connection = DM.FDConnection
     Left = 492
-    Top = 141
+    Top = 149
   end
   object TransIOTH: TFDTransaction
     Options.AutoStart = False
@@ -13449,7 +13474,77 @@ inherited TabForm: TTabForm
     Transaction = GenUpdTrans
     UpdateTransaction = GenUpdTransUPD
     StoredProcName = 'RESTOREIOTHREC'
-    Left = 588
-    Top = 101
+    Left = 556
+    Top = 93
+  end
+  object TransINOutUpd: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 636
+    Top = 133
+  end
+  object QueryIOTHSum: TFDQuery
+    BeforeInsert = QueryIOTHBeforeInsert
+    AfterPost = QueryIOTHAfterPost
+    CachedUpdates = True
+    Connection = DM.FDConnection
+    Transaction = TransIOTH
+    UpdateTransaction = TransIOTH
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
+    UpdateOptions.KeyFields = 'ID'
+    SQL.Strings = (
+      'select '
+      '    sum(calcin) as calcin'
+      '    sum(calc) as calc,'
+      '    '
+      'select'
+      '    i. id,'
+      '    i.session_id,'
+      '    cast(s.startdatetime as date) as stdt,'
+      '    w.name as fuelname,'
+      '    i.tanknum,'
+      '    i.startfuelvolume,'
+      '    (select volume from calcincomes(s.id, i.tanknum)) as calcin,'
+      
+        '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
+        ' as calc,'
+      '    i.endfactvolume,'
+      '    i.hosenum,'
+      '    i.startcounter as stcnt,'
+      '    endcounter as ecnt,'
+      '    density,'
+      '    temperature,'
+      '    height,'
+      '    mass,'
+      '    water,'
+      '    warecode,'
+      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact'
+      '    from iotankshoses i'
+      '      join sessions s on s.id = i.session_id'
+      '      join wares w on w.code = i.warecode'
+      '    where '
+      '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
+      '   s.id = :session_id'
+      '   and i.azscode=:azscode'
+      'order by s.startdatetime asc ,i.tanknum,i.hosenum')
+    Left = 124
+    Top = 165
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'AZSCODE'
+        DataType = ftWideString
+        ParamType = ptInput
+        Size = 10
+      end>
   end
 end

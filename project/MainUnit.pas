@@ -905,6 +905,7 @@ begin
         StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
         msg.Msg := WM_SESSION_ADDED;
         SendMsgs(msg);
+        DM.AddLogMsg(user_id, 'Options saved');
       end;
     finally
       reg.Free;

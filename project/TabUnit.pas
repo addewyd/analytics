@@ -62,6 +62,8 @@ type
     SCNTPMenu: TPopupMenu;
     SCNT1: TMenuItem;
     RestoreIOTHRec: TFDStoredProc;
+    TransINOutUpd: TFDTransaction;
+    QueryIOTHSum: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -1021,6 +1023,7 @@ begin
       begin
         if dirtyIOTH then
         begin
+          QueryIOTH.ApplyUpdates(0);
           Close;
           Transaction.Commit;
           cmt := true;
@@ -1254,6 +1257,7 @@ begin
   end;
 
   ShowAllData;
+  Pages.ActivePage := TabSheet1;
 end;
 
 // .............................................................................
@@ -1374,7 +1378,7 @@ begin
 
   key: session_id, azscode,tanknum,hosenum
 
-    stored proc RESTOREIOTHREC
+    stored proc RESTOREIOTHREC             // old text
 
 DDL
 --------------------------------------------------
@@ -1470,12 +1474,12 @@ end
     ParamByName('azscode').AsWideString := current_azscode;
 
 
-    if dirtyIOTH then
-    begin
+//    if dirtyIOTH then
+//    begin
       if QueryIOTH.Transaction.Active then
         QueryIOTH.Transaction.Commit;
       dirtyIOTH := false;
-    end;
+//    end;
 
     try
 
