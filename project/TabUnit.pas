@@ -1491,7 +1491,7 @@ end
       UpdateTransaction.Commit;
       Transaction.Commit;
 
-      dirtyIOTH := true;
+//      dirtyIOTH := true;
 
       msg.Msg := WM_RECRESTORED;
       MainForm.SendMsgs(msg);
