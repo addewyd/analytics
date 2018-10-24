@@ -36,7 +36,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     ExplicitHeight = 484
@@ -458,12 +458,14 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'FUELNAME'
+              Title.Caption = #1043#1057#1052
               Width = 80
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'FUELCODE'
+              Title.Caption = #1050#1086#1076' '#1043#1057#1052
               Width = 60
               Visible = True
             end
@@ -487,26 +489,31 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'PRICE'
+              Title.Caption = #1062#1077#1085#1072
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'DENSITY'
+              Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'NDS'
+              Title.Caption = #1053#1044#1057
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'SUMM'
+              Title.Caption = #1057#1091#1084#1084#1072
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'WHOLE'
+              Title.Caption = 'Total'
               Visible = True
             end>
         end
@@ -546,71 +553,148 @@ inherited TabForm: TTabForm
           item
             Expanded = False
             FieldName = 'SDATE'
+            Title.Caption = #1044#1072#1090#1072
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'CLIENTNAME'
+            Title.Caption = #1050#1083#1080#1077#1085#1090
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'CONTRACT'
+            Title.Caption = #1044#1086#1075#1086#1074#1086#1088
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'PAYMENTMODE'
+            Title.Caption = #1042#1080#1076' '#1086#1087#1083#1072#1090#1099
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'ITEMCODE'
+            Title.Caption = #1050#1086#1076' '#1090#1086#1074#1072#1088#1072
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'ITEMNAME'
+            Title.Caption = #1058#1086#1074#1072#1088
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'QUANTITY'
+            Title.Caption = #1050#1086#1083'-'#1074#1086
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'AMOUNT'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'EI'
+            Title.Caption = #1045#1076'.'#1048#1079#1084
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'PRICE'
+            Title.Caption = #1062#1077#1085#1072
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'SUMM'
+            Title.Caption = #1057#1091#1084#1084#1072
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'NDS'
+            Title.Caption = #1053#1044#1057
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'WHOLE'
+            Title.Caption = 'Total'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
             Visible = True
           end>
       end
@@ -13393,8 +13477,10 @@ inherited TabForm: TTabForm
       '   i.price,'
       'i.density,'
       'i.nds,'
-      'i.summ,'
-      'i.whole'
+      '    (VOLUME * price) as summ,'
+      
+        '    (VOLUME * price + volume * price * cast(nds as double precis' +
+        'ion) / 100.0) as whole'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -13797,8 +13883,10 @@ inherited TabForm: TTabForm
       '   i.price,'
       'i.density,'
       'i.nds,'
-      'i.summ,'
-      'i.whole'
+      '    (VOLUME * price) as summ,'
+      
+        '    (VOLUME * price + volume * price * cast(nds as double precis' +
+        'ion) / 100.0) as whole'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -13812,6 +13900,7 @@ inherited TabForm: TTabForm
         'AMP)*/'
       '      s.id = :session_id'
       '      and i.azscode=:azscode'
+      '      and direction = 0'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname'
       ')')
@@ -13854,13 +13943,15 @@ inherited TabForm: TTabForm
       '    p.name as paymentmode,'
       '    w.name as itemname,'
       '    w.code as itemcode,'
-      '   i.amount,'
-      '   i.ei,'
-      '   i.quantity,'
-      '   i.price,'
-      'i.nds,'
-      'i.summ,'
-      'i.whole'
+      '    i.amount,'
+      '    i.ei,'
+      '    i.quantity,'
+      '    i.price,'
+      '    i.nds,'
+      '    (quantity * price) as summ,'
+      
+        '    (quantity * price + quantity * price * cast(nds as double pr' +
+        'ecision) / 100.0) as whole'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14027,13 +14118,15 @@ inherited TabForm: TTabForm
       '    p.name as paymentmode,'
       '    w.name as itemname,'
       '    w.code as itemcode,'
-      '   i.amount,'
-      '   i.ei,'
-      '   i.quantity,'
-      '   i.price,'
-      'i.nds,'
-      'i.summ,'
-      'i.whole'
+      '    i.amount,'
+      '    i.ei,'
+      '    i.quantity,'
+      '    i.price,'
+      '    i.nds,'
+      '    (quantity * price) as summ,'
+      
+        '    (quantity * price + quantity * price * cast(nds as double pr' +
+        'ecision) / 100.0) as whole'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14047,6 +14140,7 @@ inherited TabForm: TTabForm
         'AMP)*/'
       '      s.id = :session_id'
       '      and i.azscode=:azscode'
+      '      and direction = 0'
       ''
       ')')
     Left = 636

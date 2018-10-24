@@ -820,6 +820,8 @@ begin
   begin
     if Active then
       Close;
+    if QueryInOutSum.Active then
+      QueryInOutSum.Close;
     if Transaction.Active then
       Transaction.Commit;
 
@@ -875,6 +877,8 @@ begin
   begin
     if Active then
       Close;
+    if QueryInOutItemsSum.Active then
+      QueryInOutItemsSum.Close;
     if Transaction.Active then
       Transaction.Commit;
 
@@ -1003,6 +1007,8 @@ begin
   begin
     if Active then
       Close;
+    if QueryRealPMSum.Active then
+      QueryRealPMSum.Close;
 
     Sql.Text := sqlt;
 

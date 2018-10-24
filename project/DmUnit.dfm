@@ -13260,7 +13260,7 @@ object DM: TDM
       '    from sessions s'
       '    join tradedocsinbill i on s.id = i.session_id'
       '    join tdb_items b on b.bill_id = i.id'
-      '    join items w on b.itemcode = w.code'
+      '    join items w on b.itemextcode = w.code'
       '   where'
       '    i.session_id = :session_id'
       '   group by sid,'
