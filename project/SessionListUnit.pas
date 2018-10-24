@@ -74,6 +74,7 @@ begin
 
 end;
 
+// .............................................................................
 
 procedure TSessionListForm.FormCreate(Sender: TObject);
 begin
@@ -109,6 +110,8 @@ begin
       );
 
 end;
+
+// .............................................................................
 
 procedure TSessionListForm.JvDBGridKeyPress(Sender: TObject; var Key: Char);
 begin

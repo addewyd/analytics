@@ -64,6 +64,13 @@ type
     RestoreIOTHRec: TFDStoredProc;
     TransINOutUpd: TFDTransaction;
     QueryIOTHSum: TFDQuery;
+    QueryInOutSum: TFDQuery;
+    QueryInOutItems: TFDQuery;
+    TransInOutItems: TFDTransaction;
+    DSInOutItems: TJvDataSource;
+    GridInOutItems: TJvDBUltimGrid;
+    GridFooterInOutItems: TJvDBGridFooter;
+    QueryInOutItemsSum: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -105,11 +112,15 @@ type
       IsDown: Boolean; var Offset: Integer; var DefaultDrawText,
       DefaultDrawSortMarker: Boolean);
     procedure RButtonKeyPress(Sender: TObject; var Key: Char);
+    procedure DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
+    procedure GridFooterInOutItemsCalculate(Sender: TJvDBGridFooter;
+      const FieldName: string; var CalcValue: Variant);
   private
     { Private declarations }
     dirtyGSM: Boolean;
     dirtyIOTH: Boolean;
     dirtyPM: Boolean;
+    dirtyItem: Boolean;
     warelist: TStringList;
     session_id: Integer;
     sessionnum: Integer;
@@ -117,6 +128,7 @@ type
     function GenPMSql(var sumsql: string): String;
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
+    procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
   public
     { Public declarations }
     sst: String;
@@ -130,6 +142,7 @@ type
     procedure ShowAllData();
 
     procedure ShowGSMData();
+    procedure ShowItemsData();
     procedure ShowIOTHData();
     procedure ShowPMData();
     procedure UpdateState(q: TFDQuery);
@@ -164,8 +177,22 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-    AddToLog(fname + ' DSCh ' + f);
-    dirtyGSM := true;
+  AddToLog(fname + ' DSCh ' + f);
+  dirtyGSM := true;
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
+var
+  f, fname: String;
+begin
+  inherited;
+  fname := Field.FieldName;
+  f := Field.AsString;
+  AddToLog(fname + ' DSCh ' + f);
+  dirtyItem := true;
 
 end;
 
@@ -756,8 +783,10 @@ begin
 //  sst := GetStartSession();
   LoadWareList;
   ShowGSMData;
+  ShowItemsData;
   ShowIOTHData;
   ShowPMData;
+
   GridInOutGSM.Refresh;
   IOTHGrid.Refresh;
   RealPMGrid.Refresh;
@@ -795,11 +824,72 @@ begin
     // ParamByName('start_session_t').AsString := sst;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
+    QueryInOutSum.Params.Assign(Params);
+    QueryInOutSum.ParamByName('session_id').AsInteger := session_id;
+    QueryInOutSum.ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
       Prepare;
       Open;
+      QueryInOutSum.Prepare;
+      QueryInOutSum.Open;
+      GridFooterInOut.ReCalc;
+      // Transaction.Commit;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+        // Transaction.Rollback;
+        // raise
+      end;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.ShowItemsData();
+begin
+
+  with QueryInOutItems do
+  begin
+    if Active then
+      Close;
+    if Transaction.Active then
+      Transaction.Commit;
+
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    // ParamByName('start_session_t').AsString := sst;
+    ParamByName('session_id').AsInteger := session_id;
+    ParamByName('azscode').AsString := current_azscode;
+    QueryInOutItemsSum.Params.Assign(Params);
+    QueryInOutItemsSum.ParamByName('session_id').AsInteger := session_id;
+    QueryInOutItemsSum.ParamByName('azscode').AsString := current_azscode;
+
+    Transaction.StartTransaction;
+    try
+      Prepare;
+      Open;
+      QueryInOutItemsSum.Prepare;
+      QueryInOutItemsSum.Open;
+      GridFooterInOutItems.ReCalc;
       // Transaction.Commit;
     except
       on e: Exception do
@@ -839,18 +929,25 @@ begin
       with Add do
       begin
         FieldName := 'stdt';
+        Title.Font.Style :=  [fsBold];
+        Title.Caption := 'Дата';
       end;
       with Add do
       begin
         FieldName := 'payment_code';
+        Title.Font.Style :=  [fsBold];
+        Title.Caption := 'Код оплаты';
       end;
       with Add do
       begin
         FieldName := 'pmode';
+        Title.Font.Style :=  [fsBold];
+        Title.Caption := 'Вид оплаты';
       end;
       with Add do
       begin
         FieldName := 'VOLUME';
+        Title.Font.Style :=  [fsBold];
         Title.Caption := 'Объём';
       end;
     end;
@@ -1066,6 +1163,22 @@ begin
       end;
     end;
 
+    with QueryInOutItems do
+    begin
+      if Transaction.Active then
+      begin
+        if dirtyItem then
+        begin
+          Close;
+          Transaction.Commit;
+          cmt := true;
+          UpdateState(QueryInOutItems);
+          ShowItemsData;
+          dirtyItem := false;
+        end;
+      end;
+    end;
+
     // if cmt then DM.FDTransaction.Commit;
 
   except
@@ -1095,6 +1208,18 @@ begin
         cmt := true;
         ShowGSMData;
         dirtyGSM := false;
+
+      end;
+
+    end;
+    with QueryInOutItems do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+        cmt := true;
+        ShowItemsData;
+        dirtyItem := false;
 
       end;
 
@@ -1136,9 +1261,37 @@ end;
 
 procedure TTabForm.GridFooterInOutCalculate(Sender: TJvDBGridFooter;
   const FieldName: string; var CalcValue: Variant);
+var
+  f: String;
 begin
   inherited;
-  CalcValue := 'F: ' + FieldName;
+  f := FieldName;
+  with QueryInOutSum do
+  begin
+    if Active and (not eof) then
+    begin
+      CalcValue := FieldByName(f).AsExtended;
+    end;
+  end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterInOutItemsCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
+var
+  f: String;
+begin
+  inherited;
+  f := FieldName;
+  with QueryInOutItemsSum do
+  begin
+    if Active and (not eof) then
+    begin
+      CalcValue := FieldByName(f).AsExtended;
+    end;
+  end;
+
 end;
 
 // .............................................................................
@@ -1151,7 +1304,6 @@ var
   f: String;
 begin
   inherited;
-  // AddToLog(FieldName);
   f := FieldName;
   with QueryRealPmSum do
   begin
@@ -1200,6 +1352,8 @@ begin
     begin
       if QueryInOut.Transaction.Active then
         QueryInOut.Transaction.Commit;
+      if QueryInOutItems.Transaction.Active then
+        QueryInOutItems.Transaction.Commit;
       if QueryIOTH.Transaction.Active then
         QueryIOTH.Transaction.Commit;
       if QueryRealPM.Transaction.Active then
@@ -1207,6 +1361,8 @@ begin
 
       if dirtyGSM then
         UpdateState(QueryInOut);
+      if dirtyItem then
+        UpdateState(QueryInOutItems);
       if dirtyIOTH then
         UpdateState(QueryIOTH);
       if dirtyPM then
@@ -1217,6 +1373,8 @@ begin
     begin
       if QueryInOut.Transaction.Active then
         QueryInOut.Transaction.Rollback;
+      if QueryInOutItems.Transaction.Active then
+        QueryInOutItems.Transaction.Rollback;
       if QueryIOTH.Transaction.Active then
         QueryIOTH.Transaction.Rollback;
       if QueryRealPM.Transaction.Active then
@@ -1240,6 +1398,7 @@ begin
   inherited;
   warelist := TStringList.Create;
   dirtyGSM := false;
+  dirtyItem := false;
   dirtyIOTH := false;
   dirtyPM := false;
   Caption := Format('TabForm AZS ' +
@@ -1378,7 +1537,7 @@ begin
 
   key: session_id, azscode,tanknum,hosenum
 
-    stored proc RESTOREIOTHREC             // old text
+    stored proc RESTOREIOTHREC
 
 DDL
 --------------------------------------------------
@@ -1390,34 +1549,86 @@ create or alter procedure restoreiothrec (
 as
 declare variable scnt double precision not null;
 declare variable ecnt double precision not null;
+declare variable density double precision;
+declare variable stv double precision;
+declare variable etv double precision;
+declare variable volume double precision;
+declare variable invol double precision;
+declare variable sid integer not null;
+declare variable tnum varchar(10) not null;
+declare variable cnt integer;
 begin
+
   for select distinct
-                h.startcounter,
-                h.endcounter
+  t.startfuelvolume,
+  t.endfactvolume,
+  t.enddensity,
+  h.startcounter,
+  h.endcounter,
+  sum(o.volume) as volume
+
                 from
                     hoses h
                     inner join tanks t on h.tanknum = t.tanknum
                     join sessions s on s.id = h.session_id
+      join outcomesbyretail o on (
+            o.session_id=s.id and
+            o.tanknum=t.tanknum and
+            h.hosenum=cast(o.hosename as integer))
 
                 where t.session_id = :session_id
                     and s.id = t.session_id
                     and s.id = t.session_id
                     and t.tanknum = :tanknum
                     and h.hosenum = :hosenum
-            into :scnt, :ecnt
-    do update iotankshoses
-        set startcounter = :scnt,
-            endcounter = :ecnt
+       group by
+          t.startfuelvolume,
+          t.endfactvolume,
+          t.enddensity,
+          h.startcounter,
+          h.endcounter
+            into :stv, :etv, :density, :scnt, :ecnt, :volume
+    do
+    begin
+        update iotankshoses
+        set density = :density,
+            startfuelvolume = :stv,
+            endfactvolume = :etv,
+            startcounter = :scnt,
+            endcounter = :ecnt,
+            volume = :volume
         where
             session_id = :session_id
             and azscode = :azscode
             and tanknum = :tanknum
             and hosenum = :hosenum
             ;
+    end
+    cnt = 0;
+    for
+        select volume, sid, tnum from
+            sessions s
+            join
+            (select volume, sid, tnum from calcincomes0(:session_id)) ss
+                on ss.sid=s.id
+            where tnum = :tanknum
+            into :invol,  :sid, :tnum
+    do
+    begin
+        if (:invol is null) then invol = 0;
+        update iotankshoses set invol = :invol
+            where session_id=:session_id and tanknum = :tanknum;
+        cnt = :cnt + 1;
+    end
+    if (:cnt = 0) then
+    begin
+        update iotankshoses set invol = 0
+            where session_id=:session_id and tanknum = :tanknum;
 
-  suspend;
+    end
+
+/*  suspend; */
 end
-
   }
 
   bwidth := 1;
@@ -1686,5 +1897,15 @@ begin
   // ShowIOTHData; // the same
 end;
 
+// .............................................................................
+
+procedure TTabForm.sessionadded(var Msg: TMessage);
+begin
+//
+  AddToLog('sess added in tabs');
+  DM.FDConnection.Close;
+  DM.FDConnection.Open();
+  ShowAllData;
+end;
 
 end.

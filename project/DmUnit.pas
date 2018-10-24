@@ -35,6 +35,7 @@ type
     LogQuery: TFDQuery;
     LogTran: TFDTransaction;
     LogTranUpd: TFDTransaction;
+    FDQueryForInOutItems: TFDQuery;
   private
     { Private declarations }
   public

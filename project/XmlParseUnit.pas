@@ -11,13 +11,14 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
 {$Include 'consts.inc'}
 
 procedure ParseInputFile(Doc: IDOMDocument);
-procedure ParseSessionFile(Doc: IDOMDocument);
+function ParseSessionFile(Doc: IDOMDocument) : Integer;
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
 procedure LoadTanks(node: IDOMNode; id: integer);
 procedure LoadHoses(node: IDOMNode; id: integer);
 procedure LoadOBR(node: IDOMNode; id: integer);
 procedure LoadOBC(node: IDOMNode; id: integer);
 procedure LoadIOBR(node: IDOMNode; id: integer);
+procedure LoadIOBP(node: IDOMNode; id: integer);
 procedure LoadIBR(node: IDOMNode; id: integer);
 procedure LoadCF(node: IDOMNode; id: integer);
 procedure LoadTDIB(node: IDOMNode; id: integer);
@@ -223,10 +224,13 @@ end;
 
 // ..................................................................
 
+// start
+
 procedure ParseInputFile(Doc: IDOMDocument);
 var
   nL, nL1: IDOMNodeList;
   msg: TMessage;
+  sid: Integer;
 begin
   nL := Doc.getElementsByTagName('DataPaket');
   if nL.length > 0 then
@@ -234,11 +238,12 @@ begin
     DM.FDTransaction.StartTransaction;
     DM.FDTransactionUPD.StartTransaction;
     try
-      ParseSessionFile(doc);
+      sid := ParseSessionFile(doc);
       if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Commit;
       if DM.FDTransaction.Active then DM.FDTransaction.Commit;
       msg.Msg := WM_SESSION_ADDED;
       MainForm.SendMsgs(msg);
+      DM.AddLogMsg(user_id, Format('Session %d added', [sid]));
     except
       on e: Exception do
       begin
@@ -418,7 +423,7 @@ end;
 
 // .............................................................................
 
-procedure ParseSessionFile(Doc: IDOMDocument);
+function ParseSessionFile(Doc: IDOMDocument) : Integer;
 var
   nL, nL1: IDOMNodeList;
   n, n0, n1: IDOMNode;
@@ -430,6 +435,7 @@ var
   requiredfile: String;
 begin
 
+  result := 0;
   if not MainForm.isWinOpen('mlog') then
   begin
     MlogForm := TMlogForm.Create(MainForm, 'mlog');
@@ -492,9 +498,6 @@ begin
     DateTimeToString(d1, 'yyyy-mm-dd hh:nn:ss', td1);
     DateTimeToString(d2, 'yyyy-mm-dd hh:nn:ss', td2);
 
-
-    // .....................
-    // move it to separate proc
 
     DM.FDQuery.SQL.Text :=
       'select * from sessions where azscode = :azs and sessionnum = :sn and startdatetime = :sdt';
@@ -588,6 +591,7 @@ begin
         Open;
         First;
         id := FieldByName('id').AsInteger;
+        result := id;
       end;
 
     end;
@@ -686,6 +690,10 @@ begin
       else if nname = 'IncomesByDischarge' then
       begin
         LoadIBR(n1, id);
+      end
+      else if nname = 'ItemOutcomesByPaysheet' then
+      begin
+        LoadIOBP(n1, id);
       end;
 
     end;
@@ -836,11 +844,70 @@ begin
   end;
 
 
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from inoutitems where session_id=:id';
+    with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+    end;
+    ParamByName('id').AsInteger := id;
+    Prepare;
+    Open;
+    rc := RecordCount;
+
+  end;
+
+  // Fill INOUTGSM with new data
+  if rc > 0 then
+  begin
+    AddToLog('session data for items already loaded!');
+  end
+  else
+  begin
+    try
+      with DM.FDQueryForINOUTItems do
+      begin
+        with Params do begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+        end;
+        ParamByName('session_id').AsInteger := id;
+        Prepare;
+        ExecSQL;
+      end;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+        raise;
+      end;
+    end;
+    // then update lastuser_id with user_id
+
+  end;
+
+
   // ...........................................................................
   // END
+  with DM.FDTransactionUpd do
+  begin
+//    if Active then Commit;
+
+  end;
   with DM.FDTransaction do
   begin
-    if Active then Commit;
+//    if Active then Commit;
 
   end;
 end;
@@ -2406,6 +2473,193 @@ end;
 
 // .............................................................................
 
+// ItemOutcomesByPaysheet
+procedure LoadIOBP(node: IDOMNode; id: integer);
+  var i, len, rc: integer;
+    NL: IDOMNodeList;
+    n: IDOMNode;
+    attrs: IDOMNamedNodeMap;
+
+    itemextcode, itemname, paymentextcode,
+      paymentname, partnerextcode, partnername: string;
+
+      partnerinn,
+        itemcode: String;
+      sItemid, sIsReturn, sQuantity: String;
+      sAmount, sPrice: String;
+
+      Itemid, IsReturn, Quantity: integer;
+      Amount, Price: Extended;
+
+begin
+  NL := node.childNodes;
+  len := nl.length;
+
+  for i:= 0 to len - 1 do
+    begin
+      attrs := NL.item[i].attributes;
+
+      itemextcode := attrs.getNamedItem('ItemExtCode').nodeValue;
+      paymentextcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
+      partnerextcode := attrs.getNamedItem('PartnerExtCode').nodeValue; // no code
+      itemcode := attrs.getNamedItem('ItemCode').nodeValue;
+
+      if Trim(itemextcode) = '' then itemextcode := 'EMPTY';
+      if Trim(itemcode) = '' then itemcode := 'EMPTY';
+//      if Trim(paymentextcode) = '' then paymentextcode := 'EMPTY';
+      if Trim(partnerextcode) = '' then partnerextcode := 'EMPTY';
+
+      itemname := attrs.getNamedItem('ItemName').nodeValue;
+      paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
+      partnername := attrs.getNamedItem('PartnerName').nodeValue;
+
+      CheckLink('ITEMS', itemextcode, itemname, ['ICODE', itemcode]);
+      CheckLink('PAYMENTMODES', paymentextcode, paymentname, []);
+      CheckLink('CONTRAGENTS', partnerextcode, partnername, []);
+      CheckContracts(partnerextcode);
+
+
+      partnerinn := attrs.getNamedItem('PartnerINN').nodeValue;
+      sItemid := attrs.getNamedItem('ItemID').nodeValue;
+      sIsReturn := attrs.getNamedItem('IsReturn').nodeValue;
+      sQuantity := attrs.getNamedItem('Quantity').nodeValue;
+      sAmount := attrs.getNamedItem('Amount').nodeValue;
+      sPrice := attrs.getNamedItem('Price').nodeValue;
+
+      Itemid := StrToIntDef(sItemid, 0);
+      IsReturn := StrToIntDef(sIsReturn, 0);
+      Quantity := StrToIntDef(sQuantity, 0);
+
+      Amount := StrToextDef(sAmount, 0);
+      Price := StrToextDef(sPrice, 0);
+
+      with DM.FDQuery do
+      begin
+        sql.Text := 'insert into itemoutcomesbypaysheet' +
+          '(session_id, itemname, itemextcode,'+
+          'paymentmodename,paymentmodeextcode,partnername,partnerextcode, ' +
+          'partnerinn,itemid,itemcode,isreturn,quantity,amount,price)' +
+          ' values ' +
+          '(:session_id, :itemname, :itemextcode,'+
+          ':paymentmodename,:paymentmodeextcode,:partnername,:partnerextcode,'+
+          ':partnerinn,:itemid,:itemcode,:isreturn,:quantity,:amount,:price)';
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemname';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'paymentmodename';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'paymentmodeextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnername';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnerextcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'partnerinn';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemid';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'itemcode';
+              DataType := ftString;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'isreturn';
+              DataType := ftSmallInt;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'quantity';
+              DataType := ftInteger;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'amount';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+          with Add do
+          begin
+              Name := 'price';
+              DataType := ftExtended;
+              ParamType := ptInput;
+          end;
+
+        end;
+
+        ParamByName('session_id').AsInteger := id;
+        ParamByName('itemname').AsString := itemname;
+        ParamByName('itemextcode').AsString := itemextcode;
+        ParamByName('paymentmodename').AsString := paymentname;
+        ParamByName('paymentmodeextcode').AsString := paymentextcode;
+        ParamByName('partnername').AsString := partnername;
+        ParamByName('partnerextcode').AsString := partnerextcode;
+        ParamByName('partnerinn').AsString := partnerinn;
+        ParamByName('itemid').AsInteger := Itemid;
+        ParamByName('itemcode').AsString := itemcode;
+        ParamByName('isreturn').AsSmallInt := IsReturn;
+        ParamByName('quantity').AsInteger := Quantity;
+        ParamByName('amount').AsExtended := Amount;
+        ParamByName('price').AsExtended := Price;
+        Prepare;
+        ExecSQL;
+
+      end;
+
+    end;
+
+    AddToLog(format('%d records added', [len]));
+
+end;
+
+// .............................................................................
+
 // CashFlow
 procedure LoadCF(node: IDOMNode; id: integer);
   var i, len: integer;
@@ -2716,6 +2970,8 @@ begin
       sTotal := getNamedItem('Total').nodeValue;
       NdsName := getNamedItem('NdsName').nodeValue;
       NdsExtCode := getNamedItem('NdsExtCode').nodeValue;
+
+      NdsName := StringReplace(NdsName, '%', '', []);
 
       Quantity := StrToIntDef(sQuantity, 0);
       ItemIsService := StrToIntDef(sItemIsService, 0);

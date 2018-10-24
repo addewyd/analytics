@@ -36,7 +36,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 484
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -99,11 +99,6 @@ inherited TabForm: TTabForm
           TitleRowHeight = 34
           WordWrap = True
           WordWrapAllFields = True
-          Columns = <
-            item
-              Expanded = False
-              Visible = True
-            end>
           Delphi2010OptionsMigrated = True
         end
         object IOTHGrid: TJvDBUltimGrid
@@ -142,6 +137,11 @@ inherited TabForm: TTabForm
               FieldName = 'FUELNAME'
               PopupMenu = FuelPopupMenu
               Title.Caption = #1043#1057#1052
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Width = 40
               Visible = True
             end
@@ -150,6 +150,11 @@ inherited TabForm: TTabForm
               FieldName = 'TANKNUM'
               ReadOnly = True
               Title.Caption = #1025#1084#1082#1086#1089#1090#1100
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Width = 29
               Visible = True
             end
@@ -158,6 +163,11 @@ inherited TabForm: TTabForm
               FieldName = 'STARTFUELVOLUME'
               PopupMenu = StartVPMenu
               Title.Caption = #1053#1072#1095' '#1054#1073#1098#1105#1084
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
@@ -165,18 +175,33 @@ inherited TabForm: TTabForm
               FieldName = 'CALC'
               ReadOnly = True
               Title.Caption = #1054#1090#1087#1091#1089#1082
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'CALCIN'
               Title.Caption = #1055#1088#1080#1085#1103#1090#1086
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'ENDFACTVOLUME'
               Title.Caption = #1060#1072#1082#1090'. '#1054#1089#1090'.'
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
@@ -184,36 +209,66 @@ inherited TabForm: TTabForm
               FieldName = 'HOSENUM'
               ReadOnly = True
               Title.Caption = #8470' '#1056#1091#1082
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'HEIGHT'
               Title.Caption = #1059#1088#1086#1074#1077#1085#1100
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MASS'
               Title.Caption = #1052#1072#1089#1089#1072
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'DENSITY'
               Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TEMPERATURE'
               Title.Caption = #1058#1077#1084' '#176#1057
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'WATER'
               Title.Caption = #1042#1086#1076#1072
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
@@ -221,23 +276,43 @@ inherited TabForm: TTabForm
               FieldName = 'STCNT'
               PopupMenu = SCNTPMenu
               Title.Caption = #1057#1095'. '#1053#1072#1095#1072#1083#1086
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'ECNT'
               Title.Caption = #1057#1095'. '#1050#1086#1085#1077#1094
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'OUTCOME'
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
               ButtonStyle = cbsNone
               Expanded = False
               FieldName = 'R'
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Width = 24
               Visible = True
             end>
@@ -295,6 +370,12 @@ inherited TabForm: TTabForm
           Columns = <
             item
               FieldName = 'VOLUME'
+            end
+            item
+              FieldName = 'SUMM'
+            end
+            item
+              FieldName = 'WHOLE'
             end>
           DataSource = DSInOut
           DBGrid = GridInOutGSM
@@ -425,8 +506,124 @@ inherited TabForm: TTabForm
       end
     end
     object TabSheet3: TTabSheet
-      Caption = 'TabSheet3'
+      Caption = #1060#1072#1089#1086#1074#1082#1072
       ImageIndex = 2
+      object GridInOutItems: TJvDBUltimGrid
+        Left = 0
+        Top = 0
+        Width = 727
+        Height = 437
+        Align = alClient
+        DataSource = DSInOutItems
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        AutoAppend = False
+        IniStorage = JvFS
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'DIR'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SDATE'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CLIENTNAME'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CONTRACT'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PAYMENTMODE'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ITEMCODE'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ITEMNAME'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'QUANTITY'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'AMOUNT'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'EI'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PRICE'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SUMM'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NDS'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'WHOLE'
+            Visible = True
+          end>
+      end
+      object GridFooterInOutItems: TJvDBGridFooter
+        Left = 0
+        Top = 437
+        Width = 727
+        Height = 19
+        SizeGrip = True
+        Columns = <
+          item
+            FieldName = 'AMOUNT'
+          end
+          item
+            FieldName = 'SUMM'
+          end
+          item
+            FieldName = 'WHOLE'
+          end>
+        DataSource = DSInOutItems
+        DBGrid = GridInOutItems
+        OnCalculate = GridFooterInOutItemsCalculate
+        ExplicitLeft = 224
+        ExplicitTop = 264
+        ExplicitWidth = 0
+      end
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
@@ -13498,10 +13695,9 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'select '
-      '    sum(calcin) as calcin'
-      '    sum(calc) as calc,'
-      '    '
+      'select sum(calcin) as calcin, sum(calc) as calc'
+      'from'
+      '('
       'select'
       '    i. id,'
       '    i.session_id,'
@@ -13509,7 +13705,10 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '    (select volume from calcincomes(s.id, i.tanknum)) as calcin,'
+      
+        '   /* (select volume from calcincomes(s.id, i.tanknum)) as calci' +
+        'n,*/'
+      '    i.invol as calcin,'
       
         '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
         ' as calc,'
@@ -13523,7 +13722,13 @@ inherited TabForm: TTabForm
       '    mass,'
       '    water,'
       '    warecode,'
-      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact'
+      '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
+      
+        '     (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
+        ') - '
+      
+        '       (select volume from calcincomes(s.id, i.tanknum)) as outc' +
+        'ome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -13531,9 +13736,204 @@ inherited TabForm: TTabForm
       '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
-      'order by s.startdatetime asc ,i.tanknum,i.hosenum')
+      'order by s.startdatetime asc ,i.tanknum,i.hosenum'
+      ')')
     Left = 124
     Top = 165
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'AZSCODE'
+        DataType = ftWideString
+        ParamType = ptInput
+        Size = 10
+      end>
+  end
+  object QueryInOutSum: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = TransInOut
+    UpdateTransaction = TransInOut
+    FetchOptions.AssignedValues = [evAutoClose]
+    FetchOptions.AutoClose = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'INOUTGSM'
+    SQL.Strings = (
+      
+        'select sum(volume) as volume,sum(summ) as summ, sum(whole) as wh' +
+        'ole'
+      'from ('
+      'select '
+      '   i.id,'
+      '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
+      '   cast(s.startdatetime as date) as sdate,'
+      '    c.name as clientname,'
+      '    cn.nomer || '#39' '#39' || cn.name as contract,'
+      '    p.name as paymentmode,'
+      '    w.name as fuelname,'
+      '    w.code as fuelcode,'
+      '   i.amount,'
+      '   i.ei,'
+      '   i.volume,'
+      '   i.price,'
+      'i.density,'
+      'i.nds,'
+      'i.summ,'
+      'i.whole'
+      ''
+      '   from inoutgsm i'
+      '   join sessions s on s.id = i.session_id'
+      '   join wares w on w.code=i.ware_code'
+      '   join contragents c on c.code=i.client_code'
+      '   join contracts cn on cn.partner_code=c.code'
+      '   join paymentmodes p on p.code=i.payment_code'
+      ''
+      
+        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
+        'AMP)*/'
+      '      s.id = :session_id'
+      '      and i.azscode=:azscode'
+      ''
+      '   order by s.startdatetime, i.direction,paymentmode,clientname'
+      ')')
+    Left = 428
+    Top = 197
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'AZSCODE'
+        DataType = ftWideString
+        ParamType = ptInput
+        Size = 10
+      end>
+  end
+  object QueryInOutItems: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = TransInOutItems
+    UpdateTransaction = TransInOutItems
+    FetchOptions.AssignedValues = [evAutoClose]
+    FetchOptions.AutoClose = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'INOUTGSM'
+    SQL.Strings = (
+      ''
+      'select '
+      '   i.id,'
+      '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
+      '   cast(s.startdatetime as date) as sdate,'
+      '    c.name as clientname,'
+      '    cn.nomer || '#39' '#39' || cn.name as contract,'
+      '    p.name as paymentmode,'
+      '    w.name as itemname,'
+      '    w.code as itemcode,'
+      '   i.amount,'
+      '   i.ei,'
+      '   i.quantity,'
+      '   i.price,'
+      'i.nds,'
+      'i.summ,'
+      'i.whole'
+      ''
+      '   from inoutitems i'
+      '   join sessions s on s.id = i.session_id'
+      '   join items w on w.code=i.item_code'
+      '   join contragents c on c.code=i.client_code'
+      '   join contracts cn on cn.partner_code=c.code'
+      '   join paymentmodes p on p.code=i.payment_code'
+      ''
+      
+        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
+        'AMP)*/'
+      '      s.id = :session_id'
+      '      and i.azscode=:azscode'
+      ''
+      '   order by s.startdatetime, i.direction,paymentmode,clientname')
+    Left = 404
+    Top = 413
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'AZSCODE'
+        DataType = ftWideString
+        ParamType = ptInput
+        Size = 10
+      end>
+  end
+  object TransInOutItems: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 500
+    Top = 413
+  end
+  object DSInOutItems: TJvDataSource
+    DataSet = QueryInOutItems
+    OnFieldChanged = DSInOutItemsFieldChanged
+    Left = 308
+    Top = 421
+  end
+  object QueryInOutItemsSum: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = TransInOutItems
+    UpdateTransaction = TransInOutItems
+    FetchOptions.AssignedValues = [evAutoClose]
+    FetchOptions.AutoClose = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'INOUTGSM'
+    SQL.Strings = (
+      
+        'select sum (amount) as amount, sum(summ) as summ, sum(whole) as ' +
+        'whole from'
+      '(select '
+      '   i.id,'
+      '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
+      '   cast(s.startdatetime as date) as sdate,'
+      '    c.name as clientname,'
+      '    cn.nomer || '#39' '#39' || cn.name as contract,'
+      '    p.name as paymentmode,'
+      '    w.name as itemname,'
+      '    w.code as itemcode,'
+      '   i.amount,'
+      '   i.ei,'
+      '   i.quantity,'
+      '   i.price,'
+      'i.nds,'
+      'i.summ,'
+      'i.whole'
+      ''
+      '   from inoutitems i'
+      '   join sessions s on s.id = i.session_id'
+      '   join items w on w.code=i.item_code'
+      '   join contragents c on c.code=i.client_code'
+      '   join contracts cn on cn.partner_code=c.code'
+      '   join paymentmodes p on p.code=i.payment_code'
+      ''
+      
+        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
+        'AMP)*/'
+      '      s.id = :session_id'
+      '      and i.azscode=:azscode'
+      ''
+      ')')
+    Left = 604
+    Top = 413
     ParamData = <
       item
         Name = 'SESSION_ID'
