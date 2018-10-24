@@ -1,10 +1,10 @@
 inherited TabForm: TTabForm
   Caption = 'Tabs'
-  ClientHeight = 532
+  ClientHeight = 550
   ClientWidth = 735
   OnCloseQuery = FormCloseQuery
   ExplicitWidth = 751
-  ExplicitHeight = 591
+  ExplicitHeight = 609
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
@@ -26,7 +26,7 @@ inherited TabForm: TTabForm
     end
   end
   inherited JvStatusBar1: TJvStatusBar
-    Top = 513
+    Top = 531
     Width = 735
     ExplicitTop = 513
     ExplicitWidth = 735
@@ -35,19 +35,22 @@ inherited TabForm: TTabForm
     Left = 0
     Top = 29
     Width = 735
-    Height = 484
+    Height = 502
     ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
+    ExplicitHeight = 484
     object TabSheet1: TTabSheet
       Caption = #1025#1084#1082#1086#1089#1090#1080' '#1090#1086#1087#1083#1080#1074#1072' '#1080' '#1088#1091#1082#1072#1074#1072' '#1058#1056#1050
+      ExplicitHeight = 456
       object JvPanel1: TJvPanel
         Left = 0
         Top = 0
         Width = 727
-        Height = 456
+        Height = 474
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 456
         object Spl01: TJvSplitter
           Left = 1
           Top = 204
@@ -59,7 +62,7 @@ inherited TabForm: TTabForm
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
-          Top = 436
+          Top = 454
           Width = 725
           Height = 19
           SizeGrip = True
@@ -67,12 +70,13 @@ inherited TabForm: TTabForm
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
+          ExplicitTop = 436
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
           Top = 208
           Width = 725
-          Height = 228
+          Height = 246
           Align = alClient
           DataSource = DSRealPM
           DefaultDrawing = False
@@ -354,16 +358,18 @@ inherited TabForm: TTabForm
     object TabSheet2: TTabSheet
       Caption = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1080' '#1087#1088#1080#1093#1086#1076' '#1043#1057#1052
       ImageIndex = 1
+      ExplicitHeight = 456
       object JvPanel2: TJvPanel
         Left = 0
         Top = 0
         Width = 727
-        Height = 456
+        Height = 474
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 456
         object GridFooterInOut: TJvDBGridFooter
           Left = 1
-          Top = 436
+          Top = 454
           Width = 725
           Height = 19
           SizeGrip = True
@@ -380,12 +386,13 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
+          ExplicitTop = 436
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
           Top = 1
           Width = 725
-          Height = 435
+          Height = 453
           Align = alClient
           DataSource = DSInOut
           Font.Charset = DEFAULT_CHARSET
@@ -508,11 +515,12 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = #1060#1072#1089#1086#1074#1082#1072
       ImageIndex = 2
+      ExplicitHeight = 456
       object GridInOutItems: TJvDBUltimGrid
         Left = 0
         Top = 0
         Width = 727
-        Height = 437
+        Height = 455
         Align = alClient
         DataSource = DSInOutItems
         TabOrder = 0
@@ -543,26 +551,31 @@ inherited TabForm: TTabForm
           item
             Expanded = False
             FieldName = 'CLIENTNAME'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'CONTRACT'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'PAYMENTMODE'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'ITEMCODE'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'ITEMNAME'
+            Width = 64
             Visible = True
           end
           item
@@ -603,7 +616,7 @@ inherited TabForm: TTabForm
       end
       object GridFooterInOutItems: TJvDBGridFooter
         Left = 0
-        Top = 437
+        Top = 455
         Width = 727
         Height = 19
         SizeGrip = True
@@ -628,6 +641,7 @@ inherited TabForm: TTabForm
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
+      ExplicitHeight = 456
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -13822,10 +13836,13 @@ inherited TabForm: TTabForm
     UpdateTransaction = TransInOutItems
     FetchOptions.AssignedValues = [evAutoClose]
     FetchOptions.AutoClose = False
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvGeneratorName, uvUpdateNonBaseFields, uvAutoCommitUpdates]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
-    UpdateOptions.UpdateTableName = 'INOUTGSM'
+    UpdateOptions.GeneratorName = 'GEN_INOUTITEMS_ID'
+    UpdateOptions.UpdateTableName = 'INOUTITEMS'
+    UpdateOptions.KeyFields = 'ID'
+    UpdateObject = QIOIUpdateSQL
     SQL.Strings = (
       ''
       'select '
@@ -13866,6 +13883,7 @@ inherited TabForm: TTabForm
         Name = 'SESSION_ID'
         DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'AZSCODE'
@@ -13873,11 +13891,110 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+    object QueryInOutItemsID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object QueryInOutItemsDIR: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DIR'
+      Origin = 'DIR'
+      ProviderFlags = []
+      ReadOnly = True
+      FixedChar = True
+      Size = 6
+    end
+    object QueryInOutItemsSDATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'SDATE'
+      Origin = 'SDATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutItemsCLIENTNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLIENTNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutItemsCONTRACT: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CONTRACT'
+      Origin = 'CONTRACT'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 229
+    end
+    object QueryInOutItemsPAYMENTMODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'PAYMENTMODE'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object QueryInOutItemsITEMNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ITEMNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutItemsITEMCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ITEMCODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 16
+    end
+    object QueryInOutItemsAMOUNT: TFloatField
+      FieldName = 'AMOUNT'
+      Origin = 'AMOUNT'
+      Required = True
+    end
+    object QueryInOutItemsEI: TWideStringField
+      FieldName = 'EI'
+      Origin = 'EI'
+      Required = True
+      Size = 10
+    end
+    object QueryInOutItemsQUANTITY: TIntegerField
+      FieldName = 'QUANTITY'
+      Origin = 'QUANTITY'
+      Required = True
+    end
+    object QueryInOutItemsPRICE: TFloatField
+      FieldName = 'PRICE'
+      Origin = 'PRICE'
+      Required = True
+    end
+    object QueryInOutItemsNDS: TWideStringField
+      FieldName = 'NDS'
+      Origin = 'NDS'
+      Required = True
+      Size = 10
+    end
+    object QueryInOutItemsSUMM: TFloatField
+      FieldName = 'SUMM'
+      Origin = 'SUMM'
+      Required = True
+    end
+    object QueryInOutItemsWHOLE: TFloatField
+      FieldName = 'WHOLE'
+      Origin = 'WHOLE'
+      Required = True
+    end
   end
   object TransInOutItems: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
+    AfterCommit = TransInOutItemsAfterCommit
     Left = 500
     Top = 413
   end
@@ -13896,7 +14013,7 @@ inherited TabForm: TTabForm
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
-    UpdateOptions.UpdateTableName = 'INOUTGSM'
+    UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
       
         'select sum (amount) as amount, sum(summ) as summ, sum(whole) as ' +
@@ -13932,7 +14049,7 @@ inherited TabForm: TTabForm
       '      and i.azscode=:azscode'
       ''
       ')')
-    Left = 604
+    Left = 636
     Top = 413
     ParamData = <
       item
@@ -13946,5 +14063,25 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+  end
+  object QIOIUpdateSQL: TFDUpdateSQL
+    Connection = DM.FDConnection
+    ModifySQL.Strings = (
+      'UPDATE INOUTITEMS'
+      'SET AMOUNT = :NEW_AMOUNT, EI = :NEW_EI, PRICE = :NEW_PRICE, '
+      
+        '  SUMM = :NEW_SUMM, NDS = :NEW_NDS, WHOLE = :NEW_WHOLE, QUANTITY' +
+        ' = :NEW_QUANTITY'
+      'WHERE ID = :ID')
+    FetchRowSQL.Strings = (
+      
+        'SELECT ID, SESSION_ID, TBL, DIRECTION, CLIENT_CODE, CONTRACT_ID,' +
+        ' PAYMENT_CODE, '
+      '  ITEM_CODE, AMOUNT, EI, PRICE, SUMM, NDS, WHOLE, QUANTITY, '
+      '  LASTUSER_ID, UPDATED_AT, STATE, AZSCODE'
+      'FROM INOUTITEMS'
+      'WHERE ID = :ID')
+    Left = 404
+    Top = 469
   end
 end

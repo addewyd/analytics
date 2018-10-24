@@ -71,6 +71,22 @@ type
     GridInOutItems: TJvDBUltimGrid;
     GridFooterInOutItems: TJvDBGridFooter;
     QueryInOutItemsSum: TFDQuery;
+    QueryInOutItemsID: TIntegerField;
+    QueryInOutItemsDIR: TWideStringField;
+    QueryInOutItemsSDATE: TDateField;
+    QueryInOutItemsCLIENTNAME: TWideStringField;
+    QueryInOutItemsCONTRACT: TWideStringField;
+    QueryInOutItemsPAYMENTMODE: TWideStringField;
+    QueryInOutItemsITEMNAME: TWideStringField;
+    QueryInOutItemsITEMCODE: TWideStringField;
+    QueryInOutItemsAMOUNT: TFloatField;
+    QueryInOutItemsEI: TWideStringField;
+    QueryInOutItemsQUANTITY: TIntegerField;
+    QueryInOutItemsPRICE: TFloatField;
+    QueryInOutItemsNDS: TWideStringField;
+    QueryInOutItemsSUMM: TFloatField;
+    QueryInOutItemsWHOLE: TFloatField;
+    QIOIUpdateSQL: TFDUpdateSQL;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -115,6 +131,7 @@ type
     procedure DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
     procedure GridFooterInOutItemsCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
+    procedure TransInOutItemsAfterCommit(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -788,6 +805,7 @@ begin
   ShowPMData;
 
   GridInOutGSM.Refresh;
+  GridInOutItems.Refresh;
   IOTHGrid.Refresh;
   RealPMGrid.Refresh;
 
@@ -1035,6 +1053,14 @@ begin
 
 end;
 
+// .............................................................................`
+
+procedure TTabForm.TransInOutItemsAfterCommit(Sender: TObject);
+begin
+  inherited;
+
+end;
+
 // .............................................................................
 
 procedure TTabForm.ShowIOTHData();
@@ -1120,7 +1146,7 @@ begin
       begin
         if dirtyIOTH then
         begin
-          QueryIOTH.ApplyUpdates(0);
+          ApplyUpdates(0);
           Close;
           Transaction.Commit;
           cmt := true;
@@ -1169,8 +1195,10 @@ begin
       begin
         if dirtyItem then
         begin
+//          ApplyUpdates;
           Close;
-          Transaction.Commit;
+          // commits if cachedupdates=false && without call ApplyUpdates
+          Transaction.Commit;              // ????? does not commit??
           cmt := true;
           UpdateState(QueryInOutItems);
           ShowItemsData;
@@ -1340,7 +1368,7 @@ begin
   // if QueryInOut.Transaction.Active then
   // begin
 
-  CanClose := not(dirtyGSM or dirtyIOTH or dirtyPM);
+  CanClose := not(dirtyGSM or dirtyIOTH or dirtyPM or dirtyItem);
 
   if not CanClose then
   begin
@@ -1794,7 +1822,6 @@ begin
   begin
 
   end;
-
 
   if gdSelected in State then
   begin

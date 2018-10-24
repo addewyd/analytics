@@ -69,7 +69,7 @@ begin
     ParamByName('sst').AsString := sst;
   end;
   inherited;
-  LoadData;
+  inherited LoadData;
   JvDBGrid.Refresh;
 
 end;

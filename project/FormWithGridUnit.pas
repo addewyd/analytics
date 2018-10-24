@@ -48,6 +48,8 @@ begin
 //  LoadData;
 end;
 
+// .............................................................................
+
 procedure TFormWithGrid.LoadData;
 begin
 

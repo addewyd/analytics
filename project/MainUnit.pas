@@ -505,6 +505,8 @@ begin
           AddToLog('deleted from outcomesbyoffice');
           ExecSQL('delete from incomesbydischarge');
           AddToLog('deleted from incomesbydischarge');
+          ExecSQL('delete from ITEMOUTCOMESBYPAYSHEET');
+          AddToLog('deleted from ITEMOUTCOMESBYPAYSHEET');
 
           ExecSQL('delete from tdb_items');
           AddToLog('deleted from tdb_items');
@@ -576,6 +578,8 @@ begin
           AddToLog('deleted from inoutgsm');
           ExecSQL('delete from iotankshoses');
           AddToLog('deleted from iotankshoses');
+          ExecSQL('delete from inoutitems');
+          AddToLog('deleted from inoutitems');
           Transaction.Commit;
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
