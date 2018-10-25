@@ -313,6 +313,8 @@ end;
 
 Procedure SaveUserOptions(user_id: Integer; Def: boolean);
 begin
+  if not DM.FDConnection.connected then Exit;
+
   if Def then
   begin
     last_sessions_count := last_sessions_count_def;
@@ -655,6 +657,8 @@ begin
 
 // AddToLog(
 //  tsd.combo.LookupValue + ' ' + IntToStr(tsd.uid));
+  if DM.FDConnection.Connected then
+  begin
 
   uid := StrToIntDef(tsd.combo.LookupValue, 0);
   urole := tsd.urole;
@@ -701,7 +705,15 @@ begin
   end;
 
   DM.AddLogMsg(user_id, 'Start Work');
-
+end
+else
+begin
+//
+  user_role := 1;
+  user_login := 'admin';
+  user_fio := '';
+  user_id := 1;
+end;
 end;
 
 // .............................................................................
@@ -715,7 +727,10 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  DM.AddLogMsg(user_id, 'End Work');
+  if DM.FDConnection.Connected then
+  begin
+    DM.AddLogMsg(user_id, 'End Work');
+  end;
   JVFS.SaveFormPlacement();
   HTTPServer.Active := false;
 end;
@@ -905,11 +920,15 @@ begin
         end;
         last_sessions_count := Ceil(od.LscEdit.Value);
         current_azscode := od.AzsEdit.Text;
-        SaveUserOptions(user_id, false);
+
+        if DM.FDConnection.connected then
+          SaveUserOptions(user_id, false);
         StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
         msg.Msg := WM_SESSION_ADDED;
         SendMsgs(msg);
-        DM.AddLogMsg(user_id, 'Options saved');
+
+        if DM.FDConnection.connected then
+          DM.AddLogMsg(user_id, 'Options saved');
       end;
     finally
       reg.Free;

@@ -28,7 +28,7 @@ inherited TabForm: TTabForm
   inherited JvStatusBar1: TJvStatusBar
     Top = 531
     Width = 735
-    ExplicitTop = 513
+    ExplicitTop = 531
     ExplicitWidth = 735
   end
   object Pages: TJvPageControl [2]
@@ -36,13 +36,11 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
-    ExplicitHeight = 484
     object TabSheet1: TTabSheet
       Caption = #1025#1084#1082#1086#1089#1090#1080' '#1090#1086#1087#1083#1080#1074#1072' '#1080' '#1088#1091#1082#1072#1074#1072' '#1058#1056#1050
-      ExplicitHeight = 456
       object JvPanel1: TJvPanel
         Left = 0
         Top = 0
@@ -50,7 +48,6 @@ inherited TabForm: TTabForm
         Height = 474
         Align = alClient
         TabOrder = 0
-        ExplicitHeight = 456
         object Spl01: TJvSplitter
           Left = 1
           Top = 204
@@ -70,7 +67,6 @@ inherited TabForm: TTabForm
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
-          ExplicitTop = 436
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -351,14 +347,12 @@ inherited TabForm: TTabForm
           DataSource = DSIOTH
           DBGrid = IOTHGrid
           OnCalculate = IOTHFooterCalculate
-          ExplicitTop = 138
         end
       end
     end
     object TabSheet2: TTabSheet
       Caption = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1080' '#1087#1088#1080#1093#1086#1076' '#1043#1057#1052
       ImageIndex = 1
-      ExplicitHeight = 456
       object JvPanel2: TJvPanel
         Left = 0
         Top = 0
@@ -366,7 +360,6 @@ inherited TabForm: TTabForm
         Height = 474
         Align = alClient
         TabOrder = 0
-        ExplicitHeight = 456
         object GridFooterInOut: TJvDBGridFooter
           Left = 1
           Top = 454
@@ -378,15 +371,17 @@ inherited TabForm: TTabForm
               FieldName = 'VOLUME'
             end
             item
-              FieldName = 'SUMM'
+              FieldName = 'AMOUNT'
             end
             item
               FieldName = 'WHOLE'
+            end
+            item
+              FieldName = 'SUMNDS'
             end>
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
-          ExplicitTop = 436
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -471,11 +466,6 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
-              FieldName = 'AMOUNT'
-              Visible = True
-            end
-            item
-              Expanded = False
               FieldName = 'EI'
               Width = 12
               Visible = True
@@ -496,18 +486,25 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'DENSITY'
               Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
+              Width = 64
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'AMOUNT'
+              Title.Caption = #1057#1091#1084#1084#1072
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'NDS'
-              Title.Caption = #1053#1044#1057
+              Title.Caption = #1053#1044#1057'%'
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'SUMM'
-              Title.Caption = #1057#1091#1084#1084#1072
+              FieldName = 'SUMNDS'
+              Title.Caption = #1053#1044#1057
               Visible = True
             end
             item
@@ -522,7 +519,6 @@ inherited TabForm: TTabForm
     object TabSheet3: TTabSheet
       Caption = #1060#1072#1089#1086#1074#1082#1072
       ImageIndex = 2
-      ExplicitHeight = 456
       object GridInOutItems: TJvDBUltimGrid
         Left = 0
         Top = 0
@@ -570,7 +566,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 64
+            Width = 200
             Visible = True
           end
           item
@@ -582,7 +578,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 64
+            Width = 100
             Visible = True
           end
           item
@@ -594,7 +590,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 64
+            Width = 50
             Visible = True
           end
           item
@@ -606,7 +602,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 64
+            Width = 50
             Visible = True
           end
           item
@@ -618,7 +614,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 64
+            Width = 100
             Visible = True
           end
           item
@@ -651,6 +647,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
+            Width = 10
             Visible = True
           end
           item
@@ -678,6 +675,17 @@ inherited TabForm: TTabForm
           item
             Expanded = False
             FieldName = 'NDS'
+            Title.Caption = ' '#1053#1044#1057'%'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SUMNDS'
             Title.Caption = #1053#1044#1057
             Title.Font.Charset = DEFAULT_CHARSET
             Title.Font.Color = clWindowText
@@ -713,19 +721,18 @@ inherited TabForm: TTabForm
           end
           item
             FieldName = 'WHOLE'
+          end
+          item
+            FieldName = 'SUMNDS'
           end>
         DataSource = DSInOutItems
         DBGrid = GridInOutItems
         OnCalculate = GridFooterInOutItemsCalculate
-        ExplicitLeft = 224
-        ExplicitTop = 264
-        ExplicitWidth = 0
       end
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
       ImageIndex = 3
-      ExplicitHeight = 456
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
@@ -765,7 +772,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180016C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13460,6 +13467,7 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
+    UpdateObject = InOutUPDSql
     SQL.Strings = (
       ''
       'select '
@@ -13471,16 +13479,20 @@ inherited TabForm: TTabForm
       '    p.name as paymentmode,'
       '    w.name as fuelname,'
       '    w.code as fuelcode,'
-      '   i.amount,'
       '   i.ei,'
       '   i.volume,'
       '   i.price,'
       'i.density,'
-      'i.nds,'
-      '    (VOLUME * price) as summ,'
+      'i.nds, -- '#1089#1090#1072#1074#1082#1072
+      'amount * cast(nds as double precision) / 100.0 as sumnds,'
+      '--    (VOLUME * price) as summ,'
       
-        '    (VOLUME * price + volume * price * cast(nds as double precis' +
-        'ion) / 100.0) as whole'
+        '--    (VOLUME * price + volume * price * cast(nds as double prec' +
+        'ision) / 100.0) as whole'
+      '    amount,'
+      
+        '    (amount + amount * cast(nds as double precision) / 100.0) as' +
+        ' whole'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -13510,6 +13522,113 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+    object QueryInOutID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QueryInOutDIR: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DIR'
+      Origin = 'DIR'
+      ProviderFlags = []
+      ReadOnly = True
+      FixedChar = True
+      Size = 6
+    end
+    object QueryInOutSDATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'SDATE'
+      Origin = 'SDATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutCONTRACT: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CONTRACT'
+      Origin = 'CONTRACT'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 229
+    end
+    object QueryInOutPAYMENTMODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'PAYMENTMODE'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object QueryInOutFUELNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'FUELNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutCLIENTNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLIENTNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutFUELCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'FUELCODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 16
+    end
+    object QueryInOutAMOUNT: TFloatField
+      FieldName = 'AMOUNT'
+      Origin = 'AMOUNT'
+      Required = True
+    end
+    object QueryInOutEI: TWideStringField
+      FieldName = 'EI'
+      Origin = 'EI'
+      Size = 10
+    end
+    object QueryInOutVOLUME: TFloatField
+      FieldName = 'VOLUME'
+      Origin = 'VOLUME'
+      Required = True
+    end
+    object QueryInOutPRICE: TFloatField
+      FieldName = 'PRICE'
+      Origin = 'PRICE'
+      Required = True
+    end
+    object QueryInOutDENSITY: TFloatField
+      FieldName = 'DENSITY'
+      Origin = 'DENSITY'
+      Required = True
+    end
+    object QueryInOutNDS: TWideStringField
+      FieldName = 'NDS'
+      Origin = 'NDS'
+      Required = True
+      Size = 10
+    end
+    object QueryInOutWHOLE: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'WHOLE'
+      Origin = 'WHOLE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutSUMNDS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'SUMNDS'
+      Origin = 'SUMNDS'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH
@@ -13691,7 +13810,6 @@ inherited TabForm: TTabForm
       end>
   end
   object TransInOut: TFDTransaction
-    Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
     Left = 492
@@ -13865,8 +13983,8 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
       
-        'select sum(volume) as volume,sum(summ) as summ, sum(whole) as wh' +
-        'ole'
+        'select sum(volume) as volume,sum(amount) as amount, sum(sumnds) ' +
+        'as sumnds, sum(whole) as whole'
       'from ('
       'select '
       '   i.id,'
@@ -13877,16 +13995,20 @@ inherited TabForm: TTabForm
       '    p.name as paymentmode,'
       '    w.name as fuelname,'
       '    w.code as fuelcode,'
-      '   i.amount,'
       '   i.ei,'
       '   i.volume,'
       '   i.price,'
       'i.density,'
       'i.nds,'
-      '    (VOLUME * price) as summ,'
+      'amount * cast(nds as double precision) / 100.0 as sumnds,'
+      '--    (VOLUME * price) as summ,'
       
-        '    (VOLUME * price + volume * price * cast(nds as double precis' +
-        'ion) / 100.0) as whole'
+        '--    (VOLUME * price + volume * price * cast(nds as double prec' +
+        'ision) / 100.0) as whole'
+      '    amount,'
+      
+        '    (amount + amount * cast(nds as double precision) / 100.0) as' +
+        ' whole'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -13918,6 +14040,34 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+    object QueryInOutSumVOLUME: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'VOLUME'
+      Origin = 'VOLUME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutSumAMOUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'AMOUNT'
+      Origin = 'AMOUNT'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutSumSUMNDS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'SUMNDS'
+      Origin = 'SUMNDS'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutSumWHOLE: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'WHOLE'
+      Origin = 'WHOLE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object QueryInOutItems: TFDQuery
     Connection = DM.FDConnection
@@ -13948,6 +14098,9 @@ inherited TabForm: TTabForm
       '    i.quantity,'
       '    i.price,'
       '    i.nds,'
+      
+        '    quantity * price * cast(nds as double precision) / 100.0 as ' +
+        'sumnds,'
       '    (quantity * price) as summ,'
       
         '    (quantity * price + quantity * price * cast(nds as double pr' +
@@ -14080,6 +14233,13 @@ inherited TabForm: TTabForm
       Origin = 'WHOLE'
       Required = True
     end
+    object QueryInOutItemsSUMNDS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'SUMNDS'
+      Origin = 'SUMNDS'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object TransInOutItems: TFDTransaction
     Options.AutoStart = False
@@ -14107,8 +14267,8 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
       
-        'select sum (amount) as amount, sum(summ) as summ, sum(whole) as ' +
-        'whole from'
+        'select sum (amount) as amount, sum(summ) as summ, sum(sumnds) as' +
+        ' sumnds, sum(whole) as whole from'
       '(select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
@@ -14123,6 +14283,10 @@ inherited TabForm: TTabForm
       '    i.quantity,'
       '    i.price,'
       '    i.nds,'
+      
+        '    quantity * price * cast(nds as double precision) / 100.0 as ' +
+        'sumnds,'
+      ''
       '    (quantity * price) as summ,'
       
         '    (quantity * price + quantity * price * cast(nds as double pr' +
@@ -14177,5 +14341,24 @@ inherited TabForm: TTabForm
       'WHERE ID = :ID')
     Left = 404
     Top = 469
+  end
+  object InOutUPDSql: TFDUpdateSQL
+    Connection = DM.FDConnection
+    ModifySQL.Strings = (
+      'UPDATE INOUTGSM'
+      'SET EI = :NEW_EI, VOLUME = :NEW_VOLUME, DENSITY = :NEW_DENSITY, '
+      '  PRICE = :NEW_PRICE, NDS = :NEW_NDS, AMOUNT = :NEW_AMOUNT'
+      'WHERE ID = :ID'
+      'RETURNING ID')
+    FetchRowSQL.Strings = (
+      
+        'SELECT ID, SESSION_ID, TBL, DIRECTION, CLIENT_CODE, CONTRACT_ID,' +
+        ' PAYMENT_CODE, '
+      '  WARE_CODE, AMOUNT, EI, VOLUME, DENSITY, PRICE, SUMM, NDS, '
+      '  WHOLE, LASTUSER_ID, UPDATED_AT, STATE, AZSCODE, TANKNUM'
+      'FROM INOUTGSM'
+      'WHERE ID = :ID')
+    Left = 556
+    Top = 181
   end
 end
