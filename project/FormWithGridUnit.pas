@@ -13,6 +13,8 @@ uses
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, JvDBUltimGrid;
 
+{$I 'consts.inc'}
+
 type
   TFormWithGrid = class(TBaseForm)
     JvDBGridFooter: TJvDBGridFooter;
@@ -28,6 +30,9 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+  protected
+    procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+
   public
     { Public declarations }
     procedure LoadData;
@@ -79,6 +84,14 @@ begin
 
 end;
 
+
+// .............................................................................
+
+procedure TFormWithGrid.sessionadded(var Msg: TMessage);
+begin
+  LoadData;
+
+end;
 
 // .............................................................................
 
