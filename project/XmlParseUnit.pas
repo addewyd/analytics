@@ -241,6 +241,11 @@ begin
       sid := ParseSessionFile(doc);
       if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Commit;
       if DM.FDTransaction.Active then DM.FDTransaction.Commit;
+
+
+DM.FDConnection.Close;
+DM.FDConnection.Open();
+
       msg.Msg := WM_SESSION_ADDED;
       MainForm.SendMsgs(msg);
       DM.AddLogMsg(user_id, Format('Session %d added', [sid]));
@@ -249,6 +254,7 @@ begin
       begin
         if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Rollback;
         if DM.FDTransaction.Active then DM.FDTransaction.Rollback;
+
         AddToLog('parse input: ' + e.Message);
         ErrorMessageBox(MainForm, e.Message);
       end;
@@ -263,7 +269,7 @@ begin
     AddToLog('Not now');
     Exit;
   end;
-  raise Exception.Create('Not a session or order file');
+//  raise Exception.Create('Not a session or order file');
 
 end;
 
