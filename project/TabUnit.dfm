@@ -36,7 +36,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -486,7 +486,6 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'DENSITY'
               Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
-              Width = 64
               Visible = True
             end
             item
@@ -636,7 +635,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Visible = True
+            Visible = False
           end
           item
             Expanded = False
@@ -772,7 +771,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180016C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001700010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

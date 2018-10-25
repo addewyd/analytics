@@ -818,6 +818,7 @@ begin
       XMLDoc.LoadFromFile(filename);
       doc := XmlDoc.DOMDocument;
       ParseInputFile(Doc);
+
     except
       on e: Exception do
       begin
