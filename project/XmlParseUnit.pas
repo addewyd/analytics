@@ -11,7 +11,7 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
 {$Include 'consts.inc'}
 
 procedure ParseInputFile(Doc: IDOMDocument; quiet: boolean);
-function ParseSessionFile(Doc: IDOMDocument) : Integer;
+function ParseSessionFile(Doc: IDOMDocument; quiet: boolean) : Integer;
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
 procedure LoadTanks(node: IDOMNode; id: integer);
 procedure LoadHoses(node: IDOMNode; id: integer);
@@ -238,7 +238,7 @@ begin
     DM.FDTransaction.StartTransaction;
     DM.FDTransactionUPD.StartTransaction;
     try
-      sid := ParseSessionFile(doc);
+      sid := ParseSessionFile(doc, quiet);
       if DM.FDTransactionUPD.Active then DM.FDTransactionUPD.Commit;
       if DM.FDTransaction.Active then DM.FDTransaction.Commit;
 
@@ -424,12 +424,11 @@ begin
     fnames.Free;
   end;
 
-
 end;
 
 // .............................................................................
 
-function ParseSessionFile(Doc: IDOMDocument) : Integer;
+function ParseSessionFile(Doc: IDOMDocument; quiet: boolean) : Integer;
 var
   nL, nL1: IDOMNodeList;
   n, n0, n1: IDOMNode;
@@ -489,10 +488,18 @@ begin
     if not ia then
     begin
       //
-      ErrorMessageBox(MainForm,
-        Format('Session not in order, load %s first (supposed SessionNum is %d)',
-          [requiredfile, sn]));
-      Continue;
+      if quiet then
+      begin
+        AddToLog(Format('Session not in order, loading %s',
+            [requiredfile]));
+      end
+      else
+      begin
+        ErrorMessageBox(MainForm,
+          Format('Session not in order, load %s first (supposed SessionNum is %d)',
+            [requiredfile, sn]));
+      end;
+      Continue;                 /// ?
     end;
 
     d1 := attrs.getNamedItem('StartDateTime').nodeValue;

@@ -549,18 +549,20 @@ begin
           Transaction.Commit;
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
+          DM.AddLogMsg(user_id, 'deleted all tables');
         except
           on e: Exception do
           begin
             Transaction.Rollback;
+            ErrorMessageBox(self, e.Message);
             AddToLog(e.Message);
           end;
         end;
       end;
     end;
 end;
-// .............................................................................
 
+// .............................................................................
 
 procedure TMainForm.DelSessionsActionExecute(Sender: TObject);
   var
@@ -586,8 +588,13 @@ begin
           Transaction.Commit;
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
+          DM.AddLogMsg(user_id, 'deleted io tables');
         except
-          Transaction.Rollback;
+          on e: Exception do
+          begin
+            Transaction.Rollback;
+            ErrorMessageBox(self, e.Message);
+          end;
         end;
       end;
     end;
