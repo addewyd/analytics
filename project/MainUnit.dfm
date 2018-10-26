@@ -56,58 +56,63 @@ object MainForm: TMainForm
       Top = 0
       Action = LoadFileAction
     end
-    object ToolButton5: TToolButton
+    object ToolButton2: TToolButton
       Left = 23
+      Top = 0
+      Action = LoadDirAction
+    end
+    object ToolButton5: TToolButton
+      Left = 46
       Top = 0
       Action = SessionsAction
     end
     object ToolButton18: TToolButton
-      Left = 46
+      Left = 69
       Top = 0
       Action = SessDataAction
     end
     object ToolButton8: TToolButton
-      Left = 69
+      Left = 92
       Top = 0
       Action = StationsAction
     end
     object ToolButton14: TToolButton
-      Left = 92
+      Left = 115
       Top = 0
       Action = PaimentModesAction
     end
     object ToolButton9: TToolButton
-      Left = 115
+      Left = 138
       Top = 0
       Action = XmlTablesAction
     end
     object ToolButton13: TToolButton
-      Left = 138
+      Left = 161
       Top = 0
       Action = SimpleReportAction
     end
     object ToolButton15: TToolButton
-      Left = 161
+      Left = 184
       Top = 0
       Action = OptionsAction
     end
     object UsersTB: TToolButton
-      Left = 184
+      Left = 207
       Top = 0
       Action = UsersAction
     end
     object ToolButton19: TToolButton
-      Left = 207
+      Left = 230
       Top = 0
       Action = ViewLogAction
     end
     object ToolButton4: TToolButton
-      Left = 230
+      Left = 253
       Top = 0
       Action = AboutAction
     end
     object ToolButton6: TToolButton
-      Left = 253
+      Left = 276
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -115,7 +120,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton16: TToolButton
-      Left = 261
+      Left = 284
       Top = 0
       Width = 8
       Caption = 'ToolButton16'
@@ -123,30 +128,30 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton10: TToolButton
-      Left = 269
+      Left = 292
       Top = 0
       Action = WindowCascade1
       ImageIndex = 12
     end
     object ToolButton11: TToolButton
-      Left = 292
+      Left = 315
       Top = 0
       Action = WindowTileHorizontal1
       ImageIndex = 14
     end
     object ToolButton12: TToolButton
-      Left = 315
+      Left = 338
       Top = 0
       Action = WindowTileVertical1
       ImageIndex = 15
     end
     object ToolButton20: TToolButton
-      Left = 338
+      Left = 361
       Top = 0
       Action = WindowListAction
     end
     object dtb1: TToolButton
-      Left = 361
+      Left = 384
       Top = 0
       Width = 23
       Caption = 'dtb1'
@@ -154,7 +159,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton7: TToolButton
-      Left = 384
+      Left = 407
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -162,19 +167,19 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object DelTB: TToolButton
-      Left = 392
+      Left = 415
       Top = 0
       Margins.Left = 20
       Margins.Right = 20
       Action = ClearDBAction
     end
     object DelSesTB: TToolButton
-      Left = 415
+      Left = 438
       Top = 0
       Action = DelSessionsAction
     end
     object dtb2: TToolButton
-      Left = 438
+      Left = 461
       Top = 0
       Width = 23
       Caption = 'dtb2'
@@ -182,7 +187,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton17: TToolButton
-      Left = 461
+      Left = 484
       Top = 0
       Width = 9
       Caption = 'ToolButton17'
@@ -190,7 +195,7 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 470
+      Left = 493
       Top = 0
       Hint = 'Quit'
       Action = CloseAction
@@ -325,6 +330,8 @@ object MainForm: TMainForm
     end
     object LoadDirAction: TAction
       Caption = 'Load Dir'
+      Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075
+      ImageIndex = 69
       OnExecute = LoadDirActionExecute
     end
     object ClearDBAction: TAction
@@ -445,7 +452,9 @@ object MainForm: TMainForm
     Left = 48
     Top = 216
   end
-  object JvSelectDirectory1: TJvSelectDirectory
+  object JvSelectDirectory: TJvSelectDirectory
+    Options = [sdPrompt]
+    Title = #1042#1099#1073#1088#1072#1090#1100' '#1040#1047#1057
     Left = 48
     Top = 280
   end
@@ -465,6 +474,8 @@ object MainForm: TMainForm
   object JvFS: TJvFormStorage
     AppStorage = JvAppRS
     AppStoragePath = '%FORM_NAME%\'
+    StoredProps.Strings = (
+      'JvSelectDirectory.Directory')
     StoredValues = <>
     Left = 48
     Top = 416

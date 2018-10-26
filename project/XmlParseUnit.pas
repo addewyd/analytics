@@ -10,7 +10,7 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
 
 {$Include 'consts.inc'}
 
-procedure ParseInputFile(Doc: IDOMDocument);
+procedure ParseInputFile(Doc: IDOMDocument; quiet: boolean);
 function ParseSessionFile(Doc: IDOMDocument) : Integer;
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
 procedure LoadTanks(node: IDOMNode; id: integer);
@@ -226,7 +226,7 @@ end;
 
 // start
 
-procedure ParseInputFile(Doc: IDOMDocument);
+procedure ParseInputFile(Doc: IDOMDocument; quiet: boolean);
 var
   nL, nL1: IDOMNodeList;
   msg: TMessage;

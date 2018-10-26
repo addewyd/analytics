@@ -10,7 +10,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, FireDAC.Comp.Client, Data.DB, Vcl.ComCtrls,
   Vcl.ToolWin, Vcl.AppEvnts, System.ImageList, Vcl.ImgList,
-  Registry, Math,
+  Registry, Math, System.Types, System.IOUtils,
 
   FStorage, AboutUnit, DmUnit, JvDataSource, Vcl.Grids, Vcl.DBGrids,
   JvExDBGrids, JvDBGrid, FireDAC.Phys.FB, FireDAC.Phys.FBDef, JvBaseDlg,
@@ -42,7 +42,7 @@ type
     LoadFileAction: TAction;
     LoadDirAction: TAction;
     JvOpenDialog: TJvOpenDialog;
-    JvSelectDirectory1: TJvSelectDirectory;
+    JvSelectDirectory: TJvSelectDirectory;
     XMLDoc: TXMLDocument;
     ClearDBAction: TAction;
     DelTB: TToolButton;
@@ -111,6 +111,7 @@ type
     ViewLogAction: TAction;
     ViewLog1: TMenuItem;
     ToolButton19: TToolButton;
+    ToolButton2: TToolButton;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -797,8 +798,38 @@ end;
 // .............................................................................
 
 procedure TMainForm.LoadDirActionExecute(Sender: TObject);
+  var
+    dir: String;
+    files: TStringDynArray;
+    i, len: Integer;
+    Doc: IDOMDocument;
 begin
-//
+  if JvSelectDirectory.Execute then
+  begin
+    dir := JvSelectDirectory.Directory;
+
+    files := TDirectory.GetFiles(dir, 'CloseS*.xml', TSearchOption.soTopDirectoryOnly);
+    len := Length(files);
+    for i := 0 to len - 1 do
+    begin
+      try
+        CurrentFile := files[i];
+        XMLDoc.LoadFromFile(files[i]);
+        doc := XmlDoc.DOMDocument;
+        ParseInputFile(Doc, true);
+
+      except
+        on e: Exception do
+        begin
+          ErrorMessageBox(self, e.Message);
+        end;
+
+      end;
+
+    end;
+
+  end;
+
 end;
 
 // .............................................................................
@@ -817,7 +848,7 @@ begin
       CurrentFile := filename;
       XMLDoc.LoadFromFile(filename);
       doc := XmlDoc.DOMDocument;
-      ParseInputFile(Doc);
+      ParseInputFile(Doc, false);
 
     except
       on e: Exception do
