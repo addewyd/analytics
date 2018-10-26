@@ -22,7 +22,7 @@ inherited ViewLogForm: TViewLogForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12705,6 +12705,7 @@ inherited ViewLogForm: TViewLogForm
     Connection = DM.FDConnection
     SQL.Strings = (
       'select first 80 a.adate, u.login, a.msg from actionlog a '
-      '    join users u on a.user_id=u.id order by a.adate')
+      '    join users u on a.user_id=u.id '
+      'order by a.adate desc')
   end
 end

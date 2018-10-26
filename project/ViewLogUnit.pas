@@ -42,8 +42,8 @@ begin
   begin
     if Active then close;
 
-    SQL.Text := 'select first 80 a.adate, u.login, a.msg from actionlog a ' +
-    'join users u on a.user_id=u.id order by a.adate desc';
+    SQL.Text := 'select first 80  a.adate, u.login, a.msg from actionlog a ' +
+      'join users u on a.user_id=u.id order by a.adate desc';
     Transaction.StartTransaction;
     Open;
   end;
@@ -59,7 +59,7 @@ begin
   with FDQuery do
   begin
     SQL.Text := 'select first 80 a.adate, u.login, a.msg from actionlog a ' +
-    'join users u on a.user_id=u.id order by a.adate';
+    'join users u on a.user_id=u.id order by a.adate desc';
     Transaction.StartTransaction;
     Open;
   end;
