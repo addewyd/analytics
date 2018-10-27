@@ -36,11 +36,14 @@ type
     LogTran: TFDTransaction;
     LogTranUpd: TFDTransaction;
     FDQueryForInOutItems: TFDQuery;
+    QUpdUId: TFDQuery;
+    QuUpdTran: TFDTransaction;
   private
     { Private declarations }
   public
     { Public declarations }
     procedure AddLogMsg(user_id: integer; msg: String);
+    procedure UpdUserId(tablename: String; sid: Integer);
   end;
 
 var
@@ -98,7 +101,37 @@ uses MainUnit;
 
   end;
 
-// ...........................................................................
+// .............................................................................
+
+procedure TDM.UpdUserId(tablename: String; sid: Integer);
+begin
+  with QUpdUId do
+  begin
+
+    MacroByName('TABLE').AsRaw := tablename;
+
+    ParamByName('lastuser_id').AsInteger := user_id;
+    ParamByName('session_id').AsInteger := sid;
+    //Transaction.StartTransaction;
+    try
+
+      Prepare;
+      ExecSQL;
+      //Transaction.Commit;
+    except
+      on e: Exception do
+      begin
+        //Transaction.Rollback;
+        ErrorMessageBox(nil, e.Message);
+        Raise;
+      end;
+
+    end;
+  end;
+
+end;
+
+// .............................................................................
 
 procedure TDM.AddLogMsg(user_id: integer; msg: String);
 var

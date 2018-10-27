@@ -6,7 +6,7 @@ object DM: TDM
     Left = 104
     Top = 48
     Bitmap = {
-      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13335,6 +13335,45 @@ object DM: TDM
       '        pmec,'
       '        partnerextcode')
     Left = 128
+    Top = 344
+  end
+  object QUpdUId: TFDQuery
+    Connection = FDConnection
+    Transaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
+    FetchOptions.AssignedValues = [evAutoFetchAll]
+    FetchOptions.AutoFetchAll = afTruncate
+    SQL.Strings = (
+      
+        'update !table set lastuser_id=:lastuser_id where session_id=:ses' +
+        'sion_id')
+    Left = 248
+    Top = 344
+    ParamData = <
+      item
+        Name = 'LASTUSER_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+    MacroData = <
+      item
+        Value = ''
+        Name = 'TABLE'
+      end>
+  end
+  object QuUpdTran: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = FDConnection
+    Left = 448
     Top = 344
   end
 end

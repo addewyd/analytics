@@ -772,6 +772,7 @@ begin
       end;
     end;
     // then update lastuser_id with user_id
+    DM.UpdUserId('IOTANKSHOSES', id);
 
   end;
 
@@ -853,6 +854,7 @@ begin
       end;
     end;
     // then update lastuser_id with user_id
+    DM.UpdUserId('INOUTGSM', id);
 
   end;
 
@@ -907,6 +909,7 @@ begin
       end;
     end;
     // then update lastuser_id with user_id
+    DM.UpdUserId('INOUTITEMS', id);
 
   end;
 

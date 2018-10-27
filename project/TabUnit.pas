@@ -184,7 +184,7 @@ type
     procedure ShowItemsData();
     procedure ShowIOTHData();
     procedure ShowPMData();
-    procedure UpdateState(q: TFDQuery);
+    procedure UpdateState(q: TFDQuery; _state: Integer);
     function GetStartSession: String;
   end;
 
@@ -264,15 +264,77 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.UpdateState(q: TFDQuery);
+procedure TTabForm.UpdateState(q: TFDQuery; _state: integer);
+  var
+    tablename: String;
 begin
   // HZ!!!
   // q.UpdateTransaction.Commit;
   AddToLog(q.Name + ' need update');
-  WITH q DO
-  begin
-    //
-  end;
+    tablename := q.UpdateOptions.UpdateTableName;
+    if Trim(tablename) <> '' then
+    begin
+      with GenUpdQuery do
+      begin
+        sql.Text := 'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id';
+        with Macros do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'table';
+            DataType := mdRaw;
+          end;
+        end;
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'state';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'user_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+        end;
+        MacroByName('table').AsRaw := tablename;
+        ParamByName('state').AsInteger := _state;
+        ParamByName('session_id').AsInteger := session_id;
+        ParamByName('user_id').AsInteger := user_id;
+
+        Transaction.StartTransaction;
+        UpdateTransaction.StartTransaction;
+        try
+          prepare;
+          ExecSQL;
+          UpdateTransaction.Commit;
+          Transaction.Commit;
+          DM.AddLogMsg(user_id, format('Updated %s session_id %d',
+            [tablename, session_id]));
+        except
+          on e: Exception do
+          begin
+            UpdateTransaction.Rollback;
+            Transaction.Rollback;
+            AddToLog(e.Message);
+          end;
+
+        end;
+
+      end;
+
+    end;
 end;
 
 // .............................................................................
@@ -474,7 +536,6 @@ begin
         GenUpdQuery.Transaction.Rollback;
         AddToLog(e.Message);
       end;
-
     end;
 
     ShowAllData;
@@ -1178,7 +1239,7 @@ begin
           Close;
           Transaction.Commit;
           cmt := true;
-          UpdateState(QueryIOTH);
+          UpdateState(QueryIOTH,1);
           dirtyIOTH := false;
           ShowIOTHData;
         end;
@@ -1194,7 +1255,7 @@ begin
           Close;
           Transaction.Commit;
           cmt := true;
-          UpdateState(QueryRealPM);
+          UpdateState(QueryRealPM, 1);
           dirtyPM := false;
           ShowPMData;
         end;
@@ -1210,7 +1271,7 @@ begin
           Close;
           Transaction.Commit;
           cmt := true;
-          UpdateState(QueryInOut);
+          UpdateState(QueryInOut, 1);
           ShowGSMData;
           dirtyGSM := false;
         end;
@@ -1228,7 +1289,7 @@ begin
           // commits if cachedupdates=false && without call ApplyUpdates
           Transaction.Commit;              // ????? does not commit??
           cmt := true;
-          UpdateState(QueryInOutItems);
+          UpdateState(QueryInOutItems, 1);
           ShowItemsData;
           dirtyItem := false;
         end;
@@ -1416,13 +1477,13 @@ begin
         QueryRealPM.Transaction.Commit;
 
       if dirtyGSM then
-        UpdateState(QueryInOut);
+        UpdateState(QueryInOut, 1);
       if dirtyItem then
-        UpdateState(QueryInOutItems);
+        UpdateState(QueryInOutItems, 1);
       if dirtyIOTH then
-        UpdateState(QueryIOTH);
+        UpdateState(QueryIOTH, 1);
       if dirtyPM then
-        UpdateState(QueryRealPM);
+        UpdateState(QueryRealPM, 1);
       CanClose := true;
     end;
     if mr = mrAbort then
