@@ -771,7 +771,7 @@ procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if DM.FDConnection.Connected then
   begin
-    DM.AddLogMsg(user_id, 'End Work');
+    if user_id > 0 thtn  DM.AddLogMsg(user_id, 'End Work');
   end;
   JVFS.SaveFormPlacement();
   HTTPServer.Active := false;
