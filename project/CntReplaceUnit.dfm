@@ -107,4 +107,11 @@ object CntReplaceDlg: TCntReplaceDlg
       OnExecute = OKActionExecute
     end
   end
+  object FDQueryS: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = Tran
+    UpdateTransaction = TranUpd
+    Left = 104
+    Top = 112
+  end
 end

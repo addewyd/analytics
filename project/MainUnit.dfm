@@ -430,6 +430,7 @@ object MainForm: TMainForm
     end
     object UsersAction: TAction
       Caption = 'Users'
+      Hint = #1070#1079#1077#1088#1099
       ImageIndex = 243
       OnExecute = UsersActionExecute
     end

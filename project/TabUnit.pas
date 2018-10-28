@@ -111,6 +111,8 @@ type
     QueryInOutItemsSUMNDS: TFloatField;
     CloseSessAction: TAction;
     ToolButton4: TToolButton;
+    GenQuery: TFDQuery;
+    GenTrans: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -167,6 +169,7 @@ type
     session_id: Integer;
     sessionnum: Integer;
     procedure LoadWareList;
+    function PrevClosed(sid: Integer): boolean;
     function GenPMSql(var sumsql: string): String;
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
@@ -275,52 +278,57 @@ end;
 procedure TTabForm.UpdateState(q: TFDQuery; _state: Integer);
 var
   tablename: String;
+  msg: TMessage;
 begin
   // HZ!!!
   // q.UpdateTransaction.Commit;
-  AddToLog(q.Name + ' need update');
   tablename := '';
 
   if q <> nil then
   begin
     tablename := q.UpdateOptions.UpdateTableName;
-  end;
+      AddToLog(q.Name + ' need update');
 
-  if Trim(tablename) <> '' then
+  end
+  else AddToLog('nil ' + ' need update');
+
+  // if Trim(tablename) <> '' then
+  // begin
+  with GenUpdQuery do
   begin
-    with GenUpdQuery do
-    begin
-      Transaction.StartTransaction;
-      UpdateTransaction.StartTransaction;
-      try
-        if _state <> session_state then
+    Transaction.StartTransaction;
+    UpdateTransaction.StartTransaction;
+    try
+      if _state <> session_state then
+      begin
+        sql.Text := 'update sessions set state=:state where id = :session_id';
+        with Params do
         begin
-          sql.Text := 'update sessions set state=:state where id = :session_id';
-          with Params do
+          Clear;
+          with Add do
           begin
-            Clear;
-            with Add do
-            begin
-              Name := 'state';
-              DataType := ftInteger;
-              ParamType := ptInput;
-            end;
-            with Add do
-            begin
-              Name := 'session_id';
-              DataType := ftInteger;
-              ParamType := ptInput;
-            end;
+            Name := 'state';
+            DataType := ftInteger;
+            ParamType := ptInput;
           end;
-          ParamByName('state').AsInteger := _state;
-          ParamByName('session_id').AsInteger := session_id;
-          prepare;
-          ExecSQL;
-          DM.AddLogMsg(user_id, format('Changed session state to %d session_id %d',
-            [_state, session_id]));
-          AddToLog(format('sate changed to %d', [_state]));
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
         end;
-
+        ParamByName('state').AsInteger := _state;
+        ParamByName('session_id').AsInteger := session_id;
+        prepare;
+        ExecSQL;
+        DM.AddLogMsg(user_id,
+          format('Changed session state to %d session_id %d',
+          [_state, session_id]));
+        AddToLog(format('sate changed to %d', [_state]));
+      end;
+      if Trim(tablename) <> '' then
+      begin
         sql.Text :=
           'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id';
         with Macros do
@@ -361,23 +369,24 @@ begin
 
         prepare;
         ExecSQL;
-        UpdateTransaction.Commit;
-        Transaction.Commit;
+      end;
 
-        SetControlsOnSessionState(_state > 1);
+      UpdateTransaction.Commit;
+      Transaction.Commit;
 
-        DM.AddLogMsg(user_id, format('Updated %s session_id %d',
-          [tablename, session_id]));
-        AddToLog(format('Updated %s state to %d',
-          [tablename, _state]));
-      except
-        on e: Exception do
-        begin
-          UpdateTransaction.Rollback;
-          Transaction.Rollback;
-          AddToLog(e.Message);
-        end;
+      msg.Msg := WM_SESSION_UPDATED;
+      MainForm.SendMsgs(msg);
+      SetControlsOnSessionState(_state > 1);
 
+      DM.AddLogMsg(user_id, format('Updated %s session_id %d',
+        [tablename, session_id]));
+      AddToLog(format('Updated %s state to %d', [tablename, _state]));
+    except
+      on e: Exception do
+      begin
+        UpdateTransaction.Rollback;
+        Transaction.Rollback;
+        AddToLog(e.Message);
       end;
 
     end;
@@ -531,7 +540,7 @@ begin
       end;
 
       sqlt := 'update inoutgsm set ware_code = :warecode_new ' +
-        ' where session_id >= :session_id and azscode=:azs and tanknum = :tanknum and ware_code = :old_warecode';
+        ' where session_id >= :session_id and azscode=:azs and tanknum = :tanknum and ware_code = :old_warecode and state = 1';
 
       with GenUpdQuery do
       begin
@@ -585,6 +594,8 @@ begin
 
       msg.Msg := WM_WARECHANGED;
       MainForm.SendMsgs(msg);
+
+      UpdateState(nil, 1);
     except
       on e: Exception do
       begin
@@ -924,6 +935,7 @@ begin
   mr := crd.ShowModal;
   if mr = mrOk then
   begin
+    UpdateState(QueryIOTH, 1);
     AddToLog('ReplCnt mrOK');
     ShowIOTHData;
   end;
@@ -1285,14 +1297,95 @@ end;
 
 // .............................................................................
 
+function TTabForm.PrevClosed(sid: Integer) : boolean;
+  var
+    i, id, prevstate: Integer;
+begin
+  Result := false;
+  with GenQuery do
+  begin
+    sql.Text := 'select id, state from sessions where azscode=:azscode order by id';
+    with Params do
+    begin
+      Clear;
+      with add do
+      begin
+        Name := 'sid';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('sid').AsInteger := sid;
+    ParamByName('azscode').AsString := current_azscode;
+    i := 0;
+    prevstate := 0;
+    Prepare;
+    Open;
+    while not Eof do
+    begin
+
+      id := FieldByName('id').AsInteger;
+
+      if i = 0 then
+      begin
+        if sid = id then
+        begin
+          result := true;
+          Exit;
+        end;
+      end
+      else
+      begin
+        if sid = id then
+        begin
+          if prevstate > 1 then
+          begin
+            result := true;
+            exit;
+          end;
+        end;
+      end;
+      prevstate := FieldByName('state').AsInteger;
+
+      Next;
+      i := i + 1;
+    end;
+  end;
+end;
+
+// .............................................................................
+
 procedure TTabForm.CloseSessActionExecute(Sender: TObject);
+  var
+    yn : TYNForm;
+    msg: TMessage;
 begin
   inherited;
+
+  if not PrevClosed(session_id) then
+  begin
+    ErrorMessageBox(self, 'Не закрыта предыдущая смена');
+    Exit;
+  end;
+
+  yn := TYNForm.Create(self);
+  yn.Memo1.Text := 'Закрыть смену?';
+  if yn.ShowModal <> mrOK then Exit;
+
   SetControlsOnSessionState(true);
   UpdateState(QueryInOut,2);
   UpdateState(QueryInOutItems,2);
   UpdateState(QueryIOTH,2);
   session_state := 2;
+  msg.Msg := WM_SESSION_CLOSED;
+  MainForm.SendMsgs(msg);
+
 end;
 
 // .............................................................................
@@ -1589,7 +1682,7 @@ begin
     GridInOutItems.ReadOnly := st;
     JvStatusBar1.Visible := st;
 
-    RButton.Enabled := false;
+//    RButton.Enabled := false;
     CloseSessAction.Enabled := not st;
     RollbackAction.Enabled := not st;
     CommitAction.Enabled := not st;
@@ -1753,6 +1846,11 @@ procedure TTabForm.RButtonClick(Sender: TObject);
     bwidth: Integer;
 begin
   inherited;
+  if session_state > 1 then
+  begin
+    ErrorMessageBox(self, 'Смена закрыта');
+    Exit;
+  end;
   AddToLog('Restore original ' +QueryIOTH.FieldByName('id').AsString);
   {
 
@@ -1927,6 +2025,8 @@ end
 
       msg.Msg := WM_RECRESTORED;
       MainForm.SendMsgs(msg);
+
+      UpdateState(QueryIOTH, 1);
 
 
     except

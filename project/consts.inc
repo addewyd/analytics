@@ -7,6 +7,7 @@ const
   WM_RECRESTORED = WM_USER + 5;
   WM_LOGADDED = WM_USER + 6;
   WM_SESSION_CLOSED = WM_USER + 7;
+  WM_SESSION_UPDATED = WM_USER + 8;
 
   type Rec =
     record

@@ -34,6 +34,7 @@ inherited SessionListForm: TSessionListForm
     Height = 297
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
+    OnDrawColumnCell = JvDBGridDrawColumnCell
     OnDblClick = JvDBGridDblClick
     OnKeyDown = JvDBGridKeyDown
     OnKeyPress = JvDBGridKeyPress
@@ -12776,7 +12777,7 @@ inherited SessionListForm: TSessionListForm
       '   where azscode=:azs'
       '              and startdatetime >= cast(:sst as timestamp)'
       '              !sscl'
-      '   order by azscode, startdatetime')
+      '   order by id, azscode, startdatetime')
     ParamData = <
       item
         Name = 'AZS'

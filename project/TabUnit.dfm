@@ -14375,4 +14375,15 @@ inherited TabForm: TTabForm
     Left = 556
     Top = 181
   end
+  object GenQuery: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = GenTrans
+    Left = 68
+    Top = 301
+  end
+  object GenTrans: TFDTransaction
+    Connection = DM.FDConnection
+    Left = 148
+    Top = 301
+  end
 end

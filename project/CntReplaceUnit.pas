@@ -24,6 +24,7 @@ type
     RecMemo: TJvMemo;
     ActionList1: TActionList;
     OKAction: TAction;
+    FDQueryS: TFDQuery;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure OKActionExecute(Sender: TObject);
   private
@@ -45,7 +46,7 @@ implementation
 uses DmUnit, MainUnit;
 
 procedure TCntReplaceDlg.DoChanges;
-  var i: Integer;
+  var i, sid: Integer;
       scnt, ecnt: Extended;
 begin
 
@@ -53,7 +54,7 @@ begin
   begin
 
     SQL.Text := 'update IOTANKSHOSES set' +
-                ' startcounter = :scnt, endcounter = :ecnt' +
+                ' startcounter = :scnt, endcounter = :ecnt, state = 1' +
                 ' where id = :id';
 
     with Params do
@@ -81,8 +82,8 @@ begin
 
     for i := 0 to reccount - 1 do
     begin
-      AddToLog(Format('Repl %d',
-        [records^[i].session_id]));
+      sid := records^[i].session_id;
+      AddToLog(Format('Repl %d',[sid]));
 
         // recalulate All counters in spite of the data in records
 
@@ -100,6 +101,36 @@ begin
         prepare;
         execSQl;
 
+    end;
+  end;
+
+  with FDQueryS do
+  begin
+
+    SQL.Text := 'update SESSIONS set' +
+                ' state = 1' +
+                ' where id = :id';
+
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+    end;
+
+    for i := 0 to reccount - 1 do
+    begin
+      sid := records^[i].session_id;
+
+
+      ParamByName('id').AsInteger  := sid;
+
+      prepare;
+      execSQl;
     end;
   end;
 

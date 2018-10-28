@@ -29,6 +29,8 @@ type
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure DeleteLastActionExecute(Sender: TObject);
+    procedure JvDBGridDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     { Private declarations }
   public
@@ -37,6 +39,7 @@ type
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure sessionclosed(var Msg: TMessage); message WM_SESSION_CLOSED;
+    procedure sessionupdated(var Msg: TMessage); message WM_SESSION_UPDATED;
     procedure PrepareAndLoad;
   end;
 
@@ -142,6 +145,61 @@ begin
       FDQuery.FieldByName('sdt').asString,
       FDQuery.FieldByName('state').asInteger
       );
+
+end;
+
+procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+  var
+    st: Integer;
+    fn, fv: String;
+    TextRect: TRect;
+    cl : TColor;
+  const clrs: array of TColor = [clBlack, clBlue, clGray, clRed];
+begin
+  inherited;
+
+
+
+  st := FDQuery.FieldByName('state').AsInteger;
+  cl := clrs[st];
+  JvDBGrid.Canvas.Brush.Color := clWebIvory;
+  JvDBGrid.Canvas.Font.Color := cl;
+  JvDBGrid.Canvas.Pen.Color := cl;
+
+
+  if gdFocused in State then
+  begin
+
+  end;
+
+  if gdFixed in State then
+  begin
+
+  end;
+
+  if gdSelected in State then
+  begin
+//    JvDBGrid.Canvas.Font.Color := clBlue;
+    JvDBGrid.Canvas.Brush.Color := clWebLavenderBlush;
+
+  end
+  else
+  begin
+//    JvDBGrid.Canvas.Font.Color := clBlack;
+  end;
+
+
+  fn := Column.FieldName;
+  fv := FDQuery.FieldByName(fn).AsString;
+
+  JvDBGrid.Canvas.FillRect(Rect);
+  TextRect := Rect;
+
+  TextRect.Bottom := TextRect.Top + JvDBGrid.RowsHeight;
+
+  JvDBGrid.Canvas.TextRect(TextRect, TextRect.Left + 2, TextRect.Top + 2, fv);
+
 
 end;
 
@@ -409,5 +467,14 @@ begin
   AddToLog('SESSIONCLOSED');
   PrepareAndLoad;
 end;
+
+// .............................................................................
+
+procedure TSessionListForm.sessionupdated(var Msg: TMessage);
+begin
+  AddToLog('SESSIONUPDATED');
+  PrepareAndLoad;
+end;
+
 
 end.
