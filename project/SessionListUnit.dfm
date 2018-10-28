@@ -9,6 +9,13 @@ inherited SessionListForm: TSessionListForm
   inherited JvToolBar1: TJvToolBar
     Width = 551
     ExplicitWidth = 551
+    object ToolButton3: TToolButton
+      Left = 46
+      Top = 0
+      Action = DeleteLastAction
+      ParentShowHint = False
+      ShowHint = True
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 345
@@ -59,14 +66,25 @@ inherited SessionListForm: TSessionListForm
         Visible = True
       end>
   end
+  inherited ActionList: TActionList
+    object DeleteLastAction: TAction
+      Caption = 'Delete Last'
+      Hint = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1089#1083#1077#1076#1085#1102#1102
+      ImageIndex = 131
+      OnExecute = DeleteLastActionExecute
+    end
+  end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = #1057#1084#1077#1085#1099
+      object DeleteLast1: TMenuItem
+        Action = DeleteLastAction
+      end
     end
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12752,9 +12770,12 @@ inherited SessionListForm: TSessionListForm
       '   id, '
       '   azscode,'
       '   sessionnum, startdatetime, '
-      '   cast(startdatetime as date) as sdt, username from sessions'
+      '   cast(startdatetime as date) as sdt, username,'
+      '   state'
+      '   from sessions'
       '   where azscode=:azs'
       '              and startdatetime >= cast(:sst as timestamp)'
+      '              !sscl'
       '   order by azscode, startdatetime')
     ParamData = <
       item
@@ -12764,6 +12785,11 @@ inherited SessionListForm: TSessionListForm
       item
         Name = 'SST'
         ParamType = ptInput
+      end>
+    MacroData = <
+      item
+        Value = Null
+        Name = 'SSCL'
       end>
   end
   object QuerySST: TFDQuery

@@ -19,12 +19,16 @@ type
   TSessionListForm = class(TFormWithGrid)
     QuerySST: TFDQuery;
     FDQueryD: TFDQuery;
+    DeleteLastAction: TAction;
+    ToolButton3: TToolButton;
+    DeleteLast1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
     procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure DeleteLastActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -32,6 +36,7 @@ type
     function GetStartSession: String;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
+    procedure sessionclosed(var Msg: TMessage); message WM_SESSION_CLOSED;
     procedure PrepareAndLoad;
   end;
 
@@ -52,6 +57,15 @@ begin
   sst := GetStartSession;
   with FDQuery do
   begin
+    with Macros do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'sscl';
+        DataType := mdRaw;
+      end;
+    end;
     with Params do
     begin
       Clear;
@@ -68,6 +82,11 @@ begin
           ParamType := ptInput;
         end;
     end;
+    if show_closed then
+      MacroByName('sscl').asRaw := ' '
+    else
+      MacroByName('sscl').asRaw := ' and state<2 ';
+
     ParamByName('azs').AsString := current_azscode;
     ParamByName('sst').AsString := sst;
   end;
@@ -75,6 +94,17 @@ begin
   inherited LoadData;
   JvDBGrid.Refresh;
 
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.DeleteLastActionExecute(Sender: TObject);
+  var
+    Key: Word;
+begin
+  inherited;
+  key := VK_DELETE;
+  JvDBGridKeyDown(Sender, Key, []);
 end;
 
 // .............................................................................
@@ -109,7 +139,8 @@ begin
   TTabForm.Create(MainForm, 'tabform',
       FDQuery.FieldByName('id').asInteger,
       FDQuery.FieldByName('sessionnum').asInteger,
-      FDQuery.FieldByName('sdt').asString
+      FDQuery.FieldByName('sdt').asString,
+      FDQuery.FieldByName('state').asInteger
       );
 
 end;
@@ -119,7 +150,7 @@ end;
 procedure TSessionListForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
   var
-    id, bill_id: Integer;
+    id, bill_id, _state: Integer;
     msg: TMessage;
 begin
   inherited;
@@ -143,6 +174,12 @@ begin
         if not false {Eof} then
         begin
           id := FDQuery.FieldByname('id').AsInteger;
+          _state := FDQuery.FieldByname('state').AsInteger;
+          if(_state > 1) then
+          begin
+            ErrorMessageBox(self, 'Смена закрыта, нельзя удалить');
+            Exit;
+          end;
           if id > 0 then
           begin
             // try to delete session
@@ -362,6 +399,14 @@ end;
 procedure TSessionListForm.sessiondeleted(var Msg: TMessage);
 begin
   AddToLog('SESSIONDELETED');
+  PrepareAndLoad;
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.sessionclosed(var Msg: TMessage);
+begin
+  AddToLog('SESSIONCLOSED');
   PrepareAndLoad;
 end;
 

@@ -164,6 +164,7 @@ var
   HTTPServiceOn: Boolean;
   CurrentFile: String;
   embed: Boolean;
+  show_closed: boolean;
 
   IPAS: TStringList;
 
@@ -271,7 +272,8 @@ begin
   try
     with DM.OptQuery do
     begin
-      sql.Text := 'select o.user_id, u.login, opname1, optvalue1, opname2, optvalue2 ' +
+      sql.Text := 'select o.user_id, u.login, opname1, optvalue1, ' +
+      ' opname2, optvalue2, opname3, optvalue3 ' +
         '  from useroptions o ' + '  join users u on u.id = o.user_id ' +
         ' where u.id = :user_id ';
 
@@ -299,6 +301,8 @@ begin
         last_sessions_count := StrToIntDef(FieldByName('optvalue1')
           .AsString, last_sessions_count_def);
         current_azscode := FieldByName('optvalue2').AsString;
+        show_closed := (FieldByName('Optvalue3').AsInteger > 0);
+
       end;
     end;
   except
@@ -324,8 +328,8 @@ begin
     begin
       sql.Text :=
         'insert into USEROPTIONS '+
-        '(user_id,opname1,optvalue1,optfullname1,opname2,optvalue2,optfullname2) values ' +
-        '(:user_id,:opname1,:optvalue1,:optfullname1,:opname2,:optvalue2,:optfullname2)';
+        '(user_id,opname1,optvalue1,optfullname1,opname2,optvalue2,optfullname2,opname3,optfullname3,optvalue3) values ' +
+        '(:user_id,:opname1,:optvalue1,:optfullname1,:opname2,:optvalue2,:optfullname2,:opname3,:optvalue3,:optfullname3)';
 
       with Params do
       begin
@@ -372,14 +376,37 @@ begin
           DataType := ftString;
           ParamType := ptInput;
         end;
+        with Add do
+        begin
+          Name := 'optvalue3';
+          DataType := ftSmallint;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'opname3';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'optfullname3';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
       end;
       ParamByName('user_id').AsInteger := user_id;
       ParamByName('optvalue1').AsString := IntToStr(last_sessions_count);
       ParamByName('opname1').AsString := 'last_sessions_count';
       ParamByName('optfullname1').AsString := 'Last sessions count';
+
       ParamByName('optvalue2').AsString := current_azscode;
       ParamByName('opname2').AsString := 'AzsCode';
       ParamByName('optfullname2').AsString := 'Azs Code';
+
+      ParamByName('optfullname3').AsString := 'Show closed sessions';
+      ParamByName('optvalue3').AsBoolean := show_closed;
+      ParamByName('opname3').AsString := 'Show closed sessions';
       Prepare;
       ExecSQL;
     end;
@@ -388,7 +415,7 @@ begin
     with DM.OptQuery do
     begin
       sql.Text :=
-        'update useroptions set optvalue1 = :optvalue1, optvalue2 = :optvalue2 where user_id=:user_id';
+        'update useroptions set optvalue1 = :optvalue1, optvalue2 = :optvalue2, optvalue3=:optvalue3 where user_id=:user_id';
 
       with Params do
       begin
@@ -412,10 +439,17 @@ begin
           DataType := ftString;
           ParamType := ptInput;
         end;
+        with Add do
+        begin
+          Name := 'optvalue3';
+          DataType := ftSmallint;
+          ParamType := ptInput;
+        end;
       end;
       ParamByName('user_id').AsInteger := user_id;
       ParamByName('optvalue1').AsString := IntToStr(last_sessions_count);
       ParamByName('optvalue2').AsString := current_azscode;
+      ParamByName('optvalue3').AsBoolean := show_closed;
       prepare;
       ExecSQL;
     end;
@@ -920,6 +954,7 @@ begin
       od.AzsEdit.Text := current_azscode;
       od.dbpassedit.Text := db_pass;
       od.dbuseredit.text := db_user;
+      od.ShowCSCB.Checked := show_closed;
 
       if od.ShowModal = mrOK then
       begin
@@ -927,6 +962,7 @@ begin
         dbname := dbloc;
         host := od.HostEdit.Text;
         embed := od.JvCheckBox1.Checked;
+        show_closed := od.ShowCSCB.Checked;
         HTTPServiceOn := od.HTTPCheckBox.Checked;
         HTTPServer.Active := HTTPServiceOn;
         if user_role = 1 then

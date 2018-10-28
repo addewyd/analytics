@@ -35,6 +35,7 @@ type
     JvStaticText8: TJvStaticText;
     dbuSEReDIT: TJvEdit;
     dbpASSeDIT: TJvEdit;
+    ShowCSCB: TJvCheckBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -58,6 +59,8 @@ begin
   Action := caFree;
 end;
 
+// .............................................................................
+
 procedure TOptionsDialog.FormCreate(Sender: TObject);
 begin
 //
@@ -66,6 +69,8 @@ begin
     SePanel.Visible := true;
   end;
 end;
+
+// .............................................................................
 
 procedure TOptionsDialog.JvCheckBox1Click(Sender: TObject);
 var

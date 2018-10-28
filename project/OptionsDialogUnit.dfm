@@ -4,8 +4,8 @@ object OptionsDialog: TOptionsDialog
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 457
-  ClientWidth = 432
+  ClientHeight = 484
+  ClientWidth = 440
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,8 +19,8 @@ object OptionsDialog: TOptionsDialog
   PixelsPerInch = 96
   TextHeight = 13
   object OkButton: TButton
-    Left = 256
-    Top = 424
+    Left = 248
+    Top = 451
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -29,7 +29,7 @@ object OptionsDialog: TOptionsDialog
   end
   object CancelButton: TButton
     Left = 349
-    Top = 424
+    Top = 451
     Width = 71
     Height = 25
     Cancel = True
@@ -158,7 +158,7 @@ object OptionsDialog: TOptionsDialog
     Left = 8
     Top = 228
     Width = 412
-    Height = 95
+    Height = 125
     Alignment = taRightJustify
     BevelEdges = []
     BevelOuter = bvNone
@@ -221,10 +221,22 @@ object OptionsDialog: TOptionsDialog
       TabOrder = 4
       Text = ''
     end
+    object ShowCSCB: TJvCheckBox
+      Left = 12
+      Top = 96
+      Width = 171
+      Height = 17
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1079#1072#1082#1088#1099#1090#1099#1077' '#1089#1084#1077#1085#1099
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
+      LinkedControls = <>
+      LeftText = True
+    end
   end
   object SePanel: TJvPanel
     Left = 8
-    Top = 333
+    Top = 371
     Width = 412
     Height = 74
     BevelEdges = []

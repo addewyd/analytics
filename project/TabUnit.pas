@@ -109,6 +109,8 @@ type
     QueryInOutSumSUMNDS: TFloatField;
     QueryInOutSumWHOLE: TFloatField;
     QueryInOutItemsSUMNDS: TFloatField;
+    CloseSessAction: TAction;
+    ToolButton4: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -154,6 +156,7 @@ type
     procedure GridFooterInOutItemsCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
     procedure TransInOutItemsAfterCommit(Sender: TObject);
+    procedure CloseSessActionExecute(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -168,14 +171,18 @@ type
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+
+    procedure SetControlsOnSessionState(st: Boolean);
+
   public
     { Public declarations }
     sst: String;
     startdate: String;
+    session_state: Integer;
     // azscode: String;
     FuelCombo: TJVDBLookUpCombo;
     constructor Create(pr: TComponent; fname: String;
-      _sid, _snum: Integer; _sdt: String);
+      _sid, _snum: Integer; _sdt: String; _state: Integer);
       reintroduce; overload;
 
     procedure ShowAllData();
@@ -198,12 +205,13 @@ implementation
 uses DmUnit, MainUnit, YNUnit, CntReplaceUnit, StrUtils;
 
 constructor TTabForm.Create(pr: TComponent; fname: String;
-  _sid, _snum: Integer; _sdt: String);
+  _sid, _snum: Integer; _sdt: String; _state: Integer);
 begin
   inherited Create(pr, fname);
   session_id := _sid;
   sessionnum := _snum;
   startdate := _sdt;
+  session_state := _state;
 
 end;
 
@@ -264,19 +272,57 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.UpdateState(q: TFDQuery; _state: integer);
-  var
-    tablename: String;
+procedure TTabForm.UpdateState(q: TFDQuery; _state: Integer);
+var
+  tablename: String;
 begin
   // HZ!!!
   // q.UpdateTransaction.Commit;
   AddToLog(q.Name + ' need update');
+  tablename := '';
+
+  if q <> nil then
+  begin
     tablename := q.UpdateOptions.UpdateTableName;
-    if Trim(tablename) <> '' then
+  end;
+
+  if Trim(tablename) <> '' then
+  begin
+    with GenUpdQuery do
     begin
-      with GenUpdQuery do
-      begin
-        sql.Text := 'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id';
+      Transaction.StartTransaction;
+      UpdateTransaction.StartTransaction;
+      try
+        if _state <> session_state then
+        begin
+          sql.Text := 'update sessions set state=:state where id = :session_id';
+          with Params do
+          begin
+            Clear;
+            with Add do
+            begin
+              Name := 'state';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+            with Add do
+            begin
+              Name := 'session_id';
+              DataType := ftInteger;
+              ParamType := ptInput;
+            end;
+          end;
+          ParamByName('state').AsInteger := _state;
+          ParamByName('session_id').AsInteger := session_id;
+          prepare;
+          ExecSQL;
+          DM.AddLogMsg(user_id, format('Changed session state to %d session_id %d',
+            [_state, session_id]));
+          AddToLog(format('sate changed to %d', [_state]));
+        end;
+
+        sql.Text :=
+          'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id';
         with Macros do
         begin
           Clear;
@@ -313,28 +359,31 @@ begin
         ParamByName('session_id').AsInteger := session_id;
         ParamByName('user_id').AsInteger := user_id;
 
-        Transaction.StartTransaction;
-        UpdateTransaction.StartTransaction;
-        try
-          prepare;
-          ExecSQL;
-          UpdateTransaction.Commit;
-          Transaction.Commit;
-          DM.AddLogMsg(user_id, format('Updated %s session_id %d',
-            [tablename, session_id]));
-        except
-          on e: Exception do
-          begin
-            UpdateTransaction.Rollback;
-            Transaction.Rollback;
-            AddToLog(e.Message);
-          end;
+        prepare;
+        ExecSQL;
+        UpdateTransaction.Commit;
+        Transaction.Commit;
 
+        SetControlsOnSessionState(_state > 1);
+
+        DM.AddLogMsg(user_id, format('Updated %s session_id %d',
+          [tablename, session_id]));
+        AddToLog(format('Updated %s state to %d',
+          [tablename, _state]));
+      except
+        on e: Exception do
+        begin
+          UpdateTransaction.Rollback;
+          Transaction.Rollback;
+          AddToLog(e.Message);
         end;
 
       end;
 
     end;
+
+  end;
+
 end;
 
 // .............................................................................
@@ -371,6 +420,13 @@ var
 
 begin
   inherited;
+  if session_state > 1 then
+  begin
+    ErrorMessageBox(self, 'Смена закрыта');
+    Exit;
+  end;
+
+
   tm := (Sender as TMenuItem);
   old_warecode := QueryIOTH.FieldByName('warecode').AsString;
   tanknum := QueryIOTH.FieldByName('tanknum').AsString;
@@ -670,6 +726,12 @@ procedure TTabForm.SCNT1Click(Sender: TObject);
 
 begin
   inherited;
+  if session_state > 1 then
+  begin
+    ErrorMessageBox(self, 'Смена закрыта');
+    Exit;
+  end;
+
   AddToLog('SCNT');
   // get ecnt value from previous session/ How?
 
@@ -873,6 +935,8 @@ end;
 procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
 begin
   inherited;
+  if session_state > 1 then Exit;
+
   AddToLog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
 end;
 
@@ -1162,7 +1226,7 @@ begin
   for i := 0 to warelist.Count - 1 do
   begin
     tm := TMenuItem.Create(FuelPopupMenu);
-    tm.Caption := warelist.ValueFromIndex[i];
+    tm.Caption := warelist.ValueFromIndex[i] + ' (' + warelist.Names[i] + ')';
 
     tm.Name := 'fpm_' + IntToStr(i);
     // tm.Parent := FuelPopupMenu;
@@ -1217,6 +1281,18 @@ begin
     end;
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.CloseSessActionExecute(Sender: TObject);
+begin
+  inherited;
+  SetControlsOnSessionState(true);
+  UpdateState(QueryInOut,2);
+  UpdateState(QueryInOutItems,2);
+  UpdateState(QueryIOTH,2);
+  session_state := 2;
 end;
 
 // .............................................................................
@@ -1506,6 +1582,25 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.SetControlsOnSessionState(st: Boolean);
+begin
+    IOTHGrid.ReadOnly := st;
+    GridInOutGSM.ReadOnly := st;
+    GridInOutItems.ReadOnly := st;
+    JvStatusBar1.Visible := st;
+
+    RButton.Enabled := false;
+    CloseSessAction.Enabled := not st;
+    RollbackAction.Enabled := not st;
+    CommitAction.Enabled := not st;
+
+    if st then  JvStatusBar1.Panels[0].Text := 'Смена закрыта!'
+    else JvStatusBar1.Panels[0].Text := '';
+
+end;
+
+// .............................................................................
+
 procedure TTabForm.FormCreate(Sender: TObject);
 var
   i: Integer;
@@ -1513,6 +1608,15 @@ var
   tm: TMenuItem;
 begin
   inherited;
+  if session_state > 1 then // 2 - fixed (closed session) 3 - sent to 1c
+  begin
+    SetControlsOnSessionState(true);
+  end
+  else
+  begin
+    SetControlsOnSessionState(false);
+  end;
+
   warelist := TStringList.Create;
   dirtyGSM := false;
   dirtyItem := false;

@@ -24,10 +24,19 @@ inherited TabForm: TTabForm
       ParentShowHint = False
       ShowHint = True
     end
+    object ToolButton4: TToolButton
+      Left = 69
+      Top = 0
+      Action = CloseSessAction
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 531
     Width = 735
+    Panels = <
+      item
+        Width = 150
+      end>
     ExplicitTop = 531
     ExplicitWidth = 735
   end
@@ -36,7 +45,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -761,6 +770,12 @@ inherited TabForm: TTabForm
       ImageIndex = 328
       OnExecute = RollbackActionExecute
     end
+    object CloseSessAction: TAction
+      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      ImageIndex = 8
+      OnExecute = CloseSessActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     Left = 200
@@ -771,7 +786,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001700010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001740010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

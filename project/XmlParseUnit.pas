@@ -556,8 +556,8 @@ begin
     else
     begin
       DM.FDQuery.SQL.Text := 'insert into sessions ' +
-        '(azscode,sessionnum, startdatetime, enddatetime, username) ' + '  values ' +
-        '(:azs, :sn, :sdt, :edt, :un) returning id';
+        '(azscode,sessionnum, startdatetime, enddatetime, username, state) ' + '  values ' +
+        '(:azs, :sn, :sdt, :edt, :un, 0) returning id';
       with DM.FDQuery.Params do
       begin
         Clear;
