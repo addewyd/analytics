@@ -166,7 +166,6 @@ type
     dirtyPM: Boolean;
     dirtyItem: Boolean;
     warelist: TStringList;
-    session_id: Integer;
     sessionnum: Integer;
     procedure LoadWareList;
     function PrevClosed(sid: Integer): boolean;
@@ -174,6 +173,7 @@ type
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+    procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure SetControlsOnSessionState(st: Boolean);
     function IsNextSessionOpened: boolean;
     function SetSessionState(st: Integer): boolean;
@@ -181,6 +181,7 @@ type
 
   public
     { Public declarations }
+    session_id: Integer;
     sst: String;
     startdate: String;
     session_state: Integer;
@@ -2298,5 +2299,16 @@ begin
   DM.FDConnection.Open();
   ShowAllData;
 end;
+
+// .............................................................................
+
+procedure TTabForm.sessiondeleted(var Msg: TMessage);
+begin
+  if Msg.WParam = session_id then
+  begin
+    Close;
+  end;
+end;
+
 
 end.

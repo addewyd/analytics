@@ -344,6 +344,7 @@ begin
               TransUPD.Commit;
               Trans.Commit;
               msg.msg := WM_SESSION_DELETED;
+              msg.WParam := id;
               MainForm.SendMsgs(msg);
               DM.AddLogMsg(user_id, Format('deleted session id %d tables', [id]));
               PrepareAndLoad;
