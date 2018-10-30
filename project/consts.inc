@@ -9,17 +9,31 @@ const
   WM_SESSION_CLOSED = WM_USER + 7;
   WM_SESSION_UPDATED = WM_USER + 8;
 
-  type Rec =
+
+type Rec =
     record
       id, session_id: Integer;
       prev_id, prev_session_id: Integer;
       scnt, ecnt, prev_scnt, prev_ecnt: Extended;
       outcome: Extended;
-  end;
+    end;
 
 
-  type 
+type
      TRecArray = Array of Rec;
      PRecArray = ^TrecArray;
 
-    
+type Qparam =
+    record
+      Name: String;
+      DataType: Data.DB.TFieldType;
+      ParamType: Data.DB.TParamType;
+    end;
+
+type
+  TQParamArray = Array of QParam;
+  PQparamArray = ^TQparamArray;
+
+
+
+

@@ -1228,6 +1228,12 @@ procedure TTabForm.ShowIOTHData();
 var
   i: Integer;
   tm: TMenuItem;
+const
+  qpa: Array [0..1] of Qparam = (
+    (Name: 'session_id'; DataType: ftInteger; ParamType: ptInput),
+    (Name: 'azscode'; DataType: ftString; ParamType: ptInput)
+  );
+
 begin
 
   FuelPopupMenu.Items.Clear;
@@ -1248,18 +1254,16 @@ begin
     with Params do
     begin
       Clear;
-      with Add do
+      for i := 0 to Length(qpa) - 1 do
       begin
-        Name := 'session_id';
-        DataType := ftInteger;
-        ParamType := ptInput;
+        with add do
+        begin
+          Name := qpa[i].Name;
+          DataType := qpa[i].DataType;
+          ParamType := qpa[i].ParamType;
+        end;
       end;
-      with Add do
-      begin
-        Name := 'azscode';
-        DataType := ftString;
-        ParamType := ptInput;
-      end;
+
     end;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;

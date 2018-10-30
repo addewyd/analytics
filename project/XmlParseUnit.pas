@@ -438,6 +438,18 @@ var
   td0, td1, td2: TDateTime;
   ia: boolean;
   requiredfile: String;
+const
+  qpa1: Array [0..2] of Qparam = (
+    (Name : 'azs';
+        DataType : ftString;
+        ParamType : ptInput),
+    (Name : 'sn';
+        DataType : ftInteger;
+        ParamType : ptInput),
+    (Name : 'sdt';
+        DataType : ftTimeStamp;
+        ParamType : ptInput)
+  );
 begin
 
   result := 0;
@@ -518,23 +530,15 @@ begin
     with DM.FDQuery.Params do
     begin
       Clear;
-      with Add do
+      for i := 0 to length(qpa1) - 1 do
       begin
-        Name := 'azs';
-        DataType := ftString;
-        ParamType := ptInput;
-      end;
-      with Add do
-      begin
-        Name := 'sn';
-        DataType := ftInteger;
-        ParamType := ptInput;
-      end;
-      with Add do
-      begin
-        Name := 'sdt';
-        DataType := ftTimeStamp;
-        ParamType := ptInput;
+        with Add do
+        begin
+          Name := qpa1[i].Name;
+          DataType := qpa1[i].DataType;
+          ParamType := qpa1[i].ParamType;
+        end;
+
       end;
     end;
     with DM.FDQuery do
