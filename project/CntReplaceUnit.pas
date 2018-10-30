@@ -55,7 +55,7 @@ begin
 
     SQL.Text := 'update IOTANKSHOSES set' +
                 ' startcounter = :scnt, endcounter = :ecnt, state = 1' +
-                ' where id = :id';
+                ' where id = :id and state < 2';
 
     with Params do
     begin
@@ -109,7 +109,7 @@ begin
 
     SQL.Text := 'update SESSIONS set' +
                 ' state = 1' +
-                ' where id = :id';
+                ' where id = :id and state < 2';
 
     with Params do
     begin

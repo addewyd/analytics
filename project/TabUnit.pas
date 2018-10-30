@@ -113,19 +113,19 @@ type
     ToolButton4: TToolButton;
     GenQuery: TFDQuery;
     GenTrans: TFDTransaction;
+    ClearCloseAction: TAction;
+    ToolButton5: TToolButton;
+    N1: TMenuItem;
+    N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure GridInOutGSMEditChange(Sender: TObject);
     procedure RealPMFooterCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
     procedure GridFooterInOutCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
-    procedure IOTHGridEditChange(Sender: TObject);
-    procedure RealPMGridEditChange(Sender: TObject);
-    procedure QueryIOTHAfterPost(DataSet: TDataSet);
     procedure SetPrevSessionData1Click(Sender: TObject);
     procedure IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -133,7 +133,6 @@ type
     procedure IOTHGridDrawDataCell(Sender: TObject; const Rect: TRect;
       Field: TField; State: TGridDrawState);
     procedure IOTHGridEditButtonClick(Sender: TObject);
-    procedure IOTHGridColExit(Sender: TObject);
     procedure QueryIOTHBeforeInsert(DataSet: TDataSet);
     procedure RButtonClick(Sender: TObject);
     procedure DSIOTHFieldChanged(Sender: TObject; Field: TField);
@@ -159,6 +158,7 @@ type
       const FieldName: string; var CalcValue: Variant);
     procedure TransInOutItemsAfterCommit(Sender: TObject);
     procedure CloseSessActionExecute(Sender: TObject);
+    procedure ClearCloseActionExecute(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -174,16 +174,16 @@ type
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
-
     procedure SetControlsOnSessionState(st: Boolean);
+    function IsNextSessionOpened: boolean;
+    function SetSessionState(st: Integer): boolean;
+
 
   public
     { Public declarations }
     sst: String;
     startdate: String;
     session_state: Integer;
-    // azscode: String;
-    FuelCombo: TJVDBLookUpCombo;
     constructor Create(pr: TComponent; fname: String;
       _sid, _snum: Integer; _sdt: String; _state: Integer);
       reintroduce; overload;
@@ -292,8 +292,6 @@ begin
   end
   else AddToLog('nil ' + ' need update');
 
-  // if Trim(tablename) <> '' then
-  // begin
   with GenUpdQuery do
   begin
     Transaction.StartTransaction;
@@ -301,7 +299,7 @@ begin
     try
       if _state <> session_state then
       begin
-        sql.Text := 'update sessions set state=:state where id = :session_id';
+        sql.Text := 'update sessions set state=:state where id = :session_id and state < 2';
         with Params do
         begin
           Clear;
@@ -330,7 +328,7 @@ begin
       if Trim(tablename) <> '' then
       begin
         sql.Text :=
-          'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id';
+          'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id and state < 2';
         with Macros do
         begin
           Clear;
@@ -452,8 +450,8 @@ begin
   // now update iotankshoses with new warecode
   // upd key: session_id, tanknum, warecode, azs
 
-  sqlt := 'update iotankshoses set warecode = :warecode_new ' +
-    ' where session_id >= :session_id and azscode= :azs and tanknum = :tanknum and warecode = :old_warecode';
+  sqlt := 'update iotankshoses set warecode = :warecode_new, state=1 ' +
+    ' where session_id >= :session_id and azscode= :azs and tanknum = :tanknum and warecode = :old_warecode and state < 2';
 
   YNForm := TYNForm.Create(self);
   // YNForm.Height := 400;
@@ -1000,7 +998,6 @@ begin
         ParamType := ptInput;
       end;
     end;
-    // ParamByName('start_session_t').AsString := sst;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
     QueryInOutSum.Params.Assign(Params);
@@ -1057,7 +1054,6 @@ begin
         ParamType := ptInput;
       end;
     end;
-    // ParamByName('start_session_t').AsString := sst;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
     QueryInOutItemsSum.Params.Assign(Params);
@@ -1205,7 +1201,6 @@ begin
       QueryRealPmSum.Open;
       // Transaction.Commit;
       RealPMFooter.ReCalc;
-//      RealPMFooter.Refresh;
     except
       on e: Exception do
       begin
@@ -1241,7 +1236,6 @@ begin
     tm.Caption := warelist.ValueFromIndex[i] + ' (' + warelist.Names[i] + ')';
 
     tm.Name := 'fpm_' + IntToStr(i);
-    // tm.Parent := FuelPopupMenu;
     tm.OnClick := FPMClick;
     FuelPopupMenu.Items.Add(tm);
   end;
@@ -1253,14 +1247,6 @@ begin
     with Params do
     begin
       Clear;
-      (*
-        with Add do
-        begin
-        Name := 'start_session_t';
-        DataType := ftString;
-        ParamType := ptInput;
-        end;
-      *)
       with Add do
       begin
         Name := 'session_id';
@@ -1274,7 +1260,6 @@ begin
         ParamType := ptInput;
       end;
     end;
-    // ParamByName('start_session_t').AsString := sst;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
 
@@ -1361,6 +1346,188 @@ end;
 
 // .............................................................................
 
+function TTabForm.IsNextSessionOpened: boolean;
+begin
+  result := false;
+  with GenQuery do
+  begin
+    sql.Text := 'select first 1 id, state from sessions where azscode = :azscode and id > :id order by id';
+    with params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := current_azscode;
+    ParamByName('id').AsInteger := session_id;
+    Prepare;
+    Open;
+    if RecordCount < 1 then Result := true
+    else
+    begin
+      if FieldByName('state').AsInteger < 2 then Result := true;
+
+    end;
+    Close;
+  end;
+end;
+
+// .............................................................................
+
+function TTabForm.SetSessionState(st: Integer): boolean;
+begin
+  result := false;
+  with GenUpdQuery do
+  begin
+    Transaction.StartTransaction;
+    UpdateTransaction.StartTransaction;
+    sql.Text := 'update sessions set state=:st where id=:id';
+    try
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'st';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('id').AsInteger := session_id;
+      ParamByName('st').AsInteger := st;
+      Prepare;
+      ExecSql;
+
+      sql.Text := 'update iotankshoses set state=:st where session_id=:id';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'st';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('id').AsInteger := session_id;
+      ParamByName('st').AsInteger := st;
+      Prepare;
+      ExecSql;
+
+      sql.Text := 'update inoutgsm set state=:st where session_id=:id';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'st';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('id').AsInteger := session_id;
+      ParamByName('st').AsInteger := st;
+      Prepare;
+      ExecSql;
+
+      sql.Text := 'update inoutitems set state=:st where session_id=:id';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'st';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('id').AsInteger := session_id;
+      ParamByName('st').AsInteger := st;
+      Prepare;
+      ExecSql;
+
+      UpdateTransaction.Commit;
+      Transaction.Commit;
+      Result := true;
+
+    except
+      on e: Exception do
+      begin
+        UpdateTransaction.Rollback;
+        Transaction.Rollback;
+        ErrorMessageBox(self, e.Message);
+      end;
+
+    end;
+  end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.ClearCloseActionExecute(Sender: TObject);
+  var
+    yn : TYNForm;
+    msg: TMessage;
+begin
+  inherited;
+  if IsNextSessionOpened then
+  begin
+    yn := TYNForm.Create(self);
+    yn.Memo1.Text := 'Открыть смену?';
+    if yn.ShowModal <> mrOK then Exit;
+
+    if SetSessionState(1) then
+    begin
+      SetControlsOnSessionState(false);
+      session_state := 1;
+      msg.Msg := WM_SESSION_ADDED;
+      MainForm.SendMsgs(msg);
+    end;
+  end
+  else
+  begin
+    ErrorMessageBox(self, 'Не открыта следующая смена');
+    Exit;
+
+  end;
+end;
+
+// .............................................................................
+
 procedure TTabForm.CloseSessActionExecute(Sender: TObject);
   var
     yn : TYNForm;
@@ -1391,11 +1558,8 @@ end;
 // .............................................................................
 
 procedure TTabForm.CommitActionExecute(Sender: TObject);
-var
-  cmt: Boolean;
 begin
   inherited;
-  cmt := false;
   try
 
     with QueryIOTH do
@@ -1407,7 +1571,6 @@ begin
           ApplyUpdates(0);
           Close;
           Transaction.Commit;
-          cmt := true;
           UpdateState(QueryIOTH,1);
           dirtyIOTH := false;
           ShowIOTHData;
@@ -1423,7 +1586,6 @@ begin
         begin
           Close;
           Transaction.Commit;
-          cmt := true;
           UpdateState(QueryRealPM, 1);
           dirtyPM := false;
           ShowPMData;
@@ -1439,7 +1601,6 @@ begin
         begin
           Close;
           Transaction.Commit;
-          cmt := true;
           UpdateState(QueryInOut, 1);
           ShowGSMData;
           dirtyGSM := false;
@@ -1457,15 +1618,12 @@ begin
           Close;
           // commits if cachedupdates=false && without call ApplyUpdates
           Transaction.Commit;              // ????? does not commit??
-          cmt := true;
           UpdateState(QueryInOutItems, 1);
           ShowItemsData;
           dirtyItem := false;
         end;
       end;
     end;
-
-    // if cmt then DM.FDTransaction.Commit;
 
   except
     on e: Exception do
@@ -1474,24 +1632,19 @@ begin
     end;
   end;
 
-  // ShowAllData;
 end;
 
 // .............................................................................
 
 procedure TTabForm.RollbackActionExecute(Sender: TObject);
-var
-  cmt: Boolean;
 begin
   inherited;
-  cmt := false;
   try
     with QueryInOut do
     begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
-        cmt := true;
         ShowGSMData;
         dirtyGSM := false;
 
@@ -1503,7 +1656,6 @@ begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
-        cmt := true;
         ShowItemsData;
         dirtyItem := false;
 
@@ -1515,7 +1667,6 @@ begin
       if Transaction.Active then
       begin
         Transaction.Rollback;
-        cmt := true;
         ShowIOTHData;
         dirtyIOTH := false;
       end;
@@ -1525,14 +1676,11 @@ begin
     begin
       if Transaction.Active then
       begin
-        // Transaction.Rollback;
-        cmt := true;
         ShowPMData;
         dirtyPM := false;
       end;
 
     end;
-    // if cmt  then DM.FDTransaction.Rollback;
 
   except
     on e: Exception do
@@ -1586,7 +1734,6 @@ procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
   const FieldName: string; var CalcValue: Variant);
 
 var
-  i: Integer;
   f: String;
 begin
   inherited;
@@ -1611,8 +1758,6 @@ begin
   begin
     //
   end;
-  // JVFS.SaveFormPlacement;
-
 end;
 
 // .............................................................................
@@ -1623,8 +1768,6 @@ var
   mr: Integer;
 begin
   inherited;
-  // if QueryInOut.Transaction.Active then
-  // begin
 
   CanClose := not(dirtyGSM or dirtyIOTH or dirtyPM or dirtyItem);
 
@@ -1686,6 +1829,7 @@ begin
     CloseSessAction.Enabled := not st;
     RollbackAction.Enabled := not st;
     CommitAction.Enabled := not st;
+    ClearCloseAction.Enabled := st;
 
     if st then  JvStatusBar1.Panels[0].Text := 'Смена закрыта!'
     else JvStatusBar1.Panels[0].Text := '';
@@ -1695,10 +1839,6 @@ end;
 // .............................................................................
 
 procedure TTabForm.FormCreate(Sender: TObject);
-var
-  i: Integer;
-  sst: String;
-  tm: TMenuItem;
 begin
   inherited;
   if session_state > 1 then // 2 - fixed (closed session) 3 - sent to 1c
@@ -1718,27 +1858,8 @@ begin
   Caption := Format('TabForm AZS ' +
     ' %s session %d start %s' , [current_azscode, sessionnum, startdate]);
 
-  // ??? no need
-  FuelCombo := TJVDBLookUpCombo.Create(self);
-  with FuelCombo do
-  begin
-    Parent := self;
-    Visible := false;
-    LookupSource := IOTHGrid.DataSource;
-    DataField := 'FUELNAME';
-
-  end;
-
   ShowAllData;
   Pages.ActivePage := TabSheet1;
-end;
-
-// .............................................................................
-
-procedure TTabForm.GridInOutGSMEditChange(Sender: TObject);
-begin
-  //
-//  dirtyGSM := true;
 end;
 
 // .............................................................................
@@ -1765,24 +1886,12 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.IOTHGridColExit(Sender: TObject);
-begin
-  inherited;
-  // if IOTHGrid.SelectedField.FieldName = 'R' then
-  // RButton.Visible := false;
-end;
-
-// .............................................................................
-
 procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
   var
     TextRect:TRect;
 begin
   inherited;
-  // IOTHGrid.
-//   Canvas.TextRect(Rect, Rect.Left+1, Rect.Top+1,
-//   WrapText(Column.Title.Caption, 20));
   if (Column.FieldName = 'R') then
   begin
     if (gdFocused in State) then
@@ -2021,13 +2130,10 @@ end
       UpdateTransaction.Commit;
       Transaction.Commit;
 
-//      dirtyIOTH := true;
-
       msg.Msg := WM_RECRESTORED;
       MainForm.SendMsgs(msg);
 
       UpdateState(QueryIOTH, 1);
-
 
     except
       on e: Exception do
@@ -2059,23 +2165,6 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.IOTHGridEditChange(Sender: TObject);
-begin
-  inherited;
-//  dirtyIOTH := true;  // in ds.Datafield change
-  //
-end;
-
-// .............................................................................
-
-procedure TTabForm.QueryIOTHAfterPost(DataSet: TDataSet);
-begin
-  inherited;
-  // AddToLog('aftwr post');
-end;
-
-// .............................................................................
-
 procedure TTabForm.QueryIOTHBeforeInsert(DataSet: TDataSet);
 begin
   inherited;
@@ -2089,22 +2178,14 @@ procedure TTabForm.RealPMGridDrawColumnCell(Sender: TObject; const Rect: TRect;
 
 var
   fn, fv, fp: String;
-  p, v: Extended;
+  p: Extended;
   TextRect: TRect;
 begin
   inherited;
 
-//  AddToLog(format('%s %d %d %d',
-  //  [Column.Title.Caption,
-    //  Rect.Top,
-      //Rect.Left,
-      //RealPMGrid.Canvas.Font.Size
-      //]));
-
   RealPMGrid.Canvas.Brush.Color := clWebIvory;
   RealPMGrid.Canvas.Font.Color := clBlue;
   RealPMGrid.Canvas.Pen.Color := clGreen;
-
 
   if gdFocused in State then
   begin
@@ -2135,7 +2216,6 @@ begin
     fn := StringReplace(fn, 'VOLUME', 'AMOUNT', []);
 
     p := QueryRealPM.FieldByName(fn).AsExtended;
-//    v := StrToextDef(fv, 0);
 
     fp := format('₽ %10.2f', [p]);
   end
@@ -2193,15 +2273,6 @@ begin
 end;
 
 // .............................................................................
-
-procedure TTabForm.RealPMGridEditChange(Sender: TObject);
-begin
-  inherited;
-//  dirtyPM := true;  // in ds.datafieldchange
-end;
-
-// .............................................................................
-
 
 procedure TTabForm.warechanged(var Msg: TMessage);
 begin

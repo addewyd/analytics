@@ -83,7 +83,10 @@ uses MainUnit;
 // .............................................................................
 
   function StrToextDef(s: String; d: Extended): Extended;
+    var
+      ds: String;
   begin
+    ds := FormatSettings.DecimalSeparator;
     Result := d;
     s := Trim(s);
     if s = '' then
@@ -93,7 +96,7 @@ uses MainUnit;
 
     try
 
-      s := StringReplace(s, ',', '.', [rfReplaceAll]);
+      s := StringReplace(s, ',', ds, [rfReplaceAll]);
       result := StrToFloatDef(s, d);
     except
       //

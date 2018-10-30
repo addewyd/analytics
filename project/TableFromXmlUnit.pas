@@ -157,8 +157,6 @@ end;
 // .............................................................................
 
 procedure TTableFromXmlForm.FormCreate(Sender: TObject);
-  var
-    len: integer;
 begin
   inherited;
   MainMenu.Items[0].Caption := formname;
@@ -167,7 +165,6 @@ begin
   if TableName = 'Tanks' then
   begin
     JvDBGrid.ReadOnly := false;
-    //JvDBGrid.Columns.Items[3].ReadOnly := false;
 
   end;
 

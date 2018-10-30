@@ -148,6 +148,8 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
   var
@@ -159,14 +161,11 @@ procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
 begin
   inherited;
 
-
-
   st := FDQuery.FieldByName('state').AsInteger;
   cl := clrs[st];
   JvDBGrid.Canvas.Brush.Color := clWebIvory;
   JvDBGrid.Canvas.Font.Color := cl;
   JvDBGrid.Canvas.Pen.Color := cl;
-
 
   if gdFocused in State then
   begin
@@ -189,7 +188,6 @@ begin
 //    JvDBGrid.Canvas.Font.Color := clBlack;
   end;
 
-
   fn := Column.FieldName;
   fv := FDQuery.FieldByName(fn).AsString;
 
@@ -199,7 +197,6 @@ begin
   TextRect.Bottom := TextRect.Top + JvDBGrid.RowsHeight;
 
   JvDBGrid.Canvas.TextRect(TextRect, TextRect.Left + 2, TextRect.Top + 2, fv);
-
 
 end;
 
@@ -262,8 +259,6 @@ begin
                      TRADEDOCSINBILL
 
                      SESSIONS  // id
-
-
 
             }
 

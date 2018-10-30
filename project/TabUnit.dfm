@@ -29,6 +29,11 @@ inherited TabForm: TTabForm
       Top = 0
       Action = CloseSessAction
     end
+    object ToolButton5: TToolButton
+      Left = 92
+      Top = 0
+      Action = ClearCloseAction
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 531
@@ -96,7 +101,6 @@ inherited TabForm: TTabForm
           OnDrawColumnCell = RealPMGridDrawColumnCell
           AutoAppend = False
           IniStorage = JvFS
-          OnEditChange = RealPMGridEditChange
           OnDrawColumnTitle = RealPMGridDrawColumnTitle
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -124,13 +128,11 @@ inherited TabForm: TTabForm
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnCellClick = IOTHGridCellClick
-          OnColExit = IOTHGridColExit
           OnDrawDataCell = IOTHGridDrawDataCell
           OnDrawColumnCell = IOTHGridDrawColumnCell
           OnEditButtonClick = IOTHGridEditButtonClick
           AutoAppend = False
           IniStorage = JvFS
-          OnEditChange = IOTHGridEditChange
           OnDrawColumnTitle = IOTHGridDrawColumnTitle
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -413,7 +415,6 @@ inherited TabForm: TTabForm
           TitleFont.Style = [fsBold]
           AutoAppend = False
           IniStorage = JvFS
-          OnEditChange = GridInOutGSMEditChange
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -776,12 +777,25 @@ inherited TabForm: TTabForm
       ImageIndex = 8
       OnExecute = CloseSessActionExecute
     end
+    object ClearCloseAction: TAction
+      Caption = #1054#1090#1082#1088#1099#1090#1100
+      Enabled = False
+      Hint = #1054#1090#1082#1088#1099#1090#1100
+      ImageIndex = 3
+      OnExecute = ClearCloseActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     Left = 200
     Top = 360
     inherited File1: TMenuItem
       Caption = 'Tabs'
+      object N1: TMenuItem
+        Action = CloseSessAction
+      end
+      object N2: TMenuItem
+        Action = ClearCloseAction
+      end
     end
   end
   inherited ImageList: TImageList
@@ -13652,7 +13666,6 @@ inherited TabForm: TTabForm
   end
   object QueryIOTH: TFDQuery
     BeforeInsert = QueryIOTHBeforeInsert
-    AfterPost = QueryIOTHAfterPost
     CachedUpdates = True
     Connection = DM.FDConnection
     Transaction = TransIOTH
@@ -13916,7 +13929,6 @@ inherited TabForm: TTabForm
   end
   object QueryIOTHSum: TFDQuery
     BeforeInsert = QueryIOTHBeforeInsert
-    AfterPost = QueryIOTHAfterPost
     CachedUpdates = True
     Connection = DM.FDConnection
     Transaction = TransIOTH
