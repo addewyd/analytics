@@ -858,6 +858,7 @@ begin
 
   end;
 
+  // .....................................................................
 
   with DM.FDQuery do
   begin
@@ -1533,12 +1534,31 @@ end;
 
 // .............................................................................
 
+procedure MoveOrderToBackup(f: String);
+  var
+    path: String;
+    nf: String;
+begin
+  path := ExtractFilePath(f) + '\ordersbackup';
+
+  if not DirectoryExists(path) then
+  begin
+
+    CreateDir(path);
+  end;
+
+  nf := path + '\' + ExtractFileName(f);
+  RenameFile(f, nf);
+
+end;
+
+
 // OutcomesByOffice
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
   var
     orderpath: String;
     files: TStringDynArray;
-    cnt, i, len, hosenum: Integer;
+    cnt, i, len, hosenum, r: Integer;
     nL: IDOMNodeList;
     attrs: IDOMNamedNodeMap;
     fuelcode, fuelname, paymentcode,
@@ -1562,7 +1582,9 @@ begin
   for i := 0 to len - 1 do
   begin
     try
-      cnt := cnt + LoadOrderFile(files[i], azs);
+      r :=  LoadOrderFile(files[i], azs);
+      cnt := cnt + r;
+      if r > 0 then MoveOrderToBackup(files[i]);
     except
       on e: EIBNativeException do  // not catches!
         raise;
