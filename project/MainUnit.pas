@@ -528,6 +528,7 @@ begin
       with DM.FDConnection do
       begin
         Transaction.StartTransaction;
+        UpdateTransaction.StartTransaction;
         try
           //logm.Lines.Clear;
 
@@ -580,7 +581,7 @@ begin
           //AddToLog('deleted from contragents');
           ExecSQL('delete from sessions');
           AddToLog('deleted from sessions');
-
+          UpdateTransaction.Commit;
           Transaction.Commit;
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
@@ -588,6 +589,7 @@ begin
         except
           on e: Exception do
           begin
+            UpdateTransaction.Rollback;;
             Transaction.Rollback;
             ErrorMessageBox(self, e.Message);
             AddToLog(e.Message);
@@ -613,6 +615,7 @@ begin
       with DM.FDConnection do
       begin
         Transaction.StartTransaction;
+        UpdateTransaction.StartTransaction;
         try
           ExecSQL('delete from inoutgsm');
           AddToLog('deleted from inoutgsm');
@@ -620,6 +623,7 @@ begin
           AddToLog('deleted from iotankshoses');
           ExecSQL('delete from inoutitems');
           AddToLog('deleted from inoutitems');
+          UpdateTransaction.Commit;
           Transaction.Commit;
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
@@ -627,7 +631,9 @@ begin
         except
           on e: Exception do
           begin
+            UpdateTransaction.Rollback;
             Transaction.Rollback;
+
             ErrorMessageBox(self, e.Message);
           end;
         end;

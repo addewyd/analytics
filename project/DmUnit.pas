@@ -38,6 +38,7 @@ type
     FDQueryForInOutItems: TFDQuery;
     QUpdUId: TFDQuery;
     QuUpdTran: TFDTransaction;
+    AddTanksProc: TFDStoredProc;
   private
     { Private declarations }
   public

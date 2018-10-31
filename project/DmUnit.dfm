@@ -13066,7 +13066,7 @@ object DM: TDM
       '    h.pumpnum,'
       '    h.numinpump,'
       '    h.hosetype,'
-      '    sum(o.volume) as volume,'
+      '    coalesce(sum(o.volume), 0) as volume,'
       '    sum(ss.volume) as invol,'
       '     1 as lastuser_id,'
       '    current_timestamp as updated_at,'
@@ -13077,8 +13077,8 @@ object DM: TDM
       '    inner join tanks t on h.tanknum = t.tanknum'
       '    join sessions s on s.id = h.session_id'
       
-        '    join outcomesbyretail o on (o.session_id=s.id and o.tanknum=' +
-        't.tanknum and h.hosenum=cast(o.hosename as integer))'
+        '    left join outcomesbyretail o on (o.session_id=s.id and o.tan' +
+        'knum=t.tanknum and h.hosenum=cast(o.hosename as integer))'
       
         '    left join (select volume, sid, tnum from calcincomes0(:sessi' +
         'on_id)) ss on ss.tnum=t.tanknum and ss.sid = s.id'
@@ -13376,5 +13376,13 @@ object DM: TDM
     Connection = FDConnection
     Left = 448
     Top = 344
+  end
+  object AddTanksProc: TFDStoredProc
+    Connection = FDConnection
+    Transaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
+    StoredProcName = 'ADDTANKS'
+    Left = 128
+    Top = 400
   end
 end

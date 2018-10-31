@@ -428,6 +428,36 @@ end;
 
 // .............................................................................
 
+procedure AddAllTanks(session_id: Integer; azs: String);
+begin
+  with DM.AddTanksProc do
+  begin
+    with Params do
+    begin
+      clear;
+      with add do
+      begin
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with add do
+      begin
+        Name := 'azscode';
+        DataType := ftWideString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').AsInteger := session_id;
+    ParamByName('azscode').AsWideString := azs;
+    Prepare;
+    ExecProc;
+  end;
+
+end;
+
+// .............................................................................
+
 function ParseSessionFile(Doc: IDOMDocument; quiet: boolean) : Integer;
 var
   nL, nL1: IDOMNodeList;
@@ -745,6 +775,8 @@ begin
   end;
 
   // Fill IOTANKSHOSES
+
+  AddAllTanks(id, azs);    // and hoses
 
   if rc > 0 then
   begin
@@ -1277,6 +1309,7 @@ begin
       end;
 
       //  tanknum may not be NULL!
+      // also warecode
 
       with DM.FDQuery do
       begin
