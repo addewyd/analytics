@@ -2258,10 +2258,24 @@ begin
 
   fn := AColumn.FieldName;
 
-  if LeftStr(fn, 6) = 'VOLUME' then
+  if LeftStr(fn, 7) = 'VOLUME_' then
   begin
+    ACanvas.Brush.Color := clWebLavenderBlush;
+    ACanvas.FillRect(ARect);
+    TextRect := ARect;
+    TextRect.Bottom := TextRect.Top + RealPMGrid.TitleRowHeight div 2;
 
+    ACanvas.TextRect(TextRect, Textrect.Left + 2, 2, AColumn.Title.Caption);
 
+    OffsetRect(TextRect, 0, RealPMGrid.TitleRowHeight DIV 2);
+
+    ACanvas.TextRect(TextRect, Textrect.Left + 2, Textrect.Top + 2, '₽ Цена?');
+
+    DefaultDrawText := false;
+
+  end
+  else if  LeftStr(fn, 6) = 'VOLUME' then
+  begin
     ACanvas.Brush.Color := clWebLavenderBlush;
     ACanvas.FillRect(ARect);
     TextRect := ARect;
@@ -2270,6 +2284,7 @@ begin
     ACanvas.TextRect(TextRect, Textrect.Left + 2, 2, AColumn.Title.Caption);
     OffsetRect(TextRect, 0, RealPMGrid.TitleRowHeight DIV 2);
     DefaultDrawText := false;
+
   end
   else
   begin

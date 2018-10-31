@@ -183,6 +183,17 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
+              FieldName = 'CALCIN'
+              Title.Caption = #1055#1088#1080#1085#1103#1090#1086
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CALC'
               ReadOnly = True
               Title.Caption = #1054#1090#1087#1091#1089#1082
@@ -195,13 +206,8 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
-              FieldName = 'CALCIN'
-              Title.Caption = #1055#1088#1080#1085#1103#1090#1086
-              Title.Font.Charset = DEFAULT_CHARSET
-              Title.Font.Color = clWindowText
-              Title.Font.Height = -11
-              Title.Font.Name = 'Tahoma'
-              Title.Font.Style = [fsBold]
+              FieldName = 'CALCREST'
+              Title.Caption = #1056#1072#1089#1095' '#1086#1089#1090#1072#1090#1086#1082
               Visible = True
             end
             item
@@ -13683,13 +13689,12 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      
-        '   /* (select volume from calcincomes(s.id, i.tanknum)) as calci' +
-        'n,*/'
       '    i.invol as calcin,'
       
         '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
         ' as calc,'
+      '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
+      '    '
       '    i.endfactvolume,'
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
