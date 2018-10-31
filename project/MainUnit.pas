@@ -144,6 +144,7 @@ type
   private
     { Private declarations }
 //    gdbname: String;
+    logged: boolean;
   public
     { Public declarations }
     function GetMdiForm(formname: string): TForm;
@@ -681,6 +682,9 @@ begin
     end;
   END;
 
+  if not logged then
+  begin
+
   tsd := TSelectUser.Create(self);
   tsd.FDQuery.Transaction.StartTransaction;
   tsd.FDQuery.Open;
@@ -714,7 +718,8 @@ begin
 
   Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ' ' +
     IntToStr(user_role) + ']';
-
+  logged := true;
+  end;
   if uid < 1 then
   begin
     ErrorMessageBox(self, 'Не выбрано');
@@ -788,6 +793,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
     SubKey: string = 'Software\Shrfs';
 begin
 
+  logged := false;
   //user_id := 1; // admin
   //user_role := 1; // admin
 

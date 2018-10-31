@@ -1276,6 +1276,8 @@ begin
 
       end;
 
+      //  tanknum may not be NULL!
+
       with DM.FDQuery do
       begin
         SQL.Text := 'update hoses set tanknum=:tanknum where session_id = :id and hosenum = :hn';
@@ -2307,7 +2309,7 @@ begin
       nds := attrs.getNamedItem('Nds').nodeValue;
       sunit := attrs.getNamedItem('Unit').nodeValue;
       frdepartment := attrs.getNamedItem('FRDepartment').nodeValue;
-      hash := attrs.getNamedItem('Hash').nodeValue;
+      hash := Trim(attrs.getNamedItem('Hash').nodeValue);
       sIsservice := attrs.getNamedItem('IsService').nodeValue;
       sItemid := attrs.getNamedItem('ItemID').nodeValue;
       sIsReturn := attrs.getNamedItem('IsReturn').nodeValue;
@@ -3022,6 +3024,8 @@ begin
       Total := StrToextDef(sTotal, 0);
       NdsAmount := StrToextDef(sNdsAmount, 0);
     end;
+      if ItemExtCode = '' then continue;  // bug in XML
+      
       CheckLink('ITEMS',ItemExtCode,ItemName, ['ICODE', itemcode]);
 
       with DM.FDQuery do
