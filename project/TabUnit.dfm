@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -114,6 +114,7 @@ inherited TabForm: TTabForm
           AutoAppend = False
           IniStorage = JvFS
           OnDrawColumnTitle = RealPMGridDrawColumnTitle
+          PostOnEnterKey = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -146,6 +147,7 @@ inherited TabForm: TTabForm
           AutoAppend = False
           IniStorage = JvFS
           OnDrawColumnTitle = IOTHGridDrawColumnTitle
+          PostOnEnterKey = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -434,6 +436,7 @@ inherited TabForm: TTabForm
           TitleFont.Style = [fsBold]
           AutoAppend = False
           IniStorage = JvFS
+          PostOnEnterKey = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -562,6 +565,7 @@ inherited TabForm: TTabForm
         TitleFont.Style = []
         AutoAppend = False
         IniStorage = JvFS
+        PostOnEnterKey = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'

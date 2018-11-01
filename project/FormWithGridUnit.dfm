@@ -41,6 +41,7 @@ inherited FormWithGrid: TFormWithGrid
     TitleFont.Style = []
     AutoAppend = False
     IniStorage = JvFS
+    PostOnEnterKey = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
     SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -76,7 +77,7 @@ inherited FormWithGrid: TFormWithGrid
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
