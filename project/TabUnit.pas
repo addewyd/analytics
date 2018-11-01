@@ -163,6 +163,14 @@ type
     procedure CloseSessActionExecute(Sender: TObject);
     procedure ClearCloseActionExecute(Sender: TObject);
     procedure VerifiedActionExecute(Sender: TObject);
+    procedure IOTHGridKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure RealPMGridKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure GridInOutGSMKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure GridInOutItemsKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -1790,6 +1798,40 @@ begin
 
 end;
 
+procedure TTabForm.GridInOutGSMKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if key = VK_F2 then
+  begin
+    CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F10 then
+  begin
+    RollbackActionExecute(Sender);
+    key := 0;
+  end;
+
+end;
+
+procedure TTabForm.GridInOutItemsKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if key = VK_F2 then
+  begin
+    CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F10 then
+  begin
+    RollbackActionExecute(Sender);
+    key := 0;
+  end;
+
+end;
+
 // .............................................................................
 
 procedure TTabForm.RealPMFooterCalculate(Sender: TJvDBGridFooter;
@@ -2016,6 +2058,22 @@ begin
   inherited;
   //
   ErrorMessageBox(self, Sender.ClassName);
+end;
+
+procedure TTabForm.IOTHGridKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if key = VK_F2 then
+  begin
+    CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F10 then
+  begin
+    RollbackActionExecute(Sender);
+    key := 0;
+  end;
 end;
 
 // .............................................................................
@@ -2356,6 +2414,23 @@ begin
   begin
 //    inherited;
   end;
+end;
+
+procedure TTabForm.RealPMGridKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if key = VK_F2 then
+  begin
+    CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F10 then
+  begin
+    RollbackActionExecute(Sender);
+    key := 0;
+  end;
+
 end;
 
 // .............................................................................

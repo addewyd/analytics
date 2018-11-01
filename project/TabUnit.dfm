@@ -111,6 +111,7 @@ inherited TabForm: TTabForm
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = RealPMGridDrawColumnCell
+          OnKeyDown = RealPMGridKeyDown
           AutoAppend = False
           IniStorage = JvFS
           OnDrawColumnTitle = RealPMGridDrawColumnTitle
@@ -144,6 +145,7 @@ inherited TabForm: TTabForm
           OnDrawDataCell = IOTHGridDrawDataCell
           OnDrawColumnCell = IOTHGridDrawColumnCell
           OnEditButtonClick = IOTHGridEditButtonClick
+          OnKeyDown = IOTHGridKeyDown
           AutoAppend = False
           IniStorage = JvFS
           OnDrawColumnTitle = IOTHGridDrawColumnTitle
@@ -434,6 +436,7 @@ inherited TabForm: TTabForm
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = [fsBold]
+          OnKeyDown = GridInOutGSMKeyDown
           AutoAppend = False
           IniStorage = JvFS
           PostOnEnterKey = True
@@ -563,6 +566,7 @@ inherited TabForm: TTabForm
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnKeyDown = GridInOutItemsKeyDown
         AutoAppend = False
         IniStorage = JvFS
         PostOnEnterKey = True
@@ -783,13 +787,13 @@ inherited TabForm: TTabForm
     Left = 256
     Top = 360
     object CommitAction: TAction
-      Caption = 'Commit'
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' (F2)'
       Hint = 'Commit'
       ImageIndex = 361
       OnExecute = CommitActionExecute
     end
     object RollbackAction: TAction
-      Caption = 'Rollback'
+      Caption = #1054#1090#1084#1077#1085#1072' (F10)'
       Hint = 'Rollback'
       ImageIndex = 328
       OnExecute = RollbackActionExecute
