@@ -15,8 +15,11 @@ IdContext, IdCustomHTTPServer, IdBaseComponent,
   XML.xmldom, XML.XMLIntf,XML.XMLDoc,
   ActiveX;
 
+{$I 'consts.inc'}
 Procedure CommandGet(Context: TIdContext;
   Request: TIdHTTPRequestInfo; Response: TIdHTTPResponseInfo);
+
+
 
 implementation
 
@@ -26,6 +29,36 @@ uses DmUnit, MainUnit;
     query: TFDQuery;
     conn: TFDConnection;
     tran: TFDTransaction;
+
+    // .............................................................................
+
+  Procedure AddToLogT(msg: String);
+  begin
+    TThread.Queue(nil,
+      procedure
+      begin
+        AddToLog(msg);
+      end);
+
+  end;
+
+// .............................................................................
+
+  procedure LoadDocs(Response: TIdHTTPResponseInfo);
+    var
+      msg: TMessage;
+  begin
+    AddToLogT('received LoadDocs');
+    try
+      DM.FDConnection.Close;
+
+    finally
+      if not DM.FDConnection.Connected then  DM.FDConnection.Open;
+      msg.msg := WM_CONN_REOPEN;
+      MainForm.SendMsgs(msg);
+    end;
+
+  end;
 
 // .............................................................................
 
@@ -269,7 +302,6 @@ begin
     end;
   end;
 
-
   TThread.Queue(nil,
     procedure
     begin
@@ -350,6 +382,11 @@ begin
       begin
         postdata := 'select * from outcomesbyretail';
         ExecAnySQL(response, postdata);
+
+      end
+      else if u = '/LoadDocs' then
+      begin
+        LoadDocs(response);
 
       end
       else
