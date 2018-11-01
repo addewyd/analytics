@@ -13079,9 +13079,10 @@ object DM: TDM
       
         '    left join outcomesbyretail o on (o.session_id=s.id and o.tan' +
         'knum=t.tanknum and h.hosenum=cast(o.hosename as integer))'
+      '    left join (select volume, sid, tnum '
       
-        '    left join (select volume, sid, tnum from calcincomes0(:sessi' +
-        'on_id)) ss on ss.tnum=t.tanknum and ss.sid = s.id'
+        '         from calcincomes0(:session_id)) ss on ss.tnum=t.tanknum' +
+        ' and ss.sid = s.id'
       ''
       '    where t.session_id = :session_id'
       '            and s.id = t.session_id'

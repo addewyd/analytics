@@ -143,6 +143,22 @@
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
+						<UsualGroup name="Группа9" id="53">
+							<ExtendedTooltip name="Группа9РасширеннаяПодсказка" id="54"/>
+							<ChildItems>
+								<Button name="LoadDocsBut" id="55">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.LoadDocs</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Загрузить документы</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="LoadDocsButРасширеннаяПодсказка" id="56"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа3" id="10">
@@ -342,6 +358,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>PostDOg</Action>
+		</Command>
+		<Command name="LoadDocs" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Load docs</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Load docs</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>LoadDocs</Action>
 		</Command>
 	</Commands>
 </Form>

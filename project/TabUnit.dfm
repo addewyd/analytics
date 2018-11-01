@@ -28,16 +28,22 @@ inherited TabForm: TTabForm
       Left = 69
       Top = 0
       Action = VerifiedAction
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton4: TToolButton
       Left = 92
       Top = 0
       Action = CloseSessAction
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton5: TToolButton
       Left = 115
       Top = 0
       Action = ClearCloseAction
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inherited JvStatusBar1: TJvStatusBar
@@ -320,6 +326,7 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'OUTCOME'
+              Title.Caption = #1056#1072#1089#1093#1086#1076
               Title.Font.Charset = DEFAULT_CHARSET
               Title.Font.Color = clWindowText
               Title.Font.Height = -11
@@ -13721,12 +13728,7 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      
-        '     (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
-        ') - '
-      
-        '       (select volume from calcincomes(s.id, i.tanknum)) as outc' +
-        'ome '
+      '    round(endcounter - startcounter, 3) as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'

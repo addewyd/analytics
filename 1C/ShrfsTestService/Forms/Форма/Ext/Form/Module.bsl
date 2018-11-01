@@ -109,6 +109,7 @@ endfunction
 	Response = Conn.post(Request);
 	r = Response.GetBodyAsString();
 	Message(r);
+	Conn.Удалить(Request);
 КонецПроцедуры
 
 
@@ -335,4 +336,24 @@ endProcedure
 &НаКлиенте
 Процедура PostDOg(Команда)
 	PostDOgНаСервере();
+КонецПроцедуры
+
+&НаСервере
+Процедура LoadDocsНаСервере()
+	Message("Loading documents");
+	
+КонецПроцедуры
+
+&НаКлиенте
+Процедура LoadDocs(Команда)
+	Conn = new HTTPConnection(ServiceHost, ServicePort);
+	Request = new HTTPRequest();
+	Request.ResourceAddress = "LoadDocs";
+	Response = Conn.get(Request);
+	r = Response.GetBodyAsString();
+	Message(r);
+	
+	LoadDocsНаСервере();
+	Conn.Удалить(Request);
+	
 КонецПроцедуры

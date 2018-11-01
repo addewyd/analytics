@@ -776,7 +776,7 @@ begin
 
   // Fill IOTANKSHOSES
 
-  AddAllTanks(id, azs);    // and hoses
+  if id > 0 then AddAllTanks(id, azs);    // and hoses
 
   if rc > 0 then
   begin
