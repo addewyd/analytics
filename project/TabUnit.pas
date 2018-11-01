@@ -178,6 +178,7 @@ type
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
+    procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
     procedure SetControlsOnSessionState(st: Integer);
     function IsNextSessionOpened: boolean;
     function SetSessionState(st: Integer): boolean;
@@ -2394,5 +2395,11 @@ begin
   end;
 end;
 
+// .............................................................................
+
+procedure TTabForm.stationchanged(var Msg: TMessage);
+begin
+//    Close;
+end;
 
 end.

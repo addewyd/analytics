@@ -16,6 +16,11 @@ inherited SessionListForm: TSessionListForm
       ParentShowHint = False
       ShowHint = True
     end
+    object ToolButton4: TToolButton
+      Left = 69
+      Top = 0
+      Action = ChangeStationAction
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 345
@@ -74,12 +79,21 @@ inherited SessionListForm: TSessionListForm
       ImageIndex = 131
       OnExecute = DeleteLastActionExecute
     end
+    object ChangeStationAction: TAction
+      Caption = #1057#1084#1077#1085#1080#1090#1100' '#1040#1047#1057
+      Hint = #1057#1084#1077#1085#1080#1090#1100' '#1040#1047#1057
+      ImageIndex = 320
+      OnExecute = ChangeStationActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = #1057#1084#1077#1085#1099
       object DeleteLast1: TMenuItem
         Action = DeleteLastAction
+      end
+      object N2: TMenuItem
+        Action = ChangeStationAction
       end
     end
   end

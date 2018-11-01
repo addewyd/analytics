@@ -23,6 +23,8 @@ type
     procedure UpdateActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure JvDBGridDblClick(Sender: TObject);
+    procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -36,7 +38,7 @@ implementation
 
 {$R *.dfm}
 
-uses DmUnit;
+uses DmUnit, MainUnit;
 
 procedure TStationsForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -67,6 +69,54 @@ begin
     end;
   end;
 end;
+
+// .............................................................................
+
+procedure TStationsForm.JvDBGridDblClick(Sender: TObject);
+  var
+    msg: TMessage;
+    tb: TForm;
+begin
+  inherited;
+  // change options, reopen sessions
+
+  current_azscode := FDQuery.FieldByName('CODE').AsString;
+  MainForm.StatusBar1.Panels[3].Text := 'ÀÇÑ ' + current_azscode;
+
+  // set option
+
+  if not MainForm.isWinOpen('tabform')
+  then
+  begin
+//
+  end
+  else
+  begin
+    tb := MainForm.GetMDIForm('tabform');
+    tb.Close;
+    MainForm.RemoveComponent(tb);
+  end;
+
+
+  msg.Msg := WM_STATION_CHANGED;
+  MainForm.SendMsgs(msg);
+
+end;
+
+// .............................................................................
+
+procedure TStationsForm.JvDBGridKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if ord(Key) = VK_RETURN then
+  begin
+     Key := #0;
+     JvDBGridDblClick(Sender);
+  end;
+
+end;
+
+// .............................................................................
 
 procedure TStationsForm.RefreshActionExecute(Sender: TObject);
 begin

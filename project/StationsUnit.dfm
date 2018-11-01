@@ -10,22 +10,26 @@ inherited StationsForm: TStationsForm
     end
   end
   inherited JvDBGrid: TJvDBUltimGrid
+    OnDblClick = JvDBGridDblClick
+    OnKeyPress = JvDBGridKeyPress
     AutoAppend = True
-    PostOnEnterKey = True
     Columns = <
       item
         Expanded = False
         FieldName = 'NAME'
+        Title.Caption = #1048#1084#1103
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CODE'
+        Title.Caption = #1050#1086#1076
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'EXTCODE'
+        Title.Caption = #1042#1085#1077#1096#1085#1080#1081' '#1082#1086#1076
         Visible = True
       end>
   end

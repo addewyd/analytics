@@ -22,6 +22,9 @@ type
     DeleteLastAction: TAction;
     ToolButton3: TToolButton;
     DeleteLast1: TMenuItem;
+    ToolButton4: TToolButton;
+    ChangeStationAction: TAction;
+    N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -31,6 +34,7 @@ type
     procedure DeleteLastActionExecute(Sender: TObject);
     procedure JvDBGridDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure ChangeStationActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,6 +44,7 @@ type
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure sessionclosed(var Msg: TMessage); message WM_SESSION_CLOSED;
     procedure sessionupdated(var Msg: TMessage); message WM_SESSION_UPDATED;
+    procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
     procedure PrepareAndLoad;
   end;
 
@@ -50,7 +55,7 @@ implementation
 
 {$R *.dfm}
 
-uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1, YNUnit;
+uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1, YNUnit, StationsUnit;
 
 
 procedure TSessionListForm.PrepareAndLoad;
@@ -96,6 +101,27 @@ begin
   inherited;
   inherited LoadData;
   JvDBGrid.Refresh;
+
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.ChangeStationActionExecute(Sender: TObject);
+  var
+    tb: TForm;
+begin
+  inherited;
+  if not MainForm.isWinOpen('stations')
+  then
+  begin
+    TStationsForm.Create(MainForm, 'stations');
+  end
+  else
+  begin
+    ShowWindow(MainForm.GetMDIForm('stations').Handle, SW_RESTORE);
+    MainForm.GetMdiForm('stations').Show;
+  end;
+
 
 end;
 
@@ -478,5 +504,12 @@ begin
   PrepareAndLoad;
 end;
 
+// .............................................................................
+
+procedure TSessionListForm.stationchanged(var Msg: TMessage);
+begin
+  AddToLog('STATIONCANGED');
+  PrepareAndLoad;
+end;
 
 end.

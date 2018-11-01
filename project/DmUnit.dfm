@@ -12725,7 +12725,6 @@ object DM: TDM
     ResourceOptions.AssignedValues = [rvAutoConnect]
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
-    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd

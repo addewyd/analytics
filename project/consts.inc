@@ -8,6 +8,7 @@ const
   WM_LOGADDED = WM_USER + 6;
   WM_SESSION_CLOSED = WM_USER + 7;
   WM_SESSION_UPDATED = WM_USER + 8;
+  WM_STATION_CHANGED = WM_USER + 9;
 
 
   // session states
