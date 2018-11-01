@@ -117,6 +117,9 @@ type
     ToolButton5: TToolButton;
     N1: TMenuItem;
     N2: TMenuItem;
+    VerifiedAction: TAction;
+    ToolButton6: TToolButton;
+    N3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -159,6 +162,7 @@ type
     procedure TransInOutItemsAfterCommit(Sender: TObject);
     procedure CloseSessActionExecute(Sender: TObject);
     procedure ClearCloseActionExecute(Sender: TObject);
+    procedure VerifiedActionExecute(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -174,9 +178,10 @@ type
     procedure counterschanged(var Msg: TMessage); message WM_COUNTERS_CHANGED;
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
-    procedure SetControlsOnSessionState(st: Boolean);
+    procedure SetControlsOnSessionState(st: Integer);
     function IsNextSessionOpened: boolean;
     function SetSessionState(st: Integer): boolean;
+    procedure UpdateState(q: TFDQuery; _state: Integer);
 
 
   public
@@ -195,7 +200,7 @@ type
     procedure ShowItemsData();
     procedure ShowIOTHData();
     procedure ShowPMData();
-    procedure UpdateState(q: TFDQuery; _state: Integer);
+    procedure UpdateAllStates(_state: Integer);
     function GetStartSession: String;
   end;
 
@@ -269,12 +274,14 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-    AddToLog(fname + ' DSCh ' + f);
-    dirtyPM := true;
+  AddToLog(fname + ' DSCh ' + f);
+  dirtyPM := true;
 
 end;
 
 // .............................................................................
+
+// raises Exc
 
 procedure TTabForm.UpdateState(q: TFDQuery; _state: Integer);
 var
@@ -288,7 +295,7 @@ begin
   if q <> nil then
   begin
     tablename := q.UpdateOptions.UpdateTableName;
-      AddToLog(q.Name + ' need update');
+//      AddToLog(q.Name + ' need update');
 
   end
   else AddToLog('nil ' + ' need update');
@@ -300,7 +307,7 @@ begin
     try
       if _state <> session_state then
       begin
-        sql.Text := 'update sessions set state=:state where id = :session_id and state < 2';
+        sql.Text := 'update sessions set state=:state where id = :session_id and state < ' + SS_CLOSED;
         with Params do
         begin
           Clear;
@@ -326,10 +333,12 @@ begin
           [_state, session_id]));
         AddToLog(format('sate changed to %d', [_state]));
       end;
+
       if Trim(tablename) <> '' then
       begin
         sql.Text :=
-          'update !table set state=:state, lastuser_id=:user_id where session_id = :session_id and state < 2';
+          'update !table set state = :state, lastuser_id=:user_id ' +
+          ' where session_id = :session_id and state < ' + SS_CLOSED;
         with Macros do
         begin
           Clear;
@@ -368,14 +377,11 @@ begin
 
         prepare;
         ExecSQL;
+        AddToLog('updating ' + tablename);  
       end;
 
       UpdateTransaction.Commit;
       Transaction.Commit;
-
-      msg.Msg := WM_SESSION_UPDATED;
-      MainForm.SendMsgs(msg);
-      SetControlsOnSessionState(_state > 1);
 
       DM.AddLogMsg(user_id, format('Updated %s session_id %d',
         [tablename, session_id]));
@@ -386,12 +392,63 @@ begin
         UpdateTransaction.Rollback;
         Transaction.Rollback;
         AddToLog(e.Message);
+        raise;
       end;
 
     end;
 
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.UpdateAllStates(_state: Integer);
+  var
+    msg: TMessage;
+begin
+  if _state <> session_state then
+  begin
+    try
+      UpdateState(nil, _state);
+      UpdateState(QueryInOut, _state);
+      UpdateState(QueryIOTH, _state);
+      UpdateState(QueryInOutItems, _state);
+
+      session_state := _state;
+
+      SetControlsOnSessionState(_state);
+      msg.Msg := WM_SESSION_UPDATED;
+      MainForm.SendMsgs(msg);
+    except
+      on e: Exception do
+      begin
+        ErrorMessageBox(self, 'UpdateAllStates: ' + e.Message);
+      end;
+    end;
+
+  end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.VerifiedActionExecute(Sender: TObject);
+  var
+    new_state: Integer;
+    yn : TYNForm;
+    
+begin
+  inherited;
+  yn := TYNForm.Create(self);
+  yn.Memo1.Text := 'Смена проверена?';
+
+  if yn.ShowModal = mrOK then
+  begin
+  
+    new_state := S_VERIFIED;
+    UpdateAllStates(new_state);
+  end;
+  
 end;
 
 // .............................................................................
@@ -428,12 +485,11 @@ var
 
 begin
   inherited;
-  if session_state > 1 then
+  if session_state > S_VERIFIED then
   begin
     ErrorMessageBox(self, 'Смена закрыта');
     Exit;
   end;
-
 
   tm := (Sender as TMenuItem);
   old_warecode := QueryIOTH.FieldByName('warecode').AsString;
@@ -451,8 +507,9 @@ begin
   // now update iotankshoses with new warecode
   // upd key: session_id, tanknum, warecode, azs
 
-  sqlt := 'update iotankshoses set warecode = :warecode_new, state=1 ' +
-    ' where session_id >= :session_id and azscode= :azs and tanknum = :tanknum and warecode = :old_warecode and state < 2';
+  sqlt := 'update iotankshoses set warecode = :warecode_new, state = ' + SS_CHANGED +
+    ' where session_id >= :session_id and azscode= :azs ' +
+    'and tanknum = :tanknum and warecode = :old_warecode and state < ' + SS_CLOSED;
 
   YNForm := TYNForm.Create(self);
   // YNForm.Height := 400;
@@ -539,7 +596,8 @@ begin
       end;
 
       sqlt := 'update inoutgsm set ware_code = :warecode_new ' +
-        ' where session_id >= :session_id and azscode=:azs and tanknum = :tanknum and ware_code = :old_warecode and state = 1';
+        ' where session_id >= :session_id and azscode=:azs ' +
+        'and tanknum = :tanknum and ware_code = :old_warecode and state = ' + SS_CHANGED;
 
       with GenUpdQuery do
       begin
@@ -594,7 +652,7 @@ begin
       msg.Msg := WM_WARECHANGED;
       MainForm.SendMsgs(msg);
 
-      UpdateState(nil, 1);
+      UpdateAllStates(S_CHANGED); // or All?
     except
       on e: Exception do
       begin
@@ -736,7 +794,7 @@ procedure TTabForm.SCNT1Click(Sender: TObject);
 
 begin
   inherited;
-  if session_state > 1 then
+  if session_state > S_VERIFIED then
   begin
     ErrorMessageBox(self, 'Смена закрыта');
     Exit;
@@ -934,7 +992,7 @@ begin
   mr := crd.ShowModal;
   if mr = mrOk then
   begin
-    UpdateState(QueryIOTH, 1);
+    UpdateAllStates(S_CHANGED);
     AddToLog('ReplCnt mrOK');
     ShowIOTHData;
   end;
@@ -946,9 +1004,10 @@ end;
 procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
 begin
   inherited;
-  if session_state > 1 then Exit;
+  if session_state > S_VERIFIED then Exit;
 
   AddToLog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
+  // WTD?
 end;
 
 // .............................................................................
@@ -1334,7 +1393,7 @@ begin
       begin
         if sid = id then
         begin
-          if prevstate > 1 then
+          if prevstate > S_VERIFIED then
           begin
             result := true;
             exit;
@@ -1356,7 +1415,8 @@ begin
   result := false;
   with GenQuery do
   begin
-    sql.Text := 'select first 1 id, state from sessions where azscode = :azscode and id > :id order by id';
+    sql.Text := 'select first 1 id, state from sessions where ' +
+    'azscode = :azscode and id > :id order by id';
     with params do
     begin
       Clear;
@@ -1380,7 +1440,7 @@ begin
     if RecordCount < 1 then Result := true
     else
     begin
-      if FieldByName('state').AsInteger < 2 then Result := true;
+      if FieldByName('state').AsInteger < S_CLOSED then Result := true;
 
     end;
     Close;
@@ -1389,7 +1449,7 @@ end;
 
 // .............................................................................
 
-function TTabForm.SetSessionState(st: Integer): boolean;
+function TTabForm.SetSessionState(st: Integer): boolean;  // forced set
 begin
   result := false;
   with GenUpdQuery do
@@ -1515,10 +1575,9 @@ begin
     yn.Memo1.Text := 'Открыть смену?';
     if yn.ShowModal <> mrOK then Exit;
 
-    if SetSessionState(1) then
+    if SetSessionState(S_CHANGED) then
     begin
-      SetControlsOnSessionState(false);
-      session_state := 1;
+      UpdateAllStates(S_CHANGED);
       msg.Msg := WM_SESSION_ADDED;
       MainForm.SendMsgs(msg);
     end;
@@ -1550,11 +1609,8 @@ begin
   yn.Memo1.Text := 'Закрыть смену?';
   if yn.ShowModal <> mrOK then Exit;
 
-  SetControlsOnSessionState(true);
-  UpdateState(QueryInOut,2);
-  UpdateState(QueryInOutItems,2);
-  UpdateState(QueryIOTH,2);
-  session_state := 2;
+  UpdateAllStates(S_CLOSED);
+
   msg.Msg := WM_SESSION_CLOSED;
   MainForm.SendMsgs(msg);
 
@@ -1576,7 +1632,7 @@ begin
           ApplyUpdates(0);
           Close;
           Transaction.Commit;
-          UpdateState(QueryIOTH,1);
+          UpdateAllStates(S_CHANGED);
           dirtyIOTH := false;
           ShowIOTHData;
         end;
@@ -1591,7 +1647,7 @@ begin
         begin
           Close;
           Transaction.Commit;
-          UpdateState(QueryRealPM, 1);
+          UpdateAllStates(S_CHANGED);
           dirtyPM := false;
           ShowPMData;
         end;
@@ -1606,7 +1662,7 @@ begin
         begin
           Close;
           Transaction.Commit;
-          UpdateState(QueryInOut, 1);
+          UpdateAllStates(S_CHANGED);
           ShowGSMData;
           dirtyGSM := false;
         end;
@@ -1623,7 +1679,7 @@ begin
           Close;
           // commits if cachedupdates=false && without call ApplyUpdates
           Transaction.Commit;              // ????? does not commit??
-          UpdateState(QueryInOutItems, 1);
+          UpdateAllStates(S_CHANGED);
           ShowItemsData;
           dirtyItem := false;
         end;
@@ -1784,6 +1840,7 @@ begin
     mr := yn.ShowModal;
     if mr = mrOk then
     begin
+
       if QueryInOut.Transaction.Active then
         QueryInOut.Transaction.Commit;
       if QueryInOutItems.Transaction.Active then
@@ -1793,15 +1850,10 @@ begin
       if QueryRealPM.Transaction.Active then
         QueryRealPM.Transaction.Commit;
 
-      if dirtyGSM then
-        UpdateState(QueryInOut, 1);
-      if dirtyItem then
-        UpdateState(QueryInOutItems, 1);
-      if dirtyIOTH then
-        UpdateState(QueryIOTH, 1);
-      if dirtyPM then
-        UpdateState(QueryRealPM, 1);
+      if dirtyGSM or dirtyItem or dirtyIOTH or dirtyPM then
+        UpdateAllStates(S_CHANGED);
       CanClose := true;
+
     end;
     if mr = mrAbort then
     begin
@@ -1823,21 +1875,41 @@ end;
 
 // .............................................................................
 
-procedure TTabForm.SetControlsOnSessionState(st: Boolean);
+procedure TTabForm.SetControlsOnSessionState(st: Integer);
+var
+  b: boolean;
 begin
-    IOTHGrid.ReadOnly := st;
-    GridInOutGSM.ReadOnly := st;
-    GridInOutItems.ReadOnly := st;
-    JvStatusBar1.Visible := st;
 
-//    RButton.Enabled := false;
-    CloseSessAction.Enabled := not st;
-    RollbackAction.Enabled := not st;
-    CommitAction.Enabled := not st;
-    ClearCloseAction.Enabled := st;
+    b := st > S_VERIFIED;
 
-    if st then  JvStatusBar1.Panels[0].Text := 'Смена закрыта!'
-    else JvStatusBar1.Panels[0].Text := '';
+    IOTHGrid.ReadOnly := b;
+    GridInOutGSM.ReadOnly := b;
+    GridInOutItems.ReadOnly := b;
+//    RealPMGrid
+    
+//    JvStatusBar1.Visible := b;
+
+    CloseSessAction.Enabled := st < S_CLOSED;
+    
+    RollbackAction.Enabled := st < S_CLOSED;
+    
+    CommitAction.Enabled := st < S_CLOSED;
+    
+    ClearCloseAction.Enabled := st = S_CLOSED;
+
+    VerifiedAction.Enabled := st < S_VERIFIED;
+
+    with JvStatusBar1 do
+    begin
+      case st of  S_NEW: Panels[0].Text := 'Свежая';
+                  S_CHANGED: Panels[0].Text := 'Смена изменена';
+                  S_VERIFIED: Panels[0].Text := 'Смена проверена';
+                  S_CLOSED: Panels[0].Text := 'Смена закрыта!';
+                  S_SENT: Panels[0].Text := 'Смена отправлена';
+      else  Panels[0].Text := 'Unknown state';
+    end;
+    
+    end;
 
 end;
 
@@ -1846,14 +1918,7 @@ end;
 procedure TTabForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  if session_state > 1 then // 2 - fixed (closed session) 3 - sent to 1c
-  begin
-    SetControlsOnSessionState(true);
-  end
-  else
-  begin
-    SetControlsOnSessionState(false);
-  end;
+  SetControlsOnSessionState(session_state);
 
   warelist := TStringList.Create;
   dirtyGSM := false;
@@ -1960,7 +2025,7 @@ procedure TTabForm.RButtonClick(Sender: TObject);
     bwidth: Integer;
 begin
   inherited;
-  if session_state > 1 then
+  if session_state > S_VERIFIED then
   begin
     ErrorMessageBox(self, 'Смена закрыта');
     Exit;
@@ -2138,7 +2203,7 @@ end
       msg.Msg := WM_RECRESTORED;
       MainForm.SendMsgs(msg);
 
-      UpdateState(QueryIOTH, 1);
+      UpdateAllStates(S_CHANGED);
 
     except
       on e: Exception do

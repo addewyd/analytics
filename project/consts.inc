@@ -10,6 +10,21 @@ const
   WM_SESSION_UPDATED = WM_USER + 8;
 
 
+  // session states
+
+const
+  S_NEW = 0;
+  S_CHANGED = 1;
+  S_VERIFIED = 2;
+  S_CLOSED = 3;
+  S_SENT = 4;
+
+  SS_NEW = '0';
+  SS_CHANGED = '1';
+  SS_VERIFIED = '2';
+  SS_CLOSED = '3';
+  SS_SENT = '4';
+
 type Rec =
     record
       id, session_id: Integer;

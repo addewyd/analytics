@@ -24,13 +24,18 @@ inherited TabForm: TTabForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton4: TToolButton
+    object ToolButton6: TToolButton
       Left = 69
+      Top = 0
+      Action = VerifiedAction
+    end
+    object ToolButton4: TToolButton
+      Left = 92
       Top = 0
       Action = CloseSessAction
     end
     object ToolButton5: TToolButton
-      Left = 92
+      Left = 115
       Top = 0
       Action = ClearCloseAction
     end
@@ -42,6 +47,7 @@ inherited TabForm: TTabForm
       item
         Width = 150
       end>
+    Visible = True
     ExplicitTop = 531
     ExplicitWidth = 735
   end
@@ -790,12 +796,21 @@ inherited TabForm: TTabForm
       ImageIndex = 3
       OnExecute = ClearCloseActionExecute
     end
+    object VerifiedAction: TAction
+      Caption = #1055#1088#1086#1074#1077#1088#1077#1085#1086
+      Hint = #1055#1088#1086#1074#1077#1088#1077#1085#1086
+      ImageIndex = 322
+      OnExecute = VerifiedActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     Left = 200
     Top = 360
     inherited File1: TMenuItem
       Caption = 'Tabs'
+      object N3: TMenuItem
+        Action = VerifiedAction
+      end
       object N1: TMenuItem
         Action = CloseSessAction
       end

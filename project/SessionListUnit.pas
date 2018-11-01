@@ -157,7 +157,13 @@ procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
     fn, fv: String;
     TextRect: TRect;
     cl : TColor;
-  const clrs: array of TColor = [clBlack, clBlue, clGray, clRed];
+  const clrs: array of TColor = [
+    clBlack, // NEW
+    clBlue,  // CHANGED
+    clGreen,  // VERIFIED
+    clGray,  // CLOSED
+    clRed     // SENT
+    ];
 begin
   inherited;
 
