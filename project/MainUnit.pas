@@ -95,9 +95,6 @@ type
     SessDataAction: TAction;
     N9: TMenuItem;
     ToolButton18: TToolButton;
-    DelSessionsAction: TAction;
-    ClearSData: TMenuItem;
-    DelSesTB: TToolButton;
     Window1: TMenuItem;
     Cascade1: TMenuItem;
     ileVertically1: TMenuItem;
@@ -531,6 +528,13 @@ begin
         UpdateTransaction.StartTransaction;
         try
           //logm.Lines.Clear;
+          ExecSQL('delete from inoutgsm');
+          AddToLog('deleted from inoutgsm');
+          ExecSQL('delete from iotankshoses');
+          AddToLog('deleted from iotankshoses');
+          ExecSQL('delete from inoutitems');
+          AddToLog('deleted from inoutitems');
+
 
           ExecSQL('delete from orders');
           AddToLog('deleted from orders');
@@ -583,6 +587,10 @@ begin
           AddToLog('deleted from sessions');
           UpdateTransaction.Commit;
           Transaction.Commit;
+
+          Close;
+          Open;
+
           msg.Msg := WM_SESSION_DELETED;
           SendMsgs(msg);
           DM.AddLogMsg(user_id, 'deleted all tables');
@@ -602,43 +610,7 @@ end;
 // .............................................................................
 
 procedure TMainForm.DelSessionsActionExecute(Sender: TObject);
-  var
-    msg: TMessage;
 begin
-//
-  YNForm := TYNForm.Create(self);
-  YNForm.Memo1.Text := 'Really?';
-
-    if YNForm.ShowModal = mrOk then
-    begin
-
-      with DM.FDConnection do
-      begin
-        Transaction.StartTransaction;
-        UpdateTransaction.StartTransaction;
-        try
-          ExecSQL('delete from inoutgsm');
-          AddToLog('deleted from inoutgsm');
-          ExecSQL('delete from iotankshoses');
-          AddToLog('deleted from iotankshoses');
-          ExecSQL('delete from inoutitems');
-          AddToLog('deleted from inoutitems');
-          UpdateTransaction.Commit;
-          Transaction.Commit;
-          msg.Msg := WM_SESSION_DELETED;
-          SendMsgs(msg);
-          DM.AddLogMsg(user_id, 'deleted io tables');
-        except
-          on e: Exception do
-          begin
-            UpdateTransaction.Rollback;
-            Transaction.Rollback;
-
-            ErrorMessageBox(self, e.Message);
-          end;
-        end;
-      end;
-    end;
 end;
 
 // ....................................................................
@@ -651,15 +623,15 @@ end;
 // .............................................................................
 
 procedure TMainForm.FormActivate(Sender: TObject);
-  var
-    oParams : TFDPhysFBConnectionDefParams;
-    tsd: TSelectUser;
-    br: Integer;
-    uid, urole: Integer;
-    login, fio: String;
+var
+  oParams: TFDPhysFBConnectionDefParams;
+  tsd: TSelectUser;
+  br: Integer;
+  uid, urole: Integer;
+  login, fio: String;
 begin
 
-  JVFS.RestoreFormPlacement();
+  JvFS.RestoreFormPlacement();
 
   TRY
     with DM.FDConnection.Params do
@@ -667,106 +639,106 @@ begin
       Clear;
       Add('Database=' + dbname);
       Add('DriverID=FB');
-      if embed then Add('Protocol=Local')
-      else Add('Protocol=TCPIP');
+      if embed then
+        Add('Protocol=Local')
+      else
+        Add('Protocol=TCPIP');
       Add('User_Name=' + db_user);
       Add('Password=' + db_pass);
       Add('SQLDialect=3');
-      if embed then Add('Server=')
-      else Add('server=' + host);
+      if embed then
+        Add('Server=')
+      else
+        Add('server=' + host);
       Add('CharacterSet=UTF8');
-      //Add('lc_ctype=UTF8');
+      // Add('lc_ctype=UTF8');
 
     end;
 
     DM.FDConnection.Open;
 
   except
-    on e: Exception do
+    on E: Exception do
     begin
-      ErrorMessageBox2(self, [e.Message, 'Set correct db location', 'And restart App, please']);
+      ErrorMessageBox2(self, [E.Message, 'Set correct db location',
+        'And restart App, please']);
     end;
   END;
 
   if not logged then
   begin
 
-  tsd := TSelectUser.Create(self);
-  tsd.FDQuery.Transaction.StartTransaction;
-  tsd.FDQuery.Open;
-  tsd.FDQuery.First;
+    tsd := TSelectUser.Create(self);
+    tsd.FDQuery.Transaction.StartTransaction;
+    tsd.FDQuery.Open;
+    tsd.FDQuery.First;
 
-  br := tsd.ShowModal;
-  if (br = mrCancel) or (tsd.uid < 0) then
-  begin
-//    Application.Terminate;
+    br := tsd.ShowModal;
+    if (br = mrCancel) or (tsd.uid < 0) then
+    begin
+      // Application.Terminate;
       if HTTPServer.Active then
         HTTPServer.Active := false;
 
-      Self.Close;
+      self.Close;
       Exit;
-  end;
-
-// AddToLog(
-//  tsd.combo.LookupValue + ' ' + IntToStr(tsd.uid));
-  if DM.FDConnection.Connected then
-  begin
-
-  uid := StrToIntDef(tsd.combo.LookupValue, 0);
-  urole := tsd.urole;
-  login := tsd.login;
-  fio := tsd.fio;
-
-  user_role := urole;
-  user_login := login;
-  user_fio := fio;
-  user_id := uid;
-
-  Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ' ' +
-    IntToStr(user_role) + ']';
-  logged := true;
-  end;
-  if uid < 1 then
-  begin
-    ErrorMessageBox(self, 'Не выбрано');
-    Application.Terminate;
-  end;
-
-  if user_role <> 1 then
-  begin
-    ClearDBAction.Visible := False;
-    DelSessionsAction.Visible := False;
-    UsersAction.Visible  := false;
-    XmlTablesAction.Visible  := false;
-    ViewLogAction.Visible  := false;
-
-  end;
-
-  //DM.FDTransaction.Options := DM.FDTransaction.Options - TFDTxOptions.AutoStart;
-  try
-    StatusBar1.Panels[0].Text := ExtractFileName(dbname);
-    LoadUserOptions(user_id);
-    StatusBar1.Panels[3].Text := 'АЗС ' + current_azscode;
-
-  except
-    on e: exception do
-    begin
-        ErrorMessageBox2(self,
-          ['Set correct db location', 'And restart App, please']);
     end;
 
-  end;
+    if DM.FDConnection.connected then
+    begin
 
-  DM.AddLogMsg(user_id, 'Start Work');
-end
-else
-begin
-//
-  user_role := 1;
-  user_login := 'admin';
-  user_fio := '';
-  user_id := 1;
-end;
+      uid := StrToIntDef(tsd.combo.LookupValue, 0);
+      urole := tsd.urole;
+      login := tsd.login;
+      fio := tsd.fio;
+
+      user_role := urole;
+      user_login := login;
+      user_fio := fio;
+      user_id := uid;
+
+      Caption := 'Analytics [' + user_login + ' id ' + IntToStr(user_id) + ' ' +
+        IntToStr(user_role) + ']';
+      logged := true;
+    end;
+
+    if uid < 1 then
+    begin
+      ErrorMessageBox(self, 'Не выбрано');
+      Application.Terminate;
+    end;
+
+    if user_role <> 1 then
+    begin
+      ClearDBAction.Visible := false;
+      UsersAction.Visible := false;
+      XmlTablesAction.Visible := false;
+      ViewLogAction.Visible := false;
+
+    end;
+
+    try
+      StatusBar1.Panels[0].Text := ExtractFileName(dbname);
+      LoadUserOptions(user_id);
+      StatusBar1.Panels[3].Text := 'АЗС ' + current_azscode;
+    except
+      on E: Exception do
+      begin
+        ErrorMessageBox2(self, ['Set correct db location',
+          'And restart App, please']);
+      end;
+    end;
+
+    DM.AddLogMsg(user_id, 'Start Work');
+  end
+  else
+  begin
+    //
+    user_role := 1;
+    user_login := 'admin';
+    user_fio := '';
+    user_id := 1;
+  end;
 end;
 
 // .............................................................................
@@ -1183,7 +1155,5 @@ begin
   end;
   TMessage(msg).result := 1;
 end;
-
-
 
 end.

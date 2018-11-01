@@ -19,12 +19,17 @@ type
     UpdateAction: TAction;
     Update1: TMenuItem;
     ToolButton3: TToolButton;
+    UpdateSQL: TFDUpdateSQL;
+    FDQueryNAME: TWideStringField;
+    FDQueryCODE: TWideStringField;
+    FDQueryEXTCODE: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure UpdateActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
+    procedure TransUPDAfterCommit(Sender: TObject);
   private
     { Private declarations }
   public
@@ -125,6 +130,12 @@ begin
   if FDQuery.Transaction.Active then FDQuery.Transaction.Commit;
 end;
 
+procedure TStationsForm.TransUPDAfterCommit(Sender: TObject);
+begin
+  inherited;
+
+end;
+
 /// ............................................................................
 
 procedure TStationsForm.UpdateActionExecute(Sender: TObject);
@@ -133,14 +144,18 @@ begin
 
   with FDQuery do
   begin
-    UpdateTransaction.StartTransaction;
+    Transaction.StartTransaction;
     try
-      ApplyUpdates;
-      UpdateTransaction.Commit;
+//      Post;
+      ApplyUpdates(0);
+      Close;
+//      UpdateTransaction.Commit;
+      Transaction.Commit;
+      LoadData;
     except
       on e: exception do
       begin
-        UpdateTransaction.Rollback;
+        Transaction.Rollback;
         ErrorMessageBox(self, e.message);
       end;
     end;

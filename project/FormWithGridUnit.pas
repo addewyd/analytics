@@ -32,6 +32,7 @@ type
     { Private declarations }
   protected
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
+    procedure connreopen(var Msg: TMessage); message WM_CONN_REOPEN;
 
   public
     { Public declarations }
@@ -98,8 +99,15 @@ end;
 procedure TFormWithGrid.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-
   LoadData;
 end;
+
+// .............................................................................
+
+procedure TFormWithGrid.connreopen(var Msg: TMessage);
+begin
+  LoadData;
+end;
+
 
 end.

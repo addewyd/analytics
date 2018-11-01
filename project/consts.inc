@@ -9,6 +9,7 @@ const
   WM_SESSION_CLOSED = WM_USER + 7;
   WM_SESSION_UPDATED = WM_USER + 8;
   WM_STATION_CHANGED = WM_USER + 9;
+  WM_CONN_REOPEN = WM_USER + 10;
 
 
   // session states

@@ -12723,6 +12723,7 @@ object DM: TDM
         'Database=C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
         'ebug\db\SHRFSPS.FDB')
     ResourceOptions.AssignedValues = [rvAutoConnect]
+    TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
     LoginPrompt = False

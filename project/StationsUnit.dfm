@@ -18,6 +18,7 @@ inherited StationsForm: TStationsForm
         Expanded = False
         FieldName = 'NAME'
         Title.Caption = #1048#1084#1103
+        Width = 64
         Visible = True
       end
       item
@@ -12733,7 +12734,51 @@ inherited StationsForm: TStationsForm
   inherited FDQuery: TFDQuery
     CachedUpdates = True
     Connection = DM.FDConnection
+    UpdateTransaction = Trans
+    UpdateOptions.UpdateTableName = 'STATIONS'
+    UpdateObject = UpdateSQL
     SQL.Strings = (
-      'select name, code, extcode from stations')
+      'select name, code, extcode from stations order by code')
+    object FDQueryNAME: TWideStringField
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      Size = 50
+    end
+    object FDQueryCODE: TWideStringField
+      FieldName = 'CODE'
+      Origin = 'CODE'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 10
+    end
+    object FDQueryEXTCODE: TWideStringField
+      FieldName = 'EXTCODE'
+      Origin = 'EXTCODE'
+      Required = True
+      Size = 10
+    end
+  end
+  inherited TransUPD: TFDTransaction
+    AfterCommit = TransUPDAfterCommit
+  end
+  object UpdateSQL: TFDUpdateSQL
+    Connection = DM.FDConnection
+    InsertSQL.Strings = (
+      'INSERT INTO STATIONS'
+      '(CODE, NAME, EXTCODE)'
+      'VALUES (:NEW_CODE, :NEW_NAME, :NEW_EXTCODE)')
+    ModifySQL.Strings = (
+      'UPDATE STATIONS'
+      'SET CODE = :NEW_CODE, NAME = :NEW_NAME, EXTCODE = :NEW_EXTCODE'
+      'WHERE CODE = :OLD_CODE')
+    DeleteSQL.Strings = (
+      'DELETE FROM STATIONS'
+      'WHERE CODE = :OLD_CODE')
+    FetchRowSQL.Strings = (
+      'SELECT CODE, NAME, EXTCODE'
+      'FROM STATIONS'
+      'WHERE CODE = :CODE')
+    Left = 224
+    Top = 96
   end
 end
