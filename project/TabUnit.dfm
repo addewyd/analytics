@@ -544,7 +544,7 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'WHOLE'
-              Title.Caption = 'Total'
+              Title.Caption = #1042' '#1090'.'#1095' '#1053#1044#1057
               Visible = True
             end>
         end
@@ -733,7 +733,7 @@ inherited TabForm: TTabForm
           item
             Expanded = False
             FieldName = 'WHOLE'
-            Title.Caption = 'Total'
+            Title.Caption = #1042' '#1090'.'#1095'. '#1053#1044#1057
             Title.Font.Charset = DEFAULT_CHARSET
             Title.Font.Color = clWindowText
             Title.Font.Height = -11
@@ -13548,15 +13548,12 @@ inherited TabForm: TTabForm
       '   i.price,'
       'i.density,'
       'i.nds, -- '#1089#1090#1072#1074#1082#1072
-      'amount * cast(nds as double precision) / 100.0 as sumnds,'
-      '--    (VOLUME * price) as summ,'
+      '    round(amount * cast(nds as double precision) / '
+      '       118.0, 2) as sumnds,'
+      '    amount as whole,'
       
-        '--    (VOLUME * price + volume * price * cast(nds as double prec' +
-        'ision) / 100.0) as whole'
-      '    amount,'
-      
-        '    (amount + amount * cast(nds as double precision) / 100.0) as' +
-        ' whole'
+        '    round(amount - amount * cast(nds as double precision) / 118.' +
+        '0, 2) as amount'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -14042,6 +14039,7 @@ inherited TabForm: TTabForm
         'select sum(volume) as volume,sum(amount) as amount, sum(sumnds) ' +
         'as sumnds, sum(whole) as whole'
       'from ('
+      ''
       'select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
@@ -14055,16 +14053,13 @@ inherited TabForm: TTabForm
       '   i.volume,'
       '   i.price,'
       'i.density,'
-      'i.nds,'
-      'amount * cast(nds as double precision) / 100.0 as sumnds,'
-      '--    (VOLUME * price) as summ,'
+      'i.nds, -- '#1089#1090#1072#1074#1082#1072
+      '    round(amount * cast(nds as double precision) / '
+      '       118.0, 2) as sumnds,'
+      '    amount as whole,'
       
-        '--    (VOLUME * price + volume * price * cast(nds as double prec' +
-        'ision) / 100.0) as whole'
-      '    amount,'
-      
-        '    (amount + amount * cast(nds as double precision) / 100.0) as' +
-        ' whole'
+        '    round(amount - amount * cast(nds as double precision) / 118.' +
+        '0, 2) as amount'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -14078,7 +14073,6 @@ inherited TabForm: TTabForm
         'AMP)*/'
       '      s.id = :session_id'
       '      and i.azscode=:azscode'
-      '      and direction = 0'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname'
       ')')
@@ -14154,13 +14148,12 @@ inherited TabForm: TTabForm
       '    i.quantity,'
       '    i.price,'
       '    i.nds,'
+      '    round(quantity * price * '
+      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
       
-        '    quantity * price * cast(nds as double precision) / 100.0 as ' +
-        'sumnds,'
-      '    (quantity * price) as summ,'
-      
-        '    (quantity * price + quantity * price * cast(nds as double pr' +
-        'ecision) / 100.0) as whole'
+        '    round(quantity * price - quantity * price * cast(nds as doub' +
+        'le precision) / 118.0, 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14339,14 +14332,12 @@ inherited TabForm: TTabForm
       '    i.quantity,'
       '    i.price,'
       '    i.nds,'
+      '    round(quantity * price * '
+      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
       
-        '    quantity * price * cast(nds as double precision) / 100.0 as ' +
-        'sumnds,'
-      ''
-      '    (quantity * price) as summ,'
-      
-        '    (quantity * price + quantity * price * cast(nds as double pr' +
-        'ecision) / 100.0) as whole'
+        '    round(quantity * price - quantity * price * cast(nds as doub' +
+        'le precision) / 118.0, 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
