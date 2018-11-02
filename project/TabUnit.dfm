@@ -378,10 +378,6 @@ inherited TabForm: TTabForm
             item
               Alignment = taRightJustify
               FieldName = 'CALC'
-            end
-            item
-              Alignment = taRightJustify
-              FieldName = 'FACT'
             end>
           DataSource = DSIOTH
           DBGrid = IOTHGrid
@@ -14091,7 +14087,7 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'select sum(calcin) as calcin, sum(calc) as calc'
+      'select sum(calc) as calc'
       'from'
       '('
       'select'
@@ -14101,13 +14097,13 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      
-        '   /* (select volume from calcincomes(s.id, i.tanknum)) as calci' +
-        'n,*/'
       '    i.invol as calcin,'
       
-        '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
-        ' as calc,'
+        '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
+        'as calc,'
+      '--    i.volume as calc,'
+      '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
+      '    '
       '    i.endfactvolume,'
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
@@ -14119,12 +14115,7 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      
-        '     (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
-        ') - '
-      
-        '       (select volume from calcincomes(s.id, i.tanknum)) as outc' +
-        'ome '
+      '    round(endcounter - startcounter, 3) as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -14132,10 +14123,10 @@ inherited TabForm: TTabForm
       '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
-      'order by s.startdatetime asc ,i.tanknum,i.hosenum'
+      ''
       ')')
-    Left = 124
-    Top = 165
+    Left = 636
+    Top = 101
     ParamData = <
       item
         Name = 'SESSION_ID'

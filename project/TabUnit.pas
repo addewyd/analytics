@@ -740,17 +740,17 @@ begin
   begin
     st := IntToStr(i);
     tm := 'coalesce((select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
-      + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
+      + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
 
-    tm := tm + '(select distinct price from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
-      + '    where i1.session_id=:session_id and i1.ware_code=' + #$27 + warelist.Names[i] + #$27 +') '
+    tm := tm + '(select first 1 price from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+      + '    where i1.session_id=:session_id and i1.ware_code='#$27 + warelist.Names[i] + #$27') '
       + ' as price_' + st + ',';
       
     tmp := 'coalesce((select sum(i1.amount) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
-      + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
+      + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as amount_' + st + ',';
@@ -1378,13 +1378,18 @@ begin
       end;
 
     end;
+    QueryIOTHSum.params.Assign(Params);
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsString := current_azscode;
+    QueryIOTHSum.ParamByName('session_id').AsInteger := session_id;
+    QueryIOTHSum.ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
       Prepare;
       Open;
+      QueryIOTHSum.Prepare;
+      QueryIOTHSum.Open;
       // Transaction.Commit;
     except
       on e: Exception do
@@ -1917,8 +1922,9 @@ var
 begin
 //  inherited;
 
+// Not in use
+
   cnv := Sender.Canvas;
-//  cnv.TextRect();
 
   Gr := Sender.DBGrid;
   Found := False;
@@ -1933,26 +1939,17 @@ begin
        Found := True;
        if trim(Text) <> '' then
        begin
-//        AddToLog(Format('DT %s %s %d %d', 
-  //        [Column.FieldName, Text, w, hw]));
-            
           cnv.Font.Color := 0;
           cnv.Brush.Color := clWhite;
-          
-//          crect.Left := hw;
-  //        crect.Top := 17;
-    //      crect.Width := w;
-      //    crect.Height := 17;
           Text := 'text';
           cnv.TextOut(hw, 17, Text);
           
-          // text := 'xxxxxxxxxxxxxxx ' + text;
           crect.Left := 0;
           crect.Top := 0;
           crect.Width := 100;
           crect.Height := 34;
           
-          cnv.TextOut(0, 0, 'Text0000');
+          cnv.TextOut(0, 0, Text);
 
           text := '';
           
@@ -1960,9 +1957,7 @@ begin
      end;
      hw := hw + w;
 
-  end;   
-
-  
+  end;     
 
 end;
 
@@ -1998,7 +1993,7 @@ begin
   begin
     if AnsiSameText(cls.Items[c].FieldName, fldn) then
     begin
-      StatusBar.Canvas.Font.Color := clRed;
+      StatusBar.Canvas.Font.Color := clGreen;
 
       txt := QueryRealPmSum.FieldByName(fldn).AsString;
       StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
@@ -2012,7 +2007,7 @@ begin
       if st <> '' then
       begin
         price := QueryRealPm.FieldByName('price_' + st).AsExtended;      
-        StatusBar.Canvas.Font.Color := clGreen;
+        StatusBar.Canvas.Font.Color := clRed;
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [price * vol]));
       end;
     
@@ -2149,9 +2144,17 @@ end;
 
 procedure TTabForm.IOTHFooterCalculate(Sender: TJvDBGridFooter;
   const FieldName: string; var CalcValue: Variant);
+  var f: String;
 begin
   inherited;
-  CalcValue := FieldName;
+  f := FieldName;
+  with QueryIOTHSum do
+  begin
+    if Active and (not eof) then
+    begin
+      CalcValue := FieldByName(f).AsExtended;
+    end;
+  end;
 end;
 
 // .............................................................................
@@ -2547,6 +2550,7 @@ procedure TTabForm.RealPMGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
   var
     fn: String;
     TextRect: TRect;
+    var price: Extended;
 
 begin
 
@@ -2561,9 +2565,13 @@ begin
 
     ACanvas.TextRect(TextRect, Textrect.Left + 2, 2, AColumn.Title.Caption);
 
+    Acanvas.Font.Color := clRed;
+    Acanvas.Font.Style := [fsBold];
     OffsetRect(TextRect, 0, RealPMGrid.TitleRowHeight DIV 2);
+    price := QueryRealPM.FieldByName('price_' + copy(fn, 8, 1)).asExtended;
 
-    ACanvas.TextRect(TextRect, Textrect.Left + 2, Textrect.Top + 2, '₽ Цена?');
+    ACanvas.TextRect(TextRect, Textrect.Left + 2, Textrect.Top + 2, 
+      Format('₽ %10.2f', [price]));
 
     DefaultDrawText := false;
 
