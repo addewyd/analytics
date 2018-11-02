@@ -12726,6 +12726,7 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -13067,7 +13068,8 @@ object DM: TDM
       '    h.numinpump,'
       '    h.hosetype,'
       '    coalesce(sum(o.volume), 0) as volume,'
-      '    sum(ss.volume) as invol,'
+      '--    sum(ss.volume) as invol,'
+      '     ss.volume as invol,'
       '     1 as lastuser_id,'
       '    current_timestamp as updated_at,'
       '    0 as state'
@@ -13076,13 +13078,12 @@ object DM: TDM
       '    hoses h'
       '    inner join tanks t on h.tanknum = t.tanknum'
       '    join sessions s on s.id = h.session_id'
-      
-        '    left join outcomesbyretail o on (o.session_id=s.id and o.tan' +
-        'knum=t.tanknum and h.hosenum=cast(o.hosename as integer))'
+      '    left join outcomesbyretail o on '
+      '       (o.session_id=s.id and o.tanknum=t.tanknum '
+      '            and h.hosenum=cast(o.hosename as integer))'
       '    left join (select volume, sid, tnum '
-      
-        '         from calcincomes0(:session_id)) ss on ss.tnum=t.tanknum' +
-        ' and ss.sid = s.id'
+      '         from calcincomes0(:session_id)) ss '
+      '             on ss.tnum=t.tanknum and ss.sid = s.id'
       ''
       '    where t.session_id = :session_id'
       '            and s.id = t.session_id'
@@ -13106,6 +13107,7 @@ object DM: TDM
       '    h.pumpnum,'
       '    h.numinpump,'
       '    h.hosetype,'
+      '    invol,'
       '    lastuser_id,'
       '    updated_at,'
       '    state'

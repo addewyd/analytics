@@ -13723,9 +13723,9 @@ inherited TabForm: TTabForm
       '    i.startfuelvolume,'
       '    i.invol as calcin,'
       
-        '--    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum' +
-        ')) as calc,'
-      '    i.volume as calc,'
+        '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
+        'as calc,'
+      '--    i.volume as calc,'
       '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
       '    '
       '    i.endfactvolume,'
