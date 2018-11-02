@@ -94,7 +94,8 @@ inherited TabForm: TTabForm
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
-          ExplicitTop = 454
+          OnDisplayText = RealPMFooterDisplayText
+          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1

@@ -194,6 +194,8 @@ type
       Shift: TShiftState);
     procedure RealPMFooterDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
       const Rect: TRect);
+    procedure RealPMFooterDisplayText(Sender: TJvDBGridFooter;
+      Column: TFooterColumn; const Value: Variant; var Text: string);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -743,18 +745,22 @@ begin
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
 
+    tm := tm + '(select distinct price from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+      + '    where i1.session_id=:session_id and i1.ware_code=' + #$27 + warelist.Names[i] + #$27 +') '
+      + ' as price_' + st + ',';
+      
     tmp := 'coalesce((select sum(i1.amount) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= ' + #$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as amount_' + st + ',';
-
+      
     th := th + tm + tmp;
 
     sumtm := sumtm + ' sum(volume_' + st + ') as volume_' + st + ',';
 
   end;
-  sumtf := ' 0 as nol' + '    from (';
+  sumtf := ' ' + st + ' as nol' + '    from (';
   tf := ' 0 as nol' + '    from inoutgsm i' +
     '    join sessions s on s.id=i.session_id' +
     '    join paymentmodes p on i.payment_code = p.code' +
@@ -769,6 +775,7 @@ begin
 //  AddToLog(sumsql);
 
   result := th + tf;
+//  ErrorMessageBox(self, result);
 
 end;
 
@@ -1199,6 +1206,8 @@ begin
       with Add do
       begin
         FieldName := 'VOLUME';
+        Alignment := taRightJustify;
+        Style := psOwnerDraw;
       end;
   end;
 
@@ -1253,6 +1262,7 @@ begin
         begin
           FieldName := 'volume_' + IntToStr(i);
           Alignment := taRightJustify;
+          Style := psOwnerDraw;
         end;
       end;
     end;
@@ -1894,11 +1904,124 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.RealPMFooterDisplayText(Sender: TJvDBGridFooter;
+  Column: TFooterColumn; const Value: Variant; var Text: string);
+
+var
+  gr: TJvDBGrid;
+  c,w, hw : Integer;
+  Found: Boolean;
+  cls : TDBGridColumns;
+  cnv : TCanvas;
+  crect: TRect;
+begin
+//  inherited;
+
+  cnv := Sender.Canvas;
+//  cnv.TextRect();
+
+  Gr := Sender.DBGrid;
+  Found := False;
+  
+  cls := gr.Columns;
+  hw := 0;
+  for C := 0 to cls.Count - 1 do
+  begin
+    w := cls[c].width;
+    if AnsiSameText(Column.FieldName, cls[C].FieldName) then
+    begin
+       Found := True;
+       if trim(Text) <> '' then
+       begin
+//        AddToLog(Format('DT %s %s %d %d', 
+  //        [Column.FieldName, Text, w, hw]));
+            
+          cnv.Font.Color := 0;
+          cnv.Brush.Color := clWhite;
+          
+//          crect.Left := hw;
+  //        crect.Top := 17;
+    //      crect.Width := w;
+      //    crect.Height := 17;
+          Text := 'text';
+          cnv.TextOut(hw, 17, Text);
+          
+          // text := 'xxxxxxxxxxxxxxx ' + text;
+          crect.Left := 0;
+          crect.Top := 0;
+          crect.Width := 100;
+          crect.Height := 34;
+          
+          cnv.TextOut(0, 0, 'Text0000');
+
+          text := '';
+          
+        end;
+     end;
+     hw := hw + w;
+
+  end;   
+
+  
+
+end;
+
+// ............................................................................
+
 procedure TTabForm.RealPMFooterDrawPanel(StatusBar: TStatusBar;
   Panel: TStatusPanel; const Rect: TRect);
+  Var
+    gr: TJvDBGrid;
+    f : TJvDBGridFooter;
+    cls : TFooterColumns;
+    gcls : TDBGridColumns;
+    pind: Integer;
+    fldn, txt, st : String;
+    price, vol: Extended;
+    c: integer;
 begin
-  inherited;
-  AddToLog('GFD');
+  // inherited;
+
+  f := StatusBar as  TJvDBGridFooter;
+
+  gr := f.DBGrid;
+  
+  cls := f.Columns;
+  gcls := gr.Columns;
+
+  pind := Panel.Index;
+
+  fldn := gcls.items[pind - 1].FieldName;
+
+  st := '';
+  for c := 0 to cls.Count -1 do
+  begin
+    if AnsiSameText(cls.Items[c].FieldName, fldn) then
+    begin
+      StatusBar.Canvas.Font.Color := clRed;
+
+      txt := QueryRealPmSum.FieldByName(fldn).AsString;
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+      vol := StrToextDef(txt, 0);
+      if Copy(fldn, 1, 7) = 'VOLUME_' then
+      begin
+        st := Copy(fldn, 8, 1);
+      
+      end;
+
+      if st <> '' then
+      begin
+        price := QueryRealPm.FieldByName('price_' + st).AsExtended;      
+        StatusBar.Canvas.Font.Color := clGreen;
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [price * vol]));
+      end;
+    
+    end;
+  
+  end;
+    
+    
+  
 end;
 
 // .............................................................................
