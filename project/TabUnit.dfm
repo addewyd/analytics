@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -85,20 +85,22 @@ inherited TabForm: TTabForm
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
-          Top = 454
+          Top = 435
           Width = 725
-          Height = 19
+          Height = 38
           SizeGrip = True
+          OnDrawPanel = RealPMFooterDrawPanel
           Columns = <>
           DataSource = DSRealPM
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
+          ExplicitTop = 454
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
           Top = 208
           Width = 725
-          Height = 246
+          Height = 227
           Align = alClient
           DataSource = DSRealPM
           DefaultDrawing = False
@@ -211,7 +213,6 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'CALC'
-              ReadOnly = True
               Title.Caption = #1054#1090#1087#1091#1089#1082
               Title.Font.Charset = DEFAULT_CHARSET
               Title.Font.Color = clWindowText
@@ -224,6 +225,7 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'CALCREST'
               Title.Caption = #1056#1072#1089#1095' '#1086#1089#1090#1072#1090#1086#1082
+              Width = 64
               Visible = True
             end
             item
@@ -280,6 +282,7 @@ inherited TabForm: TTabForm
               Title.Font.Height = -11
               Title.Font.Name = 'Tahoma'
               Title.Font.Style = [fsBold]
+              Width = 64
               Visible = True
             end
             item
@@ -314,6 +317,7 @@ inherited TabForm: TTabForm
               Title.Font.Height = -11
               Title.Font.Name = 'Tahoma'
               Title.Font.Style = [fsBold]
+              Width = 64
               Visible = True
             end
             item
@@ -764,6 +768,7 @@ inherited TabForm: TTabForm
         DataSource = DSInOutItems
         DBGrid = GridInOutItems
         OnCalculate = GridFooterInOutItemsCalculate
+        ExplicitTop = 453
       end
     end
     object TabSheet4: TTabSheet
@@ -13718,8 +13723,9 @@ inherited TabForm: TTabForm
       '    i.startfuelvolume,'
       '    i.invol as calcin,'
       
-        '    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum))' +
-        ' as calc,'
+        '--    (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum' +
+        ')) as calc,'
+      '    i.volume as calc,'
       '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
       '    '
       '    i.endfactvolume,'
@@ -13756,6 +13762,124 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+    object QueryIOTHID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QueryIOTHSESSION_ID: TIntegerField
+      FieldName = 'SESSION_ID'
+      Origin = 'SESSION_ID'
+      Required = True
+    end
+    object QueryIOTHSTDT: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'STDT'
+      Origin = 'STDT'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHFUELNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'FUELNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryIOTHTANKNUM: TWideStringField
+      FieldName = 'TANKNUM'
+      Origin = 'TANKNUM'
+      Required = True
+      Size = 10
+    end
+    object QueryIOTHSTARTFUELVOLUME: TFloatField
+      FieldName = 'STARTFUELVOLUME'
+      Origin = 'STARTFUELVOLUME'
+      Required = True
+    end
+    object QueryIOTHCALCIN: TFloatField
+      FieldName = 'CALCIN'
+      Origin = 'INVOL'
+    end
+    object QueryIOTHCALC: TFloatField
+      FieldName = 'CALC'
+      Origin = 'VOLUME'
+      Required = True
+    end
+    object QueryIOTHCALCREST: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALCREST'
+      Origin = 'VOLUME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHENDFACTVOLUME: TFloatField
+      FieldName = 'ENDFACTVOLUME'
+      Origin = 'ENDFACTVOLUME'
+      Required = True
+    end
+    object QueryIOTHHOSENUM: TIntegerField
+      FieldName = 'HOSENUM'
+      Origin = 'HOSENUM'
+      Required = True
+    end
+    object QueryIOTHSTCNT: TFloatField
+      FieldName = 'STCNT'
+      Origin = 'STARTCOUNTER'
+      Required = True
+    end
+    object QueryIOTHECNT: TFloatField
+      FieldName = 'ECNT'
+      Origin = 'ENDCOUNTER'
+      Required = True
+    end
+    object QueryIOTHDENSITY: TFloatField
+      FieldName = 'DENSITY'
+      Origin = 'DENSITY'
+      Required = True
+    end
+    object QueryIOTHTEMPERATURE: TFloatField
+      FieldName = 'TEMPERATURE'
+      Origin = 'TEMPERATURE'
+      Required = True
+    end
+    object QueryIOTHHEIGHT: TFloatField
+      FieldName = 'HEIGHT'
+      Origin = 'HEIGHT'
+      Required = True
+    end
+    object QueryIOTHMASS: TFloatField
+      FieldName = 'MASS'
+      Origin = 'MASS'
+      Required = True
+    end
+    object QueryIOTHWATER: TFloatField
+      FieldName = 'WATER'
+      Origin = 'WATER'
+      Required = True
+    end
+    object QueryIOTHWARECODE: TWideStringField
+      FieldName = 'WARECODE'
+      Origin = 'WARECODE'
+      Required = True
+      Size = 16
+    end
+    object QueryIOTHFACT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'FACT'
+      Origin = 'FACT'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHOUTCOME: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'OUTCOME'
+      Origin = 'OUTCOME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object FuelPopupMenu: TPopupMenu
     Left = 28

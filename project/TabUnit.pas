@@ -120,6 +120,27 @@ type
     VerifiedAction: TAction;
     ToolButton6: TToolButton;
     N3: TMenuItem;
+    QueryIOTHID: TIntegerField;
+    QueryIOTHSESSION_ID: TIntegerField;
+    QueryIOTHSTDT: TDateField;
+    QueryIOTHFUELNAME: TWideStringField;
+    QueryIOTHTANKNUM: TWideStringField;
+    QueryIOTHSTARTFUELVOLUME: TFloatField;
+    QueryIOTHCALCIN: TFloatField;
+    QueryIOTHCALC: TFloatField;
+    QueryIOTHCALCREST: TFloatField;
+    QueryIOTHENDFACTVOLUME: TFloatField;
+    QueryIOTHHOSENUM: TIntegerField;
+    QueryIOTHSTCNT: TFloatField;
+    QueryIOTHECNT: TFloatField;
+    QueryIOTHDENSITY: TFloatField;
+    QueryIOTHTEMPERATURE: TFloatField;
+    QueryIOTHHEIGHT: TFloatField;
+    QueryIOTHMASS: TFloatField;
+    QueryIOTHWATER: TFloatField;
+    QueryIOTHWARECODE: TWideStringField;
+    QueryIOTHFACT: TFloatField;
+    QueryIOTHOUTCOME: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -171,6 +192,8 @@ type
       Shift: TShiftState);
     procedure GridInOutItemsKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure RealPMFooterDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
+      const Rect: TRect);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -266,10 +289,22 @@ end;
 procedure TTabForm.DSIOTHFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
+  v, m, d: Extended;
 begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
+  if fname = 'DENSITY' then 
+  begin
+    v := QueryIOTH.FieldByName('CALC').AsExtended;
+    d := Field.AsExtended;
+
+    m :=  d * v / 1000.0;
+
+    QueryIOTH.FieldByName('MASS').AsExtended := m;
+  
+  end;
+  
   AddToLog(fname + ' DSCh ' + f);
   dirtyIOTH := true;
 end;
@@ -1673,6 +1708,7 @@ begin
           Transaction.Commit;
           UpdateAllStates(S_CHANGED);
           ShowGSMData;
+          ShowPMData;
           dirtyGSM := false;
         end;
       end;
@@ -1798,6 +1834,8 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TTabForm.GridInOutGSMKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -1814,6 +1852,8 @@ begin
   end;
 
 end;
+
+// .............................................................................
 
 procedure TTabForm.GridInOutItemsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -1850,6 +1890,15 @@ begin
     end;
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.RealPMFooterDrawPanel(StatusBar: TStatusBar;
+  Panel: TStatusPanel; const Rect: TRect);
+begin
+  inherited;
+  AddToLog('GFD');
 end;
 
 // .............................................................................

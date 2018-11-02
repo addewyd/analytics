@@ -54,7 +54,7 @@ begin
   begin
 
     SQL.Text := 'update IOTANKSHOSES set' +
-                ' startcounter = :scnt, endcounter = :ecnt, state = ' + SS_CHANGED +
+                ' startcounter = :scnt, endcounter = :ecnt, /*volume=:ecnt-:scnt,*/ state = ' + SS_CHANGED +
                 ' where id = :id and state < ' + SS_CLOSED;
 
     with Params do
