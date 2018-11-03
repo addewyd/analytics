@@ -13387,4 +13387,10 @@ object DM: TDM
     Left = 128
     Top = 400
   end
+  object DriverLink: TFDPhysFBDriverLink
+    DriverID = 'FB'
+    VendorLib = 'C:\Program Files\Firebird\Firebird_2_5\WOW64\fbclient.dll'
+    Left = 400
+    Top = 56
+  end
 end

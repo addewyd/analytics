@@ -10,7 +10,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.UI.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
   FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
   Vcl.Forms,
-  ErrorUnit;
+  ErrorUnit, FireDAC.Phys.IBBase;
 
 {$I 'consts.inc'}
 
@@ -39,6 +39,7 @@ type
     QUpdUId: TFDQuery;
     QuUpdTran: TFDTransaction;
     AddTanksProc: TFDStoredProc;
+    DriverLink: TFDPhysFBDriverLink;
   private
     { Private declarations }
   public

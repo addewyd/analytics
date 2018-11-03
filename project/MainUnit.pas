@@ -158,6 +158,7 @@ var
   MainForm: TMainForm;
   Exepath: String;
   dbname: string;
+  clientdll: String;
   host: String;
   HTTPServiceOn: Boolean;
   CurrentFile: String;
@@ -652,7 +653,7 @@ begin
         Add('server=' + host);
       Add('CharacterSet=UTF8');
       // Add('lc_ctype=UTF8');
-
+      DM.DriverLink.VendorLib := clientdll;
     end;
 
     DM.FDConnection.Open;
@@ -780,6 +781,7 @@ begin
   reg := TRegIniFile.Create(SubKey);
   try
     db := reg.ReadString('options', 'db', '\db\');
+    clientdll := reg.ReadString('options', 'clientdll', 'fbclient.dll');
     host := reg.ReadString('options', 'host', 'localhost'{,'94.181.67.31'});
     embed := reg.ReadBool('options', 'embedded', false);
     HTTPServiceOn := reg.ReadBool('options', 'httpservice', true);
@@ -903,6 +905,7 @@ begin
       od := TOptionsDialog.Create(self);
 
       dbloc := reg.ReadString('options', 'db', '\db\');
+      clientdll := reg.ReadString('options', 'clientdll', 'fbclient.dll');
       host := reg.ReadString('options', 'host', 'localhost');
       embed := reg.ReadBool('options', 'embedded', false);
       db_pass := reg.ReadString('options', 'dbpass', 'masterkey');
@@ -930,7 +933,7 @@ begin
       od.HostEdit.Text := host;
       od.JvCheckBox1.Checked := embed;
       od.HTTPCheckBox.Checked :=  HTTPServiceOn;
-
+      od.DllEdit.Text := clientdll;
       od.IPAMemo.Enabled :=  HTTPServiceOn;
 
       od.UserNameText.Caption := user_login + ' options:';
@@ -943,6 +946,7 @@ begin
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
+        clientdll := od.dlledit.Text;
         dbname := dbloc;
         host := od.HostEdit.Text;
         embed := od.JvCheckBox1.Checked;
@@ -958,6 +962,7 @@ begin
         end;
 
         reg.WriteString('options', 'db', dbloc);
+        reg.WriteString('options', 'clientdll', clientdll);
         if Trim(host) <> 'local' then
           reg.WriteString('options', 'host', host);
         reg.WriteBool('options', 'embedded', embed);
@@ -988,6 +993,9 @@ begin
 
         if DM.FDConnection.connected then
           DM.AddLogMsg(user_id, 'Options saved');
+
+        DM.DriverLink.VendorLib := clientdll;
+
       end;
     finally
       reg.Free;

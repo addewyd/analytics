@@ -4,8 +4,8 @@ object OptionsDialog: TOptionsDialog
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 484
-  ClientWidth = 440
+  ClientHeight = 536
+  ClientWidth = 436
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,39 +16,46 @@ object OptionsDialog: TOptionsDialog
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  DesignSize = (
+    436
+    536)
   PixelsPerInch = 96
   TextHeight = 13
   object OkButton: TButton
     Left = 248
-    Top = 451
+    Top = 496
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = 'OK'
     ModalResult = 1
     TabOrder = 0
+    ExplicitTop = 451
   end
   object CancelButton: TButton
     Left = 349
-    Top = 451
+    Top = 496
     Width = 71
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 1
+    ExplicitTop = 451
   end
   object JvPanel1: TJvPanel
     Left = 8
     Top = 7
     Width = 412
-    Height = 94
+    Height = 130
     BevelEdges = []
     BevelOuter = bvNone
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 2
     object DBLocEdit: TJvEdit
-      Left = 89
+      Left = 90
       Top = 17
       Width = 301
       Height = 21
@@ -57,7 +64,7 @@ object OptionsDialog: TOptionsDialog
     end
     object JvStaticText2: TJvStaticText
       Left = 6
-      Top = 48
+      Top = 49
       Width = 26
       Height = 17
       Caption = 'Host'
@@ -99,8 +106,8 @@ object OptionsDialog: TOptionsDialog
       WordWrap = False
     end
     object JvStaticText4: TJvStaticText
-      Left = 24
-      Top = 70
+      Left = 26
+      Top = 102
       Width = 191
       Height = 17
       Caption = '('#1058#1088#1077#1073#1091#1077#1090#1089#1103' '#1087#1077#1088#1077#1079#1072#1087#1091#1089#1082' '#1087#1088#1080#1083#1086#1078#1077#1085#1080#1103')'
@@ -110,17 +117,39 @@ object OptionsDialog: TOptionsDialog
       TextMargins.Y = 0
       WordWrap = False
     end
+    object JvStaticText9: TJvStaticText
+      Left = 6
+      Top = 76
+      Width = 74
+      Height = 17
+      Caption = 'Client DLL (32)'
+      Layout = tlTop
+      TabOrder = 6
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
+    object DllEdit: TJvEdit
+      Left = 90
+      Top = 72
+      Width = 301
+      Height = 21
+      TabOrder = 7
+      Text = 'fbclient.dll'
+    end
   end
   object JvPanel2: TJvPanel
     Left = 8
-    Top = 107
+    Top = 152
     Width = 412
     Height = 112
+    Anchors = [akRight, akBottom]
     BevelEdges = []
     BevelOuter = bvNone
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 3
+    ExplicitTop = 107
     object HTTPCheckBox: TJvCheckBox
       Left = 6
       Top = 2
@@ -156,15 +185,17 @@ object OptionsDialog: TOptionsDialog
   end
   object JvPanel3: TJvPanel
     Left = 8
-    Top = 228
+    Top = 273
     Width = 412
     Height = 125
     Alignment = taRightJustify
+    Anchors = [akRight, akBottom]
     BevelEdges = []
     BevelOuter = bvNone
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 4
+    ExplicitTop = 228
     object UserNameText: TJvStaticText
       Left = 12
       Top = 8
@@ -236,15 +267,17 @@ object OptionsDialog: TOptionsDialog
   end
   object SePanel: TJvPanel
     Left = 8
-    Top = 371
+    Top = 416
     Width = 412
     Height = 74
+    Anchors = [akRight, akBottom]
     BevelEdges = []
     BevelOuter = bvNone
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 5
     Visible = False
+    ExplicitTop = 371
     object JvStaticText7: TJvStaticText
       Left = 8
       Top = 11

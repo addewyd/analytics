@@ -36,6 +36,8 @@ type
     dbuSEReDIT: TJvEdit;
     dbpASSeDIT: TJvEdit;
     ShowCSCB: TJvCheckBox;
+    JvStaticText9: TJvStaticText;
+    DllEdit: TJvEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
