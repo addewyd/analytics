@@ -12726,7 +12726,6 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
-    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd

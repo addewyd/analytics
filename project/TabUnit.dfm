@@ -3,6 +3,7 @@ inherited TabForm: TTabForm
   ClientHeight = 550
   ClientWidth = 735
   OnCloseQuery = FormCloseQuery
+  ExplicitLeft = 0
   ExplicitWidth = 751
   ExplicitHeight = 609
   PixelsPerInch = 96
@@ -62,7 +63,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -378,6 +379,9 @@ inherited TabForm: TTabForm
             item
               Alignment = taRightJustify
               FieldName = 'CALC'
+            end
+            item
+              FieldName = 'OUTCOME'
             end>
           DataSource = DSIOTH
           DBGrid = IOTHGrid
@@ -406,7 +410,7 @@ inherited TabForm: TTabForm
               FieldName = 'VOLUME'
             end
             item
-              FieldName = 'AMOUNT'
+              FieldName = 'AMOUNT0'
             end
             item
               FieldName = 'WHOLE'
@@ -417,6 +421,7 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
+          ExplicitTop = 453
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -526,7 +531,7 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
-              FieldName = 'AMOUNT'
+              FieldName = 'AMOUNT0'
               Title.Caption = #1057#1091#1084#1084#1072
               Visible = True
             end
@@ -13533,7 +13538,6 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
-    UpdateObject = InOutUPDSql
     SQL.Strings = (
       ''
       'select '
@@ -13548,14 +13552,13 @@ inherited TabForm: TTabForm
       '   i.ei,'
       '   i.volume,'
       '   i.price,'
-      'i.density,'
-      'i.nds, -- '#1089#1090#1072#1074#1082#1072
-      '    round(amount * cast(nds as double precision) / '
+      '   i.density,'
+      '   i.nds, -- '#1089#1090#1072#1074#1082#1072
+      '    round(price*volume * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
-      '    amount as whole,'
-      
-        '    round(amount - amount * cast(nds as double precision) / 118.' +
-        '0, 2) as amount'
+      '    (price*volume) as whole,'
+      '    round(price*volume - price*volume * '
+      'cast(nds as double precision) / 118.0, 2) as amount0'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -13607,6 +13610,14 @@ inherited TabForm: TTabForm
       ProviderFlags = []
       ReadOnly = True
     end
+    object QueryInOutCLIENTNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLIENTNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
     object QueryInOutCONTRACT: TWideStringField
       AutoGenerateValue = arDefault
       FieldName = 'CONTRACT'
@@ -13631,14 +13642,6 @@ inherited TabForm: TTabForm
       ReadOnly = True
       Size = 100
     end
-    object QueryInOutCLIENTNAME: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CLIENTNAME'
-      Origin = 'NAME'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 100
-    end
     object QueryInOutFUELCODE: TWideStringField
       AutoGenerateValue = arDefault
       FieldName = 'FUELCODE'
@@ -13646,11 +13649,6 @@ inherited TabForm: TTabForm
       ProviderFlags = []
       ReadOnly = True
       Size = 16
-    end
-    object QueryInOutAMOUNT: TFloatField
-      FieldName = 'AMOUNT'
-      Origin = 'AMOUNT'
-      Required = True
     end
     object QueryInOutEI: TWideStringField
       FieldName = 'EI'
@@ -13678,17 +13676,22 @@ inherited TabForm: TTabForm
       Required = True
       Size = 10
     end
-    object QueryInOutWHOLE: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'WHOLE'
-      Origin = 'WHOLE'
-      ProviderFlags = []
-      ReadOnly = True
-    end
     object QueryInOutSUMNDS: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'SUMNDS'
       Origin = 'SUMNDS'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutWHOLE: TFloatField
+      FieldName = 'WHOLE'
+      Origin = 'AMOUNT'
+      Required = True
+    end
+    object QueryInOutAMOUNT0: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'AMOUNT0'
+      Origin = 'AMOUNT0'
       ProviderFlags = []
       ReadOnly = True
     end
@@ -14089,7 +14092,7 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'select sum(calc) as calc'
+      'select sum(calc) as calc, sum(outcome) as OUTCOME'
       'from'
       '('
       'select'
@@ -14155,8 +14158,8 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
       
-        'select sum(volume) as volume,sum(amount) as amount, sum(sumnds) ' +
-        'as sumnds, sum(whole) as whole'
+        'select sum(volume) as volume,sum(amount0) as amount0, sum(sumnds' +
+        ') as sumnds, sum(whole) as whole'
       'from ('
       ''
       'select '
@@ -14173,12 +14176,11 @@ inherited TabForm: TTabForm
       '   i.price,'
       'i.density,'
       'i.nds, -- '#1089#1090#1072#1074#1082#1072
-      '    round(amount * cast(nds as double precision) / '
+      '    round(price*volume * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
-      '    amount as whole,'
-      
-        '    round(amount - amount * cast(nds as double precision) / 118.' +
-        '0, 2) as amount'
+      '        (price*volume) as whole,'
+      '    round(price*volume - price*volume * '
+      'cast(nds as double precision) / 118.0, 2) as amount0'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -14216,10 +14218,10 @@ inherited TabForm: TTabForm
       ProviderFlags = []
       ReadOnly = True
     end
-    object QueryInOutSumAMOUNT: TFloatField
+    object QueryInOutSumAMOUNT0: TFloatField
       AutoGenerateValue = arDefault
-      FieldName = 'AMOUNT'
-      Origin = 'AMOUNT'
+      FieldName = 'AMOUNT0'
+      Origin = 'AMOUNT0'
       ProviderFlags = []
       ReadOnly = True
     end
@@ -14524,7 +14526,7 @@ inherited TabForm: TTabForm
       'FROM INOUTGSM'
       'WHERE ID = :ID')
     Left = 588
-    Top = 189
+    Top = 197
   end
   object GenQuery: TFDQuery
     Connection = DM.FDConnection

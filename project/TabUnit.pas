@@ -87,27 +87,7 @@ type
     QueryInOutItemsSUMM: TFloatField;
     QueryInOutItemsWHOLE: TFloatField;
     QIOIUpdateSQL: TFDUpdateSQL;
-    QueryInOutID: TIntegerField;
-    QueryInOutDIR: TWideStringField;
-    QueryInOutSDATE: TDateField;
-    QueryInOutCLIENTNAME: TWideStringField;
-    QueryInOutCONTRACT: TWideStringField;
-    QueryInOutPAYMENTMODE: TWideStringField;
-    QueryInOutFUELNAME: TWideStringField;
-    QueryInOutFUELCODE: TWideStringField;
-    QueryInOutAMOUNT: TFloatField;
-    QueryInOutEI: TWideStringField;
-    QueryInOutVOLUME: TFloatField;
-    QueryInOutPRICE: TFloatField;
-    QueryInOutDENSITY: TFloatField;
-    QueryInOutNDS: TWideStringField;
-    QueryInOutWHOLE: TFloatField;
     InOutUPDSql: TFDUpdateSQL;
-    QueryInOutSUMNDS: TFloatField;
-    QueryInOutSumVOLUME: TFloatField;
-    QueryInOutSumAMOUNT: TFloatField;
-    QueryInOutSumSUMNDS: TFloatField;
-    QueryInOutSumWHOLE: TFloatField;
     QueryInOutItemsSUMNDS: TFloatField;
     CloseSessAction: TAction;
     ToolButton4: TToolButton;
@@ -141,6 +121,26 @@ type
     QueryIOTHWARECODE: TWideStringField;
     QueryIOTHFACT: TFloatField;
     QueryIOTHOUTCOME: TFloatField;
+    QueryInOutID: TIntegerField;
+    QueryInOutDIR: TWideStringField;
+    QueryInOutSDATE: TDateField;
+    QueryInOutCLIENTNAME: TWideStringField;
+    QueryInOutCONTRACT: TWideStringField;
+    QueryInOutPAYMENTMODE: TWideStringField;
+    QueryInOutFUELNAME: TWideStringField;
+    QueryInOutFUELCODE: TWideStringField;
+    QueryInOutEI: TWideStringField;
+    QueryInOutVOLUME: TFloatField;
+    QueryInOutPRICE: TFloatField;
+    QueryInOutDENSITY: TFloatField;
+    QueryInOutNDS: TWideStringField;
+    QueryInOutSUMNDS: TFloatField;
+    QueryInOutWHOLE: TFloatField;
+    QueryInOutAMOUNT0: TFloatField;
+    QueryInOutSumVOLUME: TFloatField;
+    QueryInOutSumAMOUNT0: TFloatField;
+    QueryInOutSumSUMNDS: TFloatField;
+    QueryInOutSumWHOLE: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -204,6 +204,7 @@ type
     dirtyItem: Boolean;
     warelist: TStringList;
     sessionnum: Integer;
+    volumesum_ioth, volumesum_pm, amountsum_io, amountsum_pm: Extended;
     procedure LoadWareList;
     function PrevClosed(sid: Integer): boolean;
     function GenPMSql(var sumsql: string): String;
@@ -263,10 +264,34 @@ end;
 procedure TTabForm.DSInOutFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
+  v, m, d: Extended;
 begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
+
+  if fname = 'PRICE' then 
+  begin
+    v := QueryInOut.FieldByName('VOLUME').AsExtended;
+    d := Field.AsExtended;
+
+    m :=  d * v / 1000.0;
+
+    QueryInOut.FieldByName('WHOLE').AsExtended := m;
+  
+  end;
+
+  if fname = 'VOLUME' then 
+  begin
+    v := QueryInOut.FieldByName('PRICE').AsExtended;
+    d := Field.AsExtended;
+
+    m :=  d * v / 1000.0;
+
+    QueryInOut.FieldByName('WHOLE').AsExtended := m;
+  
+  end;
+  
   AddToLog(fname + ' DSCh ' + f);
   dirtyGSM := true;
 
@@ -305,6 +330,16 @@ begin
 
     QueryIOTH.FieldByName('MASS').AsExtended := m;
   
+  end;
+  if (fname = 'STCNT') or (fname = 'ECNT') then 
+  begin
+    v := QueryIOTH.FieldByName('STCNT').AsExtended;
+    d := QueryIOTH.FieldByName('ECNT').AsExtended;
+
+    m :=  v - d;
+
+//    QueryIOTH.FieldByName('OUTCOME').AsExtended := m;
+//  IOTHFooter.ReCalc;
   end;
   
   AddToLog(fname + ' DSCh ' + f);
@@ -725,14 +760,14 @@ var
 begin
   result := '';
 
-  sumth := 'select sum(volume) as volume, ';
+  sumth := 'select sum(volume) as volume, sum(amount) as amount, ';
 
   th := 'select' + '    i.session_id,' +
     '    cast(s.startdatetime as date) as stdt,' + '    i.payment_code,' +
     '    p.name as pmode,' +
 
     '    sum(i.volume) as volume,' +
-    '    sum(i.amount) as amount,'
+    '    sum(i.price*i.volume) as amount,'
     ;
 
   len := warelist.Count;
@@ -749,7 +784,7 @@ begin
       + '    where i1.session_id=:session_id and i1.ware_code='#$27 + warelist.Names[i] + #$27') '
       + ' as price_' + st + ',';
       
-    tmp := 'coalesce((select sum(i1.amount) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+    tmp := 'coalesce((select sum(i1.price*i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
@@ -1364,6 +1399,8 @@ begin
   begin
     if Active then
       Close;
+    if QueryIOTHSum.Active then QueryIOTHSum.Close;
+    
     with Params do
     begin
       Clear;
@@ -1390,6 +1427,7 @@ begin
       Open;
       QueryIOTHSum.Prepare;
       QueryIOTHSum.Open;
+      IOTHFooter.ReCalc;
       // Transaction.Commit;
     except
       on e: Exception do
@@ -1693,6 +1731,8 @@ begin
           Transaction.Commit;
           UpdateAllStates(S_CHANGED);
           dirtyIOTH := false;
+          dirtyPM := true;
+          IOTHFooter.ReCalc;
           ShowIOTHData;
         end;
       end;
@@ -1826,6 +1866,8 @@ begin
     if Active and (not eof) then
     begin
       CalcValue := FieldByName(f).AsExtended;
+      if f = 'WHOLE' then amountsum_io := calcvalue;
+      
     end;
   end;
 end;
@@ -1902,6 +1944,8 @@ begin
     if Active and (not eof) then
     begin
       CalcValue := FieldByName(f).AsExtended;
+      if f = 'VOLUME' then volumesum_pm := CalcValue;
+
     end;
   end;
 
@@ -1972,7 +2016,7 @@ procedure TTabForm.RealPMFooterDrawPanel(StatusBar: TStatusBar;
     gcls : TDBGridColumns;
     pind: Integer;
     fldn, txt, st : String;
-    price, vol: Extended;
+    price, vol, priceall: Extended;
     c: integer;
 begin
   // inherited;
@@ -1987,6 +2031,8 @@ begin
   pind := Panel.Index;
 
   fldn := gcls.items[pind - 1].FieldName;
+  priceall := QueryRealPmSum.FieldByName('amount').AsExtended;
+  amountsum_pm := priceall;
 
   st := '';
   for c := 0 to cls.Count -1 do
@@ -1994,6 +2040,10 @@ begin
     if AnsiSameText(cls.Items[c].FieldName, fldn) then
     begin
       StatusBar.Canvas.Font.Color := clGreen;
+      if (abs(volumesum_pm - volumesum_ioth) > 0.001) then
+      begin
+         StatusBar.Canvas.Font.Color := clRed;  
+      end;
 
       txt := QueryRealPmSum.FieldByName(fldn).AsString;
       StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
@@ -2002,13 +2052,29 @@ begin
       begin
         st := Copy(fldn, 8, 1);
       
+      end else st := '';
+      
+      StatusBar.Canvas.Font.Color := clBlue;
+      if (abs(volumesum_pm - volumesum_ioth) > 0.001) then
+      begin
+         StatusBar.Canvas.Font.Color := clRed;  
       end;
 
+      if (abs(amountsum_pm - amountsum_io) > 0.001) then
+      begin
+         StatusBar.Canvas.Font.Color := $006069;
+      end;
+      
       if st <> '' then
       begin
         price := QueryRealPm.FieldByName('price_' + st).AsExtended;      
-        StatusBar.Canvas.Font.Color := clRed;
+
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [price * vol]));
+      end
+      else
+      begin
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [priceall]));
+        
       end;
     
     end;
@@ -2153,6 +2219,8 @@ begin
     if Active and (not eof) then
     begin
       CalcValue := FieldByName(f).AsExtended;
+      if f = 'OUTCOME' then volumesum_ioth := CalcValue;
+      
     end;
   end;
 end;
