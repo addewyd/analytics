@@ -78,10 +78,10 @@ inherited TabForm: TTabForm
           Left = 1
           Top = 204
           Width = 725
-          Height = 4
+          Height = 7
           Cursor = crVSplit
           Align = alTop
-          ExplicitTop = 157
+          Beveled = True
         end
         object RealPMFooter: TJvDBGridFooter
           Left = 1
@@ -99,9 +99,9 @@ inherited TabForm: TTabForm
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
-          Top = 208
+          Top = 211
           Width = 725
-          Height = 227
+          Height = 224
           Align = alClient
           DataSource = DSRealPM
           DefaultDrawing = False
@@ -774,20 +774,20 @@ inherited TabForm: TTabForm
     end
   end
   inherited JvAppRS: TJvAppRegistryStorage
-    Left = 96
-    Top = 360
+    Left = 496
+    Top = 424
   end
   inherited JvFS: TJvFormStorage
     StoredProps.Strings = (
       'IOTHGrid.Height'
       'Spl01.top'
       'RealPMGrid.RowsHeight')
-    Left = 56
-    Top = 360
+    Left = 576
+    Top = 424
   end
   inherited ActionList: TActionList
-    Left = 256
-    Top = 360
+    Left = 408
+    Top = 424
     object CommitAction: TAction
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' (F2)'
       Hint = 'Commit'
@@ -821,8 +821,8 @@ inherited TabForm: TTabForm
     end
   end
   inherited MainMenu: TMainMenu
-    Left = 200
-    Top = 360
+    Left = 328
+    Top = 424
     inherited File1: TMenuItem
       Caption = 'Tabs'
       object N3: TMenuItem
@@ -13520,8 +13520,8 @@ inherited TabForm: TTabForm
   object DSInOut: TJvDataSource
     DataSet = QueryInOut
     OnFieldChanged = DSInOutFieldChanged
-    Left = 348
-    Top = 141
+    Left = 300
+    Top = 197
   end
   object QueryInOut: TFDQuery
     Connection = DM.FDConnection
@@ -13571,8 +13571,8 @@ inherited TabForm: TTabForm
       '      and i.azscode=:azscode'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname')
-    Left = 428
-    Top = 149
+    Left = 364
+    Top = 197
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -13696,8 +13696,8 @@ inherited TabForm: TTabForm
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH
     OnFieldChanged = DSIOTHFieldChanged
-    Left = 276
-    Top = 69
+    Left = 164
+    Top = 93
   end
   object QueryIOTH: TFDQuery
     BeforeInsert = QueryIOTHBeforeInsert
@@ -13736,7 +13736,10 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      '    round(endcounter - startcounter, 3) as outcome '
+      '    round(endcounter - startcounter '
+      '       - (select volume '
+      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39')), 3)'
+      '        as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -13745,7 +13748,7 @@ inherited TabForm: TTabForm
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
-    Left = 412
+    Left = 212
     Top = 93
     ParamData = <
       item
@@ -13755,9 +13758,7 @@ inherited TabForm: TTabForm
       end
       item
         Name = 'AZSCODE'
-        DataType = ftWideString
         ParamType = ptInput
-        Size = 10
       end>
     object QueryIOTHID: TIntegerField
       FieldName = 'ID'
@@ -13888,8 +13889,8 @@ inherited TabForm: TTabForm
   object DSRealPM: TJvDataSource
     DataSet = QueryRealPM
     OnFieldChanged = DSRealPMFieldChanged
-    Left = 436
-    Top = 253
+    Left = 164
+    Top = 149
   end
   object QueryRealPM: TFDQuery
     Connection = DM.FDConnection
@@ -13943,8 +13944,8 @@ inherited TabForm: TTabForm
       '   and  i.direction = 0'
       'group by session_id,stdt,payment_code, pmode'
       'order by stdt')
-    Left = 516
-    Top = 253
+    Left = 220
+    Top = 149
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -13972,8 +13973,8 @@ inherited TabForm: TTabForm
       '  order by startdatetime desc'
       '  )'
       '  order by startdatetime asc')
-    Left = 60
-    Top = 429
+    Left = 28
+    Top = 397
     ParamData = <
       item
         Name = 'CNT'
@@ -13987,22 +13988,23 @@ inherited TabForm: TTabForm
   object TransInOut: TFDTransaction
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 492
-    Top = 149
+    Left = 508
+    Top = 189
   end
   object TransIOTH: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 476
+    AfterCommit = TransIOTHAfterCommit
+    Left = 276
     Top = 93
   end
   object TransPM: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 596
-    Top = 253
+    Left = 276
+    Top = 149
   end
   object QueryWL: TFDQuery
     Connection = DM.FDConnection
@@ -14011,12 +14013,12 @@ inherited TabForm: TTabForm
     ResourceOptions.AssignedValues = [rvMacroExpand]
     SQL.Strings = (
       'select * from wares order by code')
-    Left = 132
-    Top = 429
+    Left = 116
+    Top = 405
   end
   object StartVPMenu: TPopupMenu
-    Left = 172
-    Top = 101
+    Left = 28
+    Top = 181
     object SetPrevSessionData1: TMenuItem
       Caption = 'Set Prev Session Data'
       OnClick = SetPrevSessionData1Click
@@ -14026,34 +14028,34 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Transaction = GenUpdTrans
     UpdateTransaction = GenUpdTransUPD
-    Left = 84
-    Top = 229
+    Left = 36
+    Top = 269
   end
   object GenUpdTrans: TFDTransaction
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 164
-    Top = 229
+    Left = 116
+    Top = 277
   end
   object GenUpdTransUPD: TFDTransaction
     Options.Isolation = xiSnapshot
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 252
-    Top = 229
+    Left = 188
+    Top = 277
   end
   object QueryRealPmSum: TFDQuery
     Connection = DM.FDConnection
     Transaction = TransPM
     UpdateTransaction = TransPM
-    Left = 508
-    Top = 317
+    Left = 340
+    Top = 149
   end
   object SCNTPMenu: TPopupMenu
-    Left = 100
-    Top = 101
+    Left = 28
+    Top = 141
     object SCNT1: TMenuItem
       Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1089' '#1087#1088#1077#1076#1099#1076#1091#1097#1077#1081' '#1089#1084#1077#1085#1099
       OnClick = SCNT1Click
@@ -14064,7 +14066,7 @@ inherited TabForm: TTabForm
     Transaction = GenUpdTrans
     UpdateTransaction = GenUpdTransUPD
     StoredProcName = 'RESTOREIOTHREC'
-    Left = 556
+    Left = 340
     Top = 93
   end
   object TransINOutUpd: TFDTransaction
@@ -14115,7 +14117,10 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      '    round(endcounter - startcounter, 3) as outcome '
+      '    round(endcounter - startcounter '
+      '       - (select volume '
+      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39')), 3)'
+      '        as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
       '      join wares w on w.code = i.warecode'
@@ -14125,8 +14130,8 @@ inherited TabForm: TTabForm
       '   and i.azscode=:azscode'
       ''
       ')')
-    Left = 636
-    Top = 101
+    Left = 420
+    Top = 93
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -14135,9 +14140,7 @@ inherited TabForm: TTabForm
       end
       item
         Name = 'AZSCODE'
-        DataType = ftWideString
         ParamType = ptInput
-        Size = 10
       end>
   end
   object QueryInOutSum: TFDQuery
@@ -14192,7 +14195,7 @@ inherited TabForm: TTabForm
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname'
       ')')
-    Left = 428
+    Left = 436
     Top = 197
     ParamData = <
       item
@@ -14285,8 +14288,8 @@ inherited TabForm: TTabForm
       '      and i.azscode=:azscode'
       ''
       '   order by s.startdatetime, i.direction,paymentmode,clientname')
-    Left = 404
-    Top = 413
+    Left = 396
+    Top = 277
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -14410,15 +14413,14 @@ inherited TabForm: TTabForm
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    AfterCommit = TransInOutItemsAfterCommit
-    Left = 500
-    Top = 413
+    Left = 476
+    Top = 277
   end
   object DSInOutItems: TJvDataSource
     DataSet = QueryInOutItems
     OnFieldChanged = DSInOutItemsFieldChanged
-    Left = 308
-    Top = 421
+    Left = 332
+    Top = 277
   end
   object QueryInOutItemsSum: TFDQuery
     Connection = DM.FDConnection
@@ -14470,8 +14472,8 @@ inherited TabForm: TTabForm
       '      and direction = 0'
       ''
       ')')
-    Left = 636
-    Top = 413
+    Left = 548
+    Top = 277
     ParamData = <
       item
         Name = 'SESSION_ID'
@@ -14502,8 +14504,8 @@ inherited TabForm: TTabForm
       '  LASTUSER_ID, UPDATED_AT, STATE, AZSCODE'
       'FROM INOUTITEMS'
       'WHERE ID = :ID')
-    Left = 404
-    Top = 469
+    Left = 620
+    Top = 277
   end
   object InOutUPDSql: TFDUpdateSQL
     Connection = DM.FDConnection
@@ -14521,18 +14523,18 @@ inherited TabForm: TTabForm
       '  WHOLE, LASTUSER_ID, UPDATED_AT, STATE, AZSCODE, TANKNUM'
       'FROM INOUTGSM'
       'WHERE ID = :ID')
-    Left = 556
-    Top = 181
+    Left = 588
+    Top = 189
   end
   object GenQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = GenTrans
-    Left = 68
-    Top = 301
+    Left = 28
+    Top = 333
   end
   object GenTrans: TFDTransaction
     Connection = DM.FDConnection
-    Left = 148
-    Top = 301
+    Left = 116
+    Top = 333
   end
 end

@@ -180,7 +180,6 @@ type
     procedure DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
     procedure GridFooterInOutItemsCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
-    procedure TransInOutItemsAfterCommit(Sender: TObject);
     procedure CloseSessActionExecute(Sender: TObject);
     procedure ClearCloseActionExecute(Sender: TObject);
     procedure VerifiedActionExecute(Sender: TObject);
@@ -196,6 +195,7 @@ type
       const Rect: TRect);
     procedure RealPMFooterDisplayText(Sender: TJvDBGridFooter;
       Column: TFooterColumn; const Value: Variant; var Text: string);
+    procedure TransIOTHAfterCommit(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -1329,7 +1329,7 @@ end;
 
 // .............................................................................`
 
-procedure TTabForm.TransInOutItemsAfterCommit(Sender: TObject);
+procedure TTabForm.TransIOTHAfterCommit(Sender: TObject);
 begin
   inherited;
 
