@@ -38,6 +38,8 @@ type
     ShowCSCB: TJvCheckBox;
     JvStaticText9: TJvStaticText;
     DllEdit: TJvEdit;
+    PortEdit: TJvEdit;
+    JvStaticText10: TJvStaticText;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvCheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);

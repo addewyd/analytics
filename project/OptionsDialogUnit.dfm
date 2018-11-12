@@ -137,6 +137,26 @@ object OptionsDialog: TOptionsDialog
       TabOrder = 7
       Text = 'fbclient.dll'
     end
+    object PortEdit: TJvEdit
+      Left = 332
+      Top = 45
+      Width = 59
+      Height = 21
+      TabOrder = 8
+      Text = '3050'
+    end
+    object JvStaticText10: TJvStaticText
+      Left = 296
+      Top = 48
+      Width = 29
+      Height = 17
+      Caption = #1055#1086#1088#1090
+      Layout = tlTop
+      TabOrder = 9
+      TextMargins.X = 0
+      TextMargins.Y = 0
+      WordWrap = False
+    end
   end
   object JvPanel2: TJvPanel
     Left = 8

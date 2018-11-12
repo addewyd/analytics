@@ -173,6 +173,7 @@ var
   user_fio: String;
   current_azscode: String;
   db_pass, db_user: String;
+  dbport: Integer;
   last_sessions_count: Integer;
 const
   last_sessions_count_def: Integer = 14;
@@ -647,6 +648,7 @@ begin
       Add('User_Name=' + db_user);
       Add('Password=' + db_pass);
       Add('SQLDialect=3');
+      Add(format('port=%d', [dbport]));
       if embed then
         Add('Server=')
       else
@@ -781,6 +783,7 @@ begin
   reg := TRegIniFile.Create(SubKey);
   try
     db := reg.ReadString('options', 'db', '\db\');
+    dbport := StrToIntDef(reg.ReadString('options', 'dbport', '3050'), 3050);
     clientdll := reg.ReadString('options', 'clientdll', 'fbclient.dll');
     host := reg.ReadString('options', 'host', 'localhost'{,'94.181.67.31'});
     embed := reg.ReadBool('options', 'embedded', false);
@@ -905,6 +908,7 @@ begin
       od := TOptionsDialog.Create(self);
 
       dbloc := reg.ReadString('options', 'db', '\db\');
+      dbport := StrToIntDef(reg.ReadString('options', 'dbport', '3050'), 3050);
       clientdll := reg.ReadString('options', 'clientdll', 'fbclient.dll');
       host := reg.ReadString('options', 'host', 'localhost');
       embed := reg.ReadBool('options', 'embedded', false);
@@ -946,6 +950,7 @@ begin
       if od.ShowModal = mrOK then
       begin
         dbloc := od.DBLocEdit.Text;
+        dbport := StrToIntDef(od.PortEdit.Text, 3050);
         clientdll := od.dlledit.Text;
         dbname := dbloc;
         host := od.HostEdit.Text;
@@ -962,6 +967,7 @@ begin
         end;
 
         reg.WriteString('options', 'db', dbloc);
+        reg.WriteString('options', 'dbport', IntToStr(dbport));
         reg.WriteString('options', 'clientdll', clientdll);
         if Trim(host) <> 'local' then
           reg.WriteString('options', 'host', host);
