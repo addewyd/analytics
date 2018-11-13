@@ -141,6 +141,8 @@ type
     QueryInOutSumAMOUNT0: TFloatField;
     QueryInOutSumSUMNDS: TFloatField;
     QueryInOutSumWHOLE: TFloatField;
+    QueryInOutMASS: TFloatField;
+    QueryInOutSumMASS: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -270,6 +272,8 @@ begin
   fname := Field.FieldName;
   f := Field.AsString;
 
+
+  // ??
   if fname = 'PRICE' then 
   begin
     v := QueryInOut.FieldByName('VOLUME').AsExtended;
@@ -289,6 +293,29 @@ begin
     m :=  d * v / 1000.0;
 
     QueryInOut.FieldByName('WHOLE').AsExtended := m;
+  
+  end;
+
+  // ??
+  if fname = 'DENSITY' then 
+  begin
+    v := QueryInOut.FieldByName('VOLUME').AsExtended;
+    d := Field.AsExtended;
+
+    m :=  d * v / 1000.0;
+
+    QueryInOut.FieldByName('MASS').AsExtended := m;
+  
+  end;
+
+  if fname = 'VOLUME' then 
+  begin
+    v := QueryInOut.FieldByName('DENSITY').AsExtended;
+    d := Field.AsExtended;
+
+    m :=  d * v / 1000.0;
+
+    QueryInOut.FieldByName('MASS').AsExtended := m;
   
   end;
   

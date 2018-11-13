@@ -96,7 +96,6 @@ inherited TabForm: TTabForm
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
           OnDisplayText = RealPMFooterDisplayText
-          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -410,6 +409,9 @@ inherited TabForm: TTabForm
               FieldName = 'VOLUME'
             end
             item
+              FieldName = 'MASS'
+            end
+            item
               FieldName = 'AMOUNT0'
             end
             item
@@ -421,7 +423,7 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
-          ExplicitTop = 453
+          ExplicitTop = 460
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -527,6 +529,12 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'DENSITY'
               Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'MASS'
+              Title.Caption = #1052#1072#1089#1089#1072
               Visible = True
             end
             item
@@ -770,7 +778,6 @@ inherited TabForm: TTabForm
         DataSource = DSInOutItems
         DBGrid = GridInOutItems
         OnCalculate = GridFooterInOutItemsCalculate
-        ExplicitTop = 453
       end
     end
     object TabSheet4: TTabSheet
@@ -13553,6 +13560,7 @@ inherited TabForm: TTabForm
       '   i.volume,'
       '   i.price,'
       '   i.density,'
+      '   round(volume * density / 1000,3) as mass,'
       '   i.nds, -- '#1089#1090#1072#1074#1082#1072
       '    round(price*volume * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
@@ -13694,6 +13702,12 @@ inherited TabForm: TTabForm
       Origin = 'AMOUNT0'
       ProviderFlags = []
       ReadOnly = True
+    end
+    object QueryInOutMASS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MASS'
+      Origin = 'MASS'
+      ProviderFlags = []
     end
   end
   object DSIOTH: TJvDataSource
@@ -14159,7 +14173,7 @@ inherited TabForm: TTabForm
     SQL.Strings = (
       
         'select sum(volume) as volume,sum(amount0) as amount0, sum(sumnds' +
-        ') as sumnds, sum(whole) as whole'
+        ') as sumnds, sum(whole) as whole, sum(mass) as mass'
       'from ('
       ''
       'select '
@@ -14175,6 +14189,7 @@ inherited TabForm: TTabForm
       '   i.volume,'
       '   i.price,'
       'i.density,'
+      '   round(volume * density / 1000,3) as mass,'
       'i.nds, -- '#1089#1090#1072#1074#1082#1072
       '    round(price*volume * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
@@ -14236,6 +14251,13 @@ inherited TabForm: TTabForm
       AutoGenerateValue = arDefault
       FieldName = 'WHOLE'
       Origin = 'WHOLE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutSumMASS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MASS'
+      Origin = 'MASS'
       ProviderFlags = []
       ReadOnly = True
     end

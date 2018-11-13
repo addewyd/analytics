@@ -12805,7 +12805,7 @@ object DM: TDM
       '    sum(amount) as amount,'
       '    '#39't'#39' as ei,'
       '    sum(volume) as volume,'
-      '    0 as density,  /*  !!! */'
+      '    density as density,  /*  !!! */'
       '    price,'
       '    sum(price * volume) as summ,'
       '    nds as nds,'
