@@ -63,7 +63,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet4
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
     ExplicitTop = 23
@@ -595,11 +595,6 @@ inherited TabForm: TTabForm
         Columns = <
           item
             Expanded = False
-            FieldName = 'DIR'
-            Visible = False
-          end
-          item
-            Expanded = False
             FieldName = 'SDATE'
             Title.Caption = #1044#1072#1090#1072
             Title.Font.Charset = DEFAULT_CHARSET
@@ -834,11 +829,6 @@ inherited TabForm: TTabForm
         RowsHeight = 17
         TitleRowHeight = 17
         Columns = <
-          item
-            Expanded = False
-            FieldName = 'DIR'
-            Visible = False
-          end
           item
             Expanded = False
             FieldName = 'SDATE'
