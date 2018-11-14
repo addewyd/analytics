@@ -175,6 +175,8 @@ var
   db_pass, db_user: String;
   dbport: Integer;
   last_sessions_count: Integer;
+  move_orders: boolean; // from opts
+
 const
   last_sessions_count_def: Integer = 14;
   azscode_def: string = '';
@@ -566,6 +568,10 @@ begin
 
           ExecSQL('delete from itemrests');
           AddToLog('deleted from itemrests');
+
+          ExecSQL('delete from wareprices');
+          AddToLog('deleted from wareprices');
+
 
           ExecSQL('delete from wares');
           AddToLog('deleted from wares');

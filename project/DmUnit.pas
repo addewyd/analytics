@@ -40,6 +40,7 @@ type
     QuUpdTran: TFDTransaction;
     AddTanksProc: TFDStoredProc;
     DriverLink: TFDPhysFBDriverLink;
+    FDQueryWP: TFDQuery;
   private
     { Private declarations }
   public

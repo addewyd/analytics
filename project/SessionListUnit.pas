@@ -289,6 +289,7 @@ begin
                      TDB_ITEMS // bill_id to  TRADEDOCSINBILL
                      TECHRETURN
                      TRADEDOCSINBILL
+                     WAREPRICES
 
                      SESSIONS  // id
 
@@ -360,6 +361,9 @@ begin
               Prepare;
               ExecSQL;
               sql.Text := 'delete from TECHRETURN where session_id = :id';
+              Prepare;
+              ExecSQL;
+              sql.Text := 'delete from WAREPRICES where session_id = :id';
               Prepare;
               ExecSQL;
 

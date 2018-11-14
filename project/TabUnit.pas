@@ -143,6 +143,28 @@ type
     QueryInOutSumWHOLE: TFloatField;
     QueryInOutMASS: TFloatField;
     QueryInOutSumMASS: TFloatField;
+    GridFooterOutItems: TJvDBGridFooter;
+    GridOutItems: TJvDBUltimGrid;
+    DSOutItems: TJvDataSource;
+    QueryOutItems: TFDQuery;
+    IntegerField1: TIntegerField;
+    WideStringField1: TWideStringField;
+    DateField1: TDateField;
+    WideStringField2: TWideStringField;
+    WideStringField3: TWideStringField;
+    WideStringField4: TWideStringField;
+    WideStringField5: TWideStringField;
+    WideStringField6: TWideStringField;
+    FloatField1: TFloatField;
+    WideStringField7: TWideStringField;
+    IntegerField2: TIntegerField;
+    FloatField2: TFloatField;
+    WideStringField8: TWideStringField;
+    FloatField3: TFloatField;
+    FloatField4: TFloatField;
+    FloatField5: TFloatField;
+    TransOutItems: TFDTransaction;
+    QueryOutItemsSum: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -198,12 +220,15 @@ type
     procedure RealPMFooterDisplayText(Sender: TJvDBGridFooter;
       Column: TFooterColumn; const Value: Variant; var Text: string);
     procedure TransIOTHAfterCommit(Sender: TObject);
+    procedure GridFooterOutItemsCalculate(Sender: TJvDBGridFooter;
+      const FieldName: string; var CalcValue: Variant);
   private
     { Private declarations }
     dirtyGSM: Boolean;
     dirtyIOTH: Boolean;
     dirtyPM: Boolean;
     dirtyItem: Boolean;
+    dirtyOItem: Boolean;
     warelist: TStringList;
     sessionnum: Integer;
     volumesum_ioth, volumesum_pm, amountsum_io, amountsum_pm: Extended;
@@ -235,6 +260,7 @@ type
 
     procedure ShowGSMData();
     procedure ShowItemsData();
+    procedure ShowOItemsData();
     procedure ShowIOTHData();
     procedure ShowPMData();
     procedure UpdateAllStates(_state: Integer);
@@ -273,13 +299,13 @@ begin
   f := Field.AsString;
 
 
-  // ??
+  // ??        PRICE must be read only!
   if fname = 'PRICE' then 
   begin
     v := QueryInOut.FieldByName('VOLUME').AsExtended;
     d := Field.AsExtended;
 
-    m :=  d * v / 1000.0;
+    m :=  d * v / 1000.0;      // ???
 
     QueryInOut.FieldByName('WHOLE').AsExtended := m;
   
@@ -325,7 +351,7 @@ begin
 end;
 
 // .............................................................................
-
+// the same for 2 queries 
 procedure TTabForm.DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
@@ -522,6 +548,7 @@ begin
       UpdateState(QueryInOut, _state);
       UpdateState(QueryIOTH, _state);
       UpdateState(QueryInOutItems, _state);
+      UpdateState(QueryOutItems, _state);
 
       session_state := _state;
 
@@ -798,6 +825,13 @@ begin
     ;
 
   len := warelist.Count;
+
+  // about prices:
+  {
+    select iif(price_o is null, price_r, price_o) from wareprices where session_id=:session_id
+      and ware_code = <warelist.Names[i]>
+  }
+  
   for i := 0 to len - 1 do
   begin
     st := IntToStr(i);
@@ -807,8 +841,9 @@ begin
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
 
-    tm := tm + '(select first 1 price from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
-      + '    where i1.session_id=:session_id and i1.ware_code='#$27 + warelist.Names[i] + #$27') '
+    tm := tm + '(select iif(price_o is null, price_r, price_o) ' +
+      'from wareprices where session_id=:session_id ' +
+      'and ware_code ='#$27 + warelist.Names[i] + #$27') '
       + ' as price_' + st + ',';
       
     tmp := 'coalesce((select sum(i1.price*i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
@@ -913,14 +948,7 @@ begin
     Exit;
   end;
 
-  AddToLog('SCNT');
-  // get ecnt value from previous session/ How?
-
-//  session_id
-//  current_azscode
-// tanknum & hosenum (int) := q.fieldbyname
-
-    sqlt := 'select i.id, i.session_id, startcounter, endcounter,' +
+  sqlt := 'select i.id, i.session_id, startcounter, endcounter,' +
       ' (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) as calc' +
       ' from iotankshoses i join sessions s on i.session_id = s.id' +
 
@@ -1131,6 +1159,7 @@ begin
   LoadWareList;
   ShowGSMData;
   ShowItemsData;
+  ShowOItemsData;
   ShowIOTHData;
   ShowPMData;
 
@@ -1240,6 +1269,62 @@ begin
       QueryInOutItemsSum.Prepare;
       QueryInOutItemsSum.Open;
       GridFooterInOutItems.ReCalc;
+      // Transaction.Commit;
+    except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+        // Transaction.Rollback;
+        // raise
+      end;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+// almost identical wirth prev
+procedure TTabForm.ShowOItemsData();
+begin
+
+  with QueryOutItems do
+  begin
+    if Active then
+      Close;
+    if QueryOutItemsSum.Active then
+      QueryOutItemsSum.Close;
+    if Transaction.Active then
+      Transaction.Commit;
+
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').AsInteger := session_id;
+    ParamByName('azscode').AsString := current_azscode;
+    QueryOutItemsSum.Params.Assign(Params);
+    QueryOutItemsSum.ParamByName('session_id').AsInteger := session_id;
+    QueryOutItemsSum.ParamByName('azscode').AsString := current_azscode;
+
+    Transaction.StartTransaction;
+    try
+      Prepare;
+      Open;
+      QueryOutItemsSum.Prepare;
+      QueryOutItemsSum.Open;
+      GridFooterOutItems.ReCalc;
       // Transaction.Commit;
     except
       on e: Exception do
@@ -1813,6 +1898,21 @@ begin
       end;
     end;
 
+    with QueryOutItems do
+    begin
+      if Transaction.Active then
+      begin
+        if dirtyOItem then
+        begin
+          Close;
+          Transaction.Commit;       
+          UpdateAllStates(S_CHANGED);
+          ShowOItemsData;
+          dirtyOItem := false;
+        end;
+      end;
+    end;
+    
   except
     on e: Exception do
     begin
@@ -1847,6 +1947,16 @@ begin
         ShowItemsData;
         dirtyItem := false;
 
+      end;
+
+    end;
+    with QueryOutItems do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+        ShowOItemsData;
+        dirtyOItem := false;
       end;
 
     end;
@@ -1920,6 +2030,26 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.GridFooterOutItemsCalculate(Sender: TJvDBGridFooter;
+  const FieldName: string; var CalcValue: Variant);
+var
+  f: String;
+begin
+  inherited;
+  f := FieldName;
+  CalcValue := f;
+  with QueryOutItemsSum do
+  begin
+    if Active and (not eof) then
+    begin
+      CalcValue := FieldByName(f).AsExtended;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
 procedure TTabForm.GridInOutGSMKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -1938,7 +2068,7 @@ begin
 end;
 
 // .............................................................................
-
+// the same for two grids
 procedure TTabForm.GridInOutItemsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -2146,12 +2276,14 @@ begin
         QueryInOut.Transaction.Commit;
       if QueryInOutItems.Transaction.Active then
         QueryInOutItems.Transaction.Commit;
+      if QueryOutItems.Transaction.Active then
+        QueryOutItems.Transaction.Commit;
       if QueryIOTH.Transaction.Active then
         QueryIOTH.Transaction.Commit;
       if QueryRealPM.Transaction.Active then
         QueryRealPM.Transaction.Commit;
 
-      if dirtyGSM or dirtyItem or dirtyIOTH or dirtyPM then
+      if dirtyGSM or dirtyItem or dirtyOItem or dirtyIOTH or dirtyPM then
         UpdateAllStates(S_CHANGED);
       CanClose := true;
 
@@ -2162,6 +2294,8 @@ begin
         QueryInOut.Transaction.Rollback;
       if QueryInOutItems.Transaction.Active then
         QueryInOutItems.Transaction.Rollback;
+      if QueryOutItems.Transaction.Active then
+        QueryOutItems.Transaction.Rollback;
       if QueryIOTH.Transaction.Active then
         QueryIOTH.Transaction.Rollback;
       if QueryRealPM.Transaction.Active then
@@ -2208,7 +2342,7 @@ begin
                   S_CLOSED: Panels[0].Text := 'Смена закрыта!';
                   S_SENT: Panels[0].Text := 'Смена отправлена';
       else  Panels[0].Text := 'Unknown state';
-    end;
+      end;
     
     end;
 
@@ -2224,6 +2358,7 @@ begin
   warelist := TStringList.Create;
   dirtyGSM := false;
   dirtyItem := false;
+  dirtyOItem := false;
   dirtyIOTH := false;
   dirtyPM := false;
   Caption := Format('TabForm AZS ' +
@@ -2688,6 +2823,8 @@ begin
 //    inherited;
   end;
 end;
+
+// .............................................................................
 
 procedure TTabForm.RealPMGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);

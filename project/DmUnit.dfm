@@ -12726,6 +12726,7 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -12826,8 +12827,9 @@ object DM: TDM
       '    t.warecode as fuelextcode,'
       '    w.name as fuelname,'
       '    r.tanknum,'
-      '    origprice as price,'
-      '    '#39'18'#39' as nds,'
+      '--    origprice as price,'
+      '    iif(wp.price_o is null, wp.price_r, wp.price_o) as price,'
+      '    '#39'18'#39' as nds, -- ??'
       '    t.density as density,'
       '    r.paymentmodeextcode as pmec,'
       '    r.paymentmodename,'
@@ -12844,6 +12846,9 @@ object DM: TDM
         '                ) t on t.session_id = s.id  /* here must be user' +
         ' editable density table */'
       '    join wares w on t.warecode = w.code'
+      
+        '    join wareprices wp on wp.session_id = r.session_id and wp.wa' +
+        're_code=t.warecode'
       '   where'
       '    r.session_id = :session_id'
       '    and r.tanknum = t.tanknum'
@@ -12858,45 +12863,7 @@ object DM: TDM
       '    paymentmodeextcode,'
       '    paymentmodename,'
       '    partnerextcode'
-      '/*   NO OFFICE!'
-      'union all'
-      'select'
-      '    s.id as sid,'
-      '    azscode,'
-      '    sessionnum,'
-      '    '#39'O'#39' as tbl,'
-      '    startdatetime,'
-      '    0 as dir,'
-      '    t.warecode as fuelextcode,'
-      '    w.name as fuelname,'
-      '    r.tanknum,'
-      '    r.origprice as price,'
-      '    '#39'18'#39' as nds,'
-      '    t.enddensity as density,'
-      '    r.paymentmodeextcode as pmec,'
-      '    r.paymentmodename,'
-      '    '#39'EMPTY'#39' as partnerextcode,'
-      '    sum(r.volume) as volume,'
-      '    sum(r.amount) as amount'
-      '    from sessions s'
-      '    join outcomesbyoffice r on s.id = r.session_id'
-      '    join tanks t on t.session_id = s.id'
-      '    join wares w on t.warecode = w.code'
-      '   where'
-      '    r.session_id = :session_id'
-      '    and r.tanknum = t.tanknum'
-      '   group by sid,'
-      '    azscode,sessionnum,startdatetime,'
-      '    dir,'
-      '    fuelextcode,fuelname,'
-      '    tanknum,'
-      '    price,'
-      '    nds,'
-      '    density,'
-      '    paymentmodeextcode,'
-      '    paymentmodename,'
-      '    partnerextcode'
-      '*/'
+      ''
       'union all'
       'select'
       '    s.id as sid,'
@@ -13392,5 +13359,16 @@ object DM: TDM
     VendorLib = 'C:\Program Files\Firebird\Firebird_2_5\WOW64\fbclient.dll'
     Left = 400
     Top = 56
+  end
+  object FDQueryWP: TFDQuery
+    Connection = FDConnection
+    Transaction = FDTransaction
+    UpdateTransaction = FDTransactionUpd
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvParamCreate]
+    ResourceOptions.ParamCreate = False
+    Left = 96
+    Top = 104
   end
 end

@@ -965,6 +965,87 @@ begin
   end;
 end;
 
+// .............................................................................
+
+procedure UpdateWarePices(session_id: Integer; ware_code: String; price: Extended; fld: String);
+
+begin
+  with DM.FDQueryWP do
+  begin
+    sql.Text := 'select * from wareprices where session_id = :session_id and ware_code = :ware_code';
+    with params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'session_id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'ware_code';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('session_id').AsInteger := session_id;
+    ParamByName('ware_code').AsString := ware_code;
+    Prepare;
+    Open;
+    if RecordCount > 0 then
+    begin
+    // update
+      sql.Text := 'update wareprices set !fld = :price where ' +
+                  'session_id = :session_id and ware_code = :ware_code';
+    end
+    else
+    begin
+      sql.Text := 'insert into wareprices ' +
+                '(session_id, ware_code, !fld) values ' +
+                '(:session_id, :ware_code, :price)';
+
+    end;
+      with Macros do
+      begin
+        Clear;
+        with Add do
+        begin
+          name := 'fld';
+          DataType := mdRaw;
+        end;
+      end;
+      with params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'ware_code';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'price';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+      end;
+      MacroByName('fld').AsRaw := fld;
+      ParamByName('session_id').AsInteger := session_id;
+      ParamByName('ware_code').AsString := ware_code;
+      ParamByName('price').AsExtended := price;
+      Prepare;
+      ExecSQL;
+
+  end;
+end;
 
 // .............................................................................
 
@@ -1409,6 +1490,7 @@ begin
       hosenum := StrToIntDef(hosename, 0);
 
       UpdateTanks(id, hosenum, tanknum, fuelcode);
+      UpdateWarePices(id, fuelcode, origprice, 'price_r');
 
       with DM.FDQuery do
       begin
@@ -1623,7 +1705,7 @@ begin
     try
       r :=  LoadOrderFile(files[i], azs);
       cnt := cnt + r;
-      if r > 0 then MoveOrderToBackup(files[i]);
+      if (r > 0) and move_orders then MoveOrderToBackup(files[i]);
     except
       on e: EIBNativeException do  // not catches!
         raise;
@@ -1724,6 +1806,12 @@ begin
           );
         end;
       end;
+
+      if bhasorder then
+      begin
+        UpdateWarePices(id, fuelcode, origprice, 'price_o');
+      end;
+
       with DM.FDQuery do
       begin
         SQL.Text := 'insert into OutcomesByOffice ' +
