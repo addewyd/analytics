@@ -841,9 +841,7 @@ begin
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
 
-    tm := tm + '(select iif(price_o is null, price_r, price_o) ' +
-      'from wareprices where session_id=:session_id ' +
-      'and ware_code ='#$27 + warelist.Names[i] + #$27') '
+    tm := tm + '(select price from getprice(:session_id,'#$27 + warelist.Names[i] + #$27')) '
       + ' as price_' + st + ',';
       
     tmp := 'coalesce((select sum(i1.price*i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '

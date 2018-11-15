@@ -232,6 +232,7 @@ var
   msg: TMessage;
   sid: Integer;
 begin
+
   nL := Doc.getElementsByTagName('DataPaket');
   if nL.length > 0 then
   begin
@@ -968,11 +969,12 @@ end;
 // .............................................................................
 
 procedure UpdateWarePices(session_id: Integer; ware_code: String; price: Extended; fld: String);
-
+  var bUpd: boolean;
 begin
+  bUpd := false;
   with DM.FDQueryWP do
   begin
-    sql.Text := 'select * from wareprices where session_id = :session_id and ware_code = :ware_code';
+    sql.Text := 'select price_r, price_o from wareprices where session_id = :session_id and ware_code = :ware_code';
     with params do
     begin
       Clear;
@@ -995,6 +997,9 @@ begin
     Open;
     if RecordCount > 0 then
     begin
+      if (fld = 'price_r') and FIeldByName('price_r').IsNull then bUpd := true
+      else if (fld = 'price_o') and FIeldByName('price_o').IsNull then bUpd := true;
+
     // update
       sql.Text := 'update wareprices set !fld = :price where ' +
                   'session_id = :session_id and ware_code = :ware_code';
@@ -1004,8 +1009,10 @@ begin
       sql.Text := 'insert into wareprices ' +
                 '(session_id, ware_code, !fld) values ' +
                 '(:session_id, :ware_code, :price)';
-
+      bUpd := true;
     end;
+    if bUpd then
+    begin
       with Macros do
       begin
         Clear;
@@ -1040,6 +1047,40 @@ begin
       MacroByName('fld').AsRaw := fld;
       ParamByName('session_id').AsInteger := session_id;
       ParamByName('ware_code').AsString := ware_code;
+      ParamByName('price').AsExtended := price;
+      Prepare;
+      ExecSQL;
+    end;
+
+    SQL.Text := 'update wares set !fld = :price where code = :code and !fld <> :price';
+
+      with Macros do
+      begin
+        Clear;
+        with Add do
+        begin
+          name := 'fld';
+          DataType := mdRaw;
+        end;
+      end;
+      with params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'code';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'price';
+          DataType := ftExtended;
+          ParamType := ptInput;
+        end;
+      end;
+      MacroByName('fld').AsRaw := fld;
+      ParamByName('code').AsString := ware_code;
       ParamByName('price').AsExtended := price;
       Prepare;
       ExecSQL;
@@ -1695,40 +1736,45 @@ procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
 
 begin
   // load orders first
-  orderpath := ExtractFilePath(CurrentFile);
-  files := TDirectory.GetFiles(orderpath, 'order*.xml', TSearchOption.soTopDirectoryOnly);
-  len := Length(files);
-  AddToLog(Format('Order files count: %d',[len]));
-  cnt := 0;
-  for i := 0 to len - 1 do
+  if ordersLoaded = 0 then
   begin
-    try
-      r :=  LoadOrderFile(files[i], azs);
-      cnt := cnt + r;
-      if (r > 0) and move_orders then MoveOrderToBackup(files[i]);
-    except
-      on e: EIBNativeException do  // not catches!
-        raise;
-      on e: Exception do
-        AddToLog(e.Message + ' ' + e.Classname);
+    orderpath := ExtractFilePath(CurrentFile);
+    files := TDirectory.GetFiles(orderpath, 'order*.xml', TSearchOption.soTopDirectoryOnly);
+    len := Length(files);
+    AddToLog(Format('Order files count: %d',[len]));
+    cnt := 0;
+    for i := 0 to len - 1 do
+    begin
+      try
+        r :=  LoadOrderFile(files[i], azs);
+        cnt := cnt + r;
+        if (r > 0) and move_orders then
+            MoveOrderToBackup(files[i]);
+      except
+          on e: EIBNativeException do // not catches!
+            raise;
+          on e: Exception do
+            AddToLog(e.Message + ' ' + e.Classname);
+      end;
     end;
+    ordersLoaded := ordersLoaded + 1;
+    AddToLog(format('Order files loaded: %d', [cnt]));
   end;
-  AddToLog(Format('Order files loaded: %d',[cnt]));
-
   // ..............................................................
 
-  NL := node.childNodes;
-  len := nl.length;
+  nL := node.childNodes;
+  len := nL.length;
 
-  for i:= 0 to len - 1 do
-    begin
-      attrs := NL.item[i].attributes;
+  for i := 0 to len - 1 do
+  begin
+    attrs := nL.item[i].attributes;
 
-      fuelcode := attrs.getNamedItem('FuelExtCode').nodeValue;
-      paymentcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
+    fuelcode := attrs.getNamedItem('FuelExtCode').nodeValue;
+    paymentcode := attrs.getNamedItem('PaymentModeExtCode').nodeValue;
 
-      if Trim(fuelcode) = '' then fuelcode := 'EMPTY';
-//      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
+    if Trim(fuelcode) = '' then
+      fuelcode := 'EMPTY';
+    //      if Trim(paymentcode) = '' then paymentcode := 'EMPTY';
 
       fuelname := attrs.getNamedItem('FuelName').nodeValue;
       paymentname := attrs.getNamedItem('PaymentModeName').nodeValue;
@@ -1808,6 +1854,10 @@ begin
       end;
 
       if bhasorder then
+      begin
+        UpdateWarePices(id, fuelcode, origprice, 'price_o');
+      end
+      else
       begin
         UpdateWarePices(id, fuelcode, origprice, 'price_o');
       end;
@@ -3146,7 +3196,7 @@ begin
       NdsAmount := StrToextDef(sNdsAmount, 0);
     end;
       if ItemExtCode = '' then continue;  // bug in XML
-      
+
       CheckLink('ITEMS',ItemExtCode,ItemName, ['ICODE', itemcode]);
 
       with DM.FDQuery do

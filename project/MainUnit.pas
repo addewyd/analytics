@@ -176,6 +176,7 @@ var
   dbport: Integer;
   last_sessions_count: Integer;
   move_orders: boolean; // from opts
+  ordersLoaded: Integer;
 
 const
   last_sessions_count_def: Integer = 14;
@@ -843,6 +844,7 @@ begin
   if JvSelectDirectory.Execute then
   begin
     dir := JvSelectDirectory.Directory;
+    ordersLoaded := 0;
 
     files := TDirectory.GetFiles(dir, 'CloseS*.xml', TSearchOption.soTopDirectoryOnly);
     len := Length(files);
@@ -884,6 +886,7 @@ begin
       CurrentFile := filename;
       XMLDoc.LoadFromFile(filename);
       doc := XmlDoc.DOMDocument;
+      ordersLoaded := 0;
       ParseInputFile(Doc, false);
 
     except
