@@ -16,7 +16,16 @@ uses
 
 type
   TCatGSMForm = class(TFormWithGrid)
+    FDQueryCODE: TWideStringField;
+    FDQueryNAME: TWideStringField;
+    FDQueryPRICE_R: TFloatField;
+    FDQueryPRICE_O: TFloatField;
+    FDQueryINCL: TSmallintField;
+    CommitAction: TAction;
+    ToolButton3: TToolButton;
     procedure FormCreate(Sender: TObject);
+    procedure CommitActionExecute(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -32,19 +41,51 @@ implementation
 
 uses DmUnit;
 
-procedure TCatGSMForm.FormCreate(Sender: TObject);
+procedure TCatGSMForm.CommitActionExecute(Sender: TObject);
 begin
   inherited;
   with FDQuery do
   begin
     Transaction.StartTransaction;
     try
-      Open;
+      ApplyUpdates(0);
+      Close;
       Transaction.Commit;
+      LoadData;
     except
-      Transaction.Rollback;
+      on e: exception do
+      begin
+        Transaction.Rollback;
+        ErrorMessageBox(self, e.message);
+      end;
     end;
   end;
+end;
+
+procedure TCatGSMForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  with FDQuery do
+    begin
+    Transaction.StartTransaction;
+    try
+      Open;
+    except
+      on e: exception do
+      begin
+        Transaction.Rollback;
+        ErrorMessageBox(self, e.message);
+      end;
+    end;
+  end;
+
+end;
+
+procedure TCatGSMForm.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 
 end;
 

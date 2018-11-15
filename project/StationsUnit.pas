@@ -126,8 +126,8 @@ end;
 procedure TStationsForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Commit;
-  if FDQuery.Transaction.Active then FDQuery.Transaction.Commit;
+  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 end;
 
 procedure TStationsForm.TransUPDAfterCommit(Sender: TObject);

@@ -109,6 +109,8 @@ type
     ViewLog1: TMenuItem;
     ToolButton19: TToolButton;
     ToolButton2: TToolButton;
+    CatTHAction: TAction;
+    anksHoses1: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -138,6 +140,7 @@ type
     procedure WindowListActionExecute(Sender: TObject);
     procedure UsersActionExecute(Sender: TObject);
     procedure ViewLogActionExecute(Sender: TObject);
+    procedure CatTHActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -189,7 +192,7 @@ implementation
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
-  WindowListUnit, UsersUnit, ViewLogUnit;
+  WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit;
 
 
 // .............................................................................
@@ -516,6 +519,17 @@ end;
 
 // .............................................................................
 
+procedure TMainForm.CatTHActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('cattankshoses') then
+  begin
+    TTanksHosesForm.Create(self, 'cattankshoses');
+  end
+  else GetMDIForm('cattankshoses').Show;
+end;
+
+// .............................................................................
+
 procedure TMainForm.ClearDBActionExecute(Sender: TObject);
   var
     msg: TMessage;
@@ -584,10 +598,15 @@ begin
 
           ExecSQL('delete from items');
           AddToLog('deleted from items');
+
+//          ExecSQL('delete from tahoa');
+//          AddToLog('deleted from tahoa');
+
           ExecSQL('delete from tanks');
           AddToLog('deleted from tanks');
           ExecSQL('delete from hoses');
           AddToLog('deleted from hoses');
+
           ExecSQL('delete from paymentmodes');
           AddToLog('deleted from paymentmodes');
           //ExecSQL('delete from contragents');

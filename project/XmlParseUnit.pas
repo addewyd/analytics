@@ -35,6 +35,8 @@ implementation
 
 uses MainUnit, MlogUnit;
 
+var gazs: string;
+
 procedure CheckLink(tablename: string; var ecode: string; ename: string; adds: array of string);
   var
     rc: integer;
@@ -500,6 +502,8 @@ begin
   n0 := attrs.getNamedItem('AZSCode');
   azs := n0.nodeValue;
 
+  gazs := azs;
+
   td0 := VarToDateTime(attrs.getNamedItem('DateTime').nodeValue);
 
   DateTimeToString(d0, 'yyyy-mm-dd hh:nn:ss', td0);
@@ -781,7 +785,7 @@ begin
 
   if rc > 0 then
   begin
-    AddToLog('session data fror tanks already loaded!');
+    AddToLog('session data for tanks already loaded!');
   end
   else
   begin
@@ -1052,7 +1056,7 @@ begin
       ExecSQL;
     end;
 
-    SQL.Text := 'update wares set !fld = :price where code = :code and !fld <> :price';
+    SQL.Text := 'update wares set !fld = :price where code = :code';
 
       with Macros do
       begin
@@ -1259,6 +1263,8 @@ begin
 
       end;
 
+//      CheckCTanks(gazs, tn);
+
     end;
 
 end;
@@ -1378,7 +1384,7 @@ begin
 
         end;
         ParamByName('id').AsInteger := id;
-        ParamByName('hn').AsInteger :=StrToIntDef(hn, 1);
+        ParamByName('hn').AsInteger := StrToIntDef(hn, 1);
 
         ParamByName('startcounter').AsExtended := startc;
         ParamByName('endcounter').AsExtended := endc;
@@ -1389,9 +1395,142 @@ begin
         ExecSQL;
 
       end;
+
     end;
 end;
 
+// .............................................................................
+
+procedure UpdateTaho(azs, tanknum: String; hosenum: Integer);
+  var
+    rc: Integer;
+begin
+
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from ctanks where azscode=:azscode and tanknum=:tanknum';
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'tanknum';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := azs;
+    ParamByName('tanknum').AsString := tanknum;
+    Prepare;
+    Open;
+    rc := RecordCount;
+  end;
+
+  if rc < 1 then
+  begin
+    with DM.FDQuery do
+    begin
+      Close;
+      SQL.Text :=  'insert into ctanks (azscode,tanknum) values (:azscode,:tanknum)';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'tanknum';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('azscode').AsString := azs;
+      ParamByName('tanknum').AsString := tanknum;
+      Prepare;
+      ExecSql;
+    end;
+  end;
+
+  with DM.FDQuery do
+  begin
+    SQL.Text := 'select * from choses where azscode=:azscode and tanknum=:tanknum and hosenum=:hosenum';
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'tanknum';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'hosenum';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := azs;
+    ParamByName('tanknum').AsString := tanknum;
+    ParamByName('hosenum').AsInteger := hosenum;
+    Prepare;
+    Open;
+    rc := RecordCount;
+  end;
+  if rc < 1 then
+  begin
+    with DM.FDQuery do
+    begin
+      Close;
+      SQL.Text :=  'insert into choses (azscode,tanknum,hosenum) values (:azscode,:tanknum,:hosenum)';
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'tanknum';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'hosenum';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('azscode').AsString := azs;
+      ParamByName('tanknum').AsString := tanknum;
+      ParamByName('hosenum').AsInteger := hosenum;
+      Prepare;
+      ExecSql;
+    end;
+  end;
+
+
+end;
 
 // .............................................................................
 
@@ -1465,6 +1604,7 @@ begin
         ExecSQL;
 
       end;
+      UpdateTaho(gazs, tanknum, hosenum);
 end;
 
 // .............................................................................

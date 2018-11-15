@@ -31,7 +31,8 @@ uses
   WindowListUnit in 'WindowListUnit.pas' {WinListDlg},
   CntReplaceUnit in 'CntReplaceUnit.pas' {CntReplaceDlg},
   UsersUnit in 'UsersUnit.pas' {UsersForm},
-  ViewLogUnit in 'ViewLogUnit.pas' {ViewLogForm};
+  ViewLogUnit in 'ViewLogUnit.pas' {ViewLogForm},
+  TanksHosesUnit in 'TanksHosesUnit.pas' {TanksHosesForm};
 
 {$R *.res}
 

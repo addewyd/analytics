@@ -243,6 +243,9 @@ object MainForm: TMainForm
       object N7: TMenuItem
         Action = PaimentModesAction
       end
+      object anksHoses1: TMenuItem
+        Action = CatTHAction
+      end
     end
     object Service1: TMenuItem
       Caption = 'Service'
@@ -424,6 +427,10 @@ object MainForm: TMainForm
       Hint = 'View Log'
       ImageIndex = 355
       OnExecute = ViewLogActionExecute
+    end
+    object CatTHAction: TAction
+      Caption = 'Tanks/Hoses'
+      OnExecute = CatTHActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents
