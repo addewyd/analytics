@@ -257,10 +257,11 @@ begin
 
 DM.FDConnection.Close;
 DM.FDConnection.Open();
-
+{$Ifndef console}
       msg.Msg := WM_SESSION_ADDED;
       MainForm.SendMsgs(msg);
       DM.AddLogMsg(user_id, Format('Session %d added', [sid]));
+{$Endif}
     except
       on e: Exception do
       begin
@@ -268,7 +269,10 @@ DM.FDConnection.Open();
         if DM.FDTransaction.Active then DM.FDTransaction.Rollback;
 
         AddToLog('parse input: ' + e.Message);
+{$Ifndef console}
         ErrorMessageBox(MainForm, e.Message);
+
+{$Endif}
       end;
     end;
     Exit;
@@ -495,11 +499,12 @@ const
 begin
 
   result := 0;
+{$Ifndef console}
   if not MainForm.isWinOpen('mlog') then
   begin
     MlogForm := TMlogForm.Create(MainForm, 'mlog');
   end;
-
+{$Endif}
   id := -1;
 
   nL := Doc.getElementsByTagName('DataPaket');
@@ -551,9 +556,14 @@ begin
       end
       else
       begin
+{$Ifndef console}
         ErrorMessageBox(MainForm,
           Format('Session not in order, load %s first (supposed SessionNum is %d)',
             [requiredfile, sn]));
+{$else}
+      Addtolog(Format('Session not in order, load %s first (supposed SessionNum is %d)',
+            [requiredfile, sn]));
+{$Endif}
       end;
       Continue;                 /// ?
     end;
@@ -2143,11 +2153,27 @@ function LoadOrderFile(filename, azs: string): integer;
   var
     orderdoc: TXMLDocument;
 begin
-  orderdoc := TXMLDocument.Create(MainForm);
-  orderdoc.LoadFromFile(filename);
+  orderdoc := TXMLDocument.Create(
+{$ifdef console}
+    nil
+{$else}
+    MainForm
+{$endif}
+    );
   result := 0;
   try
-    result := ParseOrderFile(orderdoc.DocumentElement, azs, filename);
+    orderdoc.LoadFromFile(filename);
+    try
+      result := ParseOrderFile(orderdoc.DocumentElement, azs, filename);
+    except
+      on e:Exception do
+      begin
+{$ifdef console}
+        //addtolog(e.Message);
+{$endif}
+
+      end;
+    end;
   finally
     orderdoc.Free;
   end;

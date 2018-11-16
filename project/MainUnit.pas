@@ -111,6 +111,7 @@ type
     ToolButton2: TToolButton;
     CatTHAction: TAction;
     anksHoses1: TMenuItem;
+    ImageList: TImageList;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);

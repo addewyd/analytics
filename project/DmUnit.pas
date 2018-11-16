@@ -20,7 +20,6 @@ uses
 
 type
   TDM = class(TDataModule)
-    imlist: TImageList;
     FDQuery: TFDQuery;
     FDUpdateSQL: TFDUpdateSQL;
     FDCommand: TFDCommand;
