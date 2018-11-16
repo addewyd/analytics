@@ -6,7 +6,14 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, System.IOUtils, Data.DB, System.Types,
   XML.xmldom, XML.XMLIntf,
   FIREDAC.Stan.Error, FIREDAC.Stan.Param,FireDAC.Phys.IBWrapper,
-  XML.XMLDoc, ErrorUnit, DmUnit;
+  XML.XMLDoc
+  {$Ifdef console}
+    , DMConUnit
+  {$else}
+    , ErrorUnit
+    , DmUnit
+  {$Endif}
+    ;
 
 {$Include 'consts.inc'}
 
@@ -33,8 +40,10 @@ function TryToGetCode(tablename, ename: String): String;
 
 implementation
 
+{$Ifdef console}
+{$else}
 uses MainUnit, MlogUnit;
-
+{$Endif}
 var gazs: string;
 
 procedure CheckLink(tablename: string; var ecode: string; ename: string; adds: array of string);
