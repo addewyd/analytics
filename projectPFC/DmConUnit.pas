@@ -64,7 +64,7 @@ constructor TDM.Create(pr: TComponent);
 begin
 
   inherited Create(pr);
-
+{
   dbname := 'C:\Users\user\Documents\topaz\analytics\project\Win32\D' +
     'ebug\db\SHRFSPS.FDB';
   clientdll := 'C:\Program Files\Firebird\Firebird_2_5\WOW64\fbclient.dll';
@@ -73,7 +73,7 @@ begin
   db_pass := 'electro';
   host := 'localhost';
   dbport := 3050;
-
+ }
   FDConnection.DriverName := 'FB';
 
   FDConnection.Transaction := FDTransaction;

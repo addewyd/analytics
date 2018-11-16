@@ -2152,19 +2152,23 @@ end;
 function LoadOrderFile(filename, azs: string): integer;
   var
     orderdoc: TXMLDocument;
+    inode: IXMLNode;
 begin
   orderdoc := TXMLDocument.Create(
 {$ifdef console}
-    nil
+    DM
 {$else}
     MainForm
 {$endif}
     );
   result := 0;
   try
+//    orderdoc.DOMVendor := DOMVendor.
+//         'ADOM XML v4';
     orderdoc.LoadFromFile(filename);
     try
-      result := ParseOrderFile(orderdoc.DocumentElement, azs, filename);
+      inode := orderdoc.DocumentElement;
+      result := ParseOrderFile(inode, azs, filename);
     except
       on e:Exception do
       begin
