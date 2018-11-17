@@ -165,6 +165,8 @@ type
     FloatField5: TFloatField;
     TransOutItems: TFDTransaction;
     QueryOutItemsSum: TFDQuery;
+    QueryIOTHSumCALC: TFloatField;
+    QueryIOTHSumOUTCOME: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -821,7 +823,7 @@ begin
     '    p.name as pmode,' +
 
     '    sum(i.volume) as volume,' +
-    '    sum(i.price*i.volume) as amount,'
+    '    sum(i.amount) as amount,'
     ;
 
   len := warelist.Count;
@@ -831,7 +833,7 @@ begin
     select iif(price_o is null, price_r, price_o) from wareprices where session_id=:session_id
       and ware_code = <warelist.Names[i]>
   }
-  
+
   for i := 0 to len - 1 do
   begin
     st := IntToStr(i);
@@ -841,26 +843,27 @@ begin
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + st + ',';
 
-    tm := tm + '(select price from getprice(:session_id,'#$27 + warelist.Names[i] + #$27')) '
+    tm := tm + '(select price from getprice(0, :session_id,'#$27 + warelist.Names[i] + #$27')) '
       + ' as price_' + st + ',';
-      
-    tmp := 'coalesce((select sum(i1.price*i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
+
+    tmp := 'coalesce((select sum((select price from getprice(1, :session_id,'#$27 + warelist.Names[i] + #$27')) * i1.volume) from inoutgsm i1 '
+      + '  join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as amount_' + st + ',';
-      
+
     th := th + tm + tmp;
 
     sumtm := sumtm + ' sum(volume_' + st + ') as volume_' + st + ',';
 
   end;
-  sumtf := ' ' + st + ' as nol' + '    from (';
-  tf := ' 0 as nol' + '    from inoutgsm i' +
+  sumtf := ' ' + '0' + ' as nol' + '    from (';
+  tf := ' 0 as nol ' + ' from inoutgsm i' +
     '    join sessions s on s.id=i.session_id' +
     '    join paymentmodes p on i.payment_code = p.code' +
 
-    '    where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
+    '    where ' +
     '   s.id = :session_id ' + '   and i.azscode=:azscode' +
     '   and  i.direction = 0' +
     ' group by session_id,stdt,payment_code, pmode'
@@ -2197,7 +2200,8 @@ begin
       StatusBar.Canvas.Font.Color := clGreen;
       if (abs(volumesum_pm - volumesum_ioth) > 0.001) then
       begin
-         StatusBar.Canvas.Font.Color := clRed;  
+         StatusBar.Canvas.Font.Color := clRed;
+        // AddToLog(format('%f %f', [volumesum_pm, volumesum_ioth]));
       end;
 
       txt := QueryRealPmSum.FieldByName(fldn).AsString;

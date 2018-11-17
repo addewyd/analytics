@@ -381,6 +381,7 @@ inherited TabForm: TTabForm
           DataSource = DSIOTH
           DBGrid = IOTHGrid
           OnCalculate = IOTHFooterCalculate
+          ExplicitTop = 186
         end
       end
     end
@@ -1048,7 +1049,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001780010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180017C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13761,10 +13762,10 @@ inherited TabForm: TTabForm
       '   i.density,'
       '   round(volume * density / 1000,3) as mass,'
       '   i.nds, -- '#1089#1090#1072#1074#1082#1072
-      '    round(price*volume * cast(nds as double precision) / '
+      '    round(amount * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
-      '    (price*volume) as whole,'
-      '    round(price*volume - price*volume * '
+      '    amount as whole,'
+      '    round(amount - amount * '
       'cast(nds as double precision) / 118.0, 2) as amount0'
       ''
       '   from inoutgsm i'
@@ -13912,7 +13913,7 @@ inherited TabForm: TTabForm
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH
     OnFieldChanged = DSIOTHFieldChanged
-    Left = 164
+    Left = 124
     Top = 93
   end
   object QueryIOTH: TFDQuery
@@ -13964,7 +13965,7 @@ inherited TabForm: TTabForm
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
       'order by s.startdatetime asc ,i.tanknum,i.hosenum')
-    Left = 212
+    Left = 196
     Top = 93
     ParamData = <
       item
@@ -13974,7 +13975,9 @@ inherited TabForm: TTabForm
       end
       item
         Name = 'AZSCODE'
+        DataType = ftWideString
         ParamType = ptInput
+        Size = 10
       end>
     object QueryIOTHID: TIntegerField
       FieldName = 'ID'
@@ -14105,7 +14108,7 @@ inherited TabForm: TTabForm
   object DSRealPM: TJvDataSource
     DataSet = QueryRealPM
     OnFieldChanged = DSRealPMFieldChanged
-    Left = 164
+    Left = 124
     Top = 149
   end
   object QueryRealPM: TFDQuery
@@ -14160,7 +14163,7 @@ inherited TabForm: TTabForm
       '   and  i.direction = 0'
       'group by session_id,stdt,payment_code, pmode'
       'order by stdt')
-    Left = 220
+    Left = 204
     Top = 149
     ParamData = <
       item
@@ -14212,7 +14215,7 @@ inherited TabForm: TTabForm
     Options.AutoStop = False
     Connection = DM.FDConnection
     AfterCommit = TransIOTHAfterCommit
-    Left = 276
+    Left = 260
     Top = 93
   end
   object TransPM: TFDTransaction
@@ -14299,11 +14302,11 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Transaction = TransIOTH
     UpdateTransaction = TransIOTH
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
-    UpdateOptions.UpdateTableName = 'IOTANKSHOSES'
-    UpdateOptions.KeyFields = 'ID'
+    UpdateOptions.EnableUpdate = False
+    UpdateOptions.KeyFields = 'CALC;OUTCOME'
     SQL.Strings = (
       'select sum(calc) as calc, sum(outcome) as OUTCOME'
       'from'
@@ -14356,8 +14359,24 @@ inherited TabForm: TTabForm
       end
       item
         Name = 'AZSCODE'
+        DataType = ftWideString
         ParamType = ptInput
+        Size = 10
       end>
+    object QueryIOTHSumCALC: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALC'
+      Origin = 'CALC'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHSumOUTCOME: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'OUTCOME'
+      Origin = 'OUTCOME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object QueryInOutSum: TFDQuery
     Connection = DM.FDConnection
@@ -14390,10 +14409,10 @@ inherited TabForm: TTabForm
       'i.density,'
       '   round(volume * density / 1000,3) as mass,'
       'i.nds, -- '#1089#1090#1072#1074#1082#1072
-      '    round(price*volume * cast(nds as double precision) / '
+      '    round(amount * cast(nds as double precision) / '
       '       118.0, 2) as sumnds,'
-      '        (price*volume) as whole,'
-      '    round(price*volume - price*volume * '
+      '    amount as whole,'
+      '    round(amount - amount * '
       'cast(nds as double precision) / 118.0, 2) as amount0'
       ''
       '   from inoutgsm i'
