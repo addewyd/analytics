@@ -124,6 +124,7 @@ begin
   try
 
     s := StringReplace(s, ',', ds, [rfReplaceAll]);
+    s := StringReplace(s, '.', ds, [rfReplaceAll]);
     Result := StrToFloatDef(s, d);
   except
     //

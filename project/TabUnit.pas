@@ -850,17 +850,17 @@ begin
     tm := tm + '(select price from getprice(0, :session_id,'#$27 + WN + #$27')) '
       + ' as price_' + ST + ',';
 
-    tmp := 'coalesce((select sum((select price from getprice(1, :session_id,'#$27
-      + WN + #$27')) * i1.volume) from inoutgsm i1 '
+    tmp := '(select amount from inoutgsm i1 '
       + '  join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= '#$27 + WN + #$27 +
       '        and i1.direction=0 ' +
-      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
-      + '0)  as amount_' + ST + ',';
+      '        and i1.payment_code = i.payment_code and i1.session_id=:session_id) '
+      + ' as amount_' + ST + ',';
 
     th := th + tm + tmp;
 
     sumtm := sumtm + ' sum(volume_' + ST + ') as volume_' + ST + ',';
+    sumtm := sumtm + ' sum(amount_' + ST + ') as amount_' + ST + ',';
 
   end;
   sumtf := ' 0 as nol  from (';
@@ -2180,7 +2180,7 @@ procedure TTabForm.RealPMFooterDrawPanel(StatusBar: TStatusBar;
     gcls : TDBGridColumns;
     pind: Integer;
     fldn, txt, st : String;
-    price, vol, priceall: Extended;
+    price, amount, vol, priceall: Extended;
     c: integer;
 begin
   // inherited;
@@ -2188,7 +2188,7 @@ begin
   f := StatusBar as  TJvDBGridFooter;
 
   gr := f.DBGrid;
-  
+
   cls := f.Columns;
   gcls := gr.Columns;
 
@@ -2233,15 +2233,16 @@ begin
       if st <> '' then
       begin
         price := QueryRealPm.FieldByName('price_' + st).AsExtended;      
+        amount := QueryRealPmSum.FieldByName('amount_' + st).AsExtended;
 
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [price * vol]));
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [amount]));
       end
       else
       begin
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [priceall]));
-        
+
       end;
-    
+
     end;
   
   end;

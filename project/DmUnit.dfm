@@ -125,11 +125,11 @@ object DM: TDM
       '    sum(volume) as volume,'
       '    density as density,  /*  !!! */'
       '    price,'
-      '    sum(price * volume) as summ,'
+      '    sum(amount) as summ,'
       '    nds as nds,'
       
-        '    sum(price * volume + price * volume * cast(nds as integer) /' +
-        ' 100.0) as whole,'
+        '    sum(amount + amount * cast(nds as integer) / 100.0) as whole' +
+        ','
       '    1 as lastuser_id,'
       '    current_timestamp as updated_at,'
       '    0 as state'
