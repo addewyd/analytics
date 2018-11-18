@@ -377,11 +377,16 @@ inherited TabForm: TTabForm
             end
             item
               FieldName = 'OUTCOME'
+            end
+            item
+              FieldName = 'CALCIN'
+            end
+            item
+              FieldName = 'CALCREST'
             end>
           DataSource = DSIOTH
           DBGrid = IOTHGrid
           OnCalculate = IOTHFooterCalculate
-          ExplicitTop = 186
         end
       end
     end
@@ -1049,7 +1054,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180017C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001800010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13953,9 +13958,13 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      '    round(endcounter - startcounter '
+      '    round(endcounter - startcounter /* - '
+      '      coalesce(invol, 0, invol)'
+      ''
       '       - (select volume '
-      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39')), 3)'
+      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39'))'
+      '*/'
+      '    , 3)'
       '        as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
@@ -14308,7 +14317,9 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableUpdate = False
     UpdateOptions.KeyFields = 'CALC;OUTCOME'
     SQL.Strings = (
-      'select sum(calc) as calc, sum(outcome) as OUTCOME'
+      
+        'select sum(calc) as calc, sum(outcome) as OUTCOME, sum(calcin) a' +
+        's calcin, sum(calcrest) as calcrest'
       'from'
       '('
       'select'
@@ -14336,9 +14347,14 @@ inherited TabForm: TTabForm
       '    water,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
-      '    round(endcounter - startcounter '
+      '    round(endcounter - startcounter /* - '
+      '      coalesce(invol, 0, invol) '
+      ''
       '       - (select volume '
-      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39')), 3)'
+      '              from outcomepm(:session_id, '#39'01'#1058#1055'00'#39'))'
+      '*/'
+      ', 3)'
+      ''
       '        as outcome '
       '    from iotankshoses i'
       '      join sessions s on s.id = i.session_id'
@@ -14347,7 +14363,6 @@ inherited TabForm: TTabForm
       '    /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/'
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
-      ''
       ')')
     Left = 420
     Top = 93
@@ -14374,6 +14389,20 @@ inherited TabForm: TTabForm
       AutoGenerateValue = arDefault
       FieldName = 'OUTCOME'
       Origin = 'OUTCOME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHSumCALCIN: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALCIN'
+      Origin = 'CALCIN'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHSumCALCREST: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALCREST'
+      Origin = 'CALCREST'
       ProviderFlags = []
       ReadOnly = True
     end

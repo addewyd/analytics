@@ -43,6 +43,7 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -197,7 +198,7 @@ object DM: TDM
       '    '#39'EMPTY'#39' as pmec,'
       '    '#39#39' as paymentmodename,'
       '    i.partnerextcode, '
-      '    sum(i.volume) as volume,'
+      '       sum(i.volume) as volume,'
       '    sum(volume * price) as amount'
       '    from sessions s'
       '    join incomesbydischarge i on s.id = i.session_id'
@@ -239,7 +240,7 @@ object DM: TDM
       '    '#39'01'#1058#1055'00'#39' as pmec,'
       '    '#39#39' as paymentmodename,'
       '    '#39'EMPTY'#39' as partnerextcode,'
-      '    sum(i.volume) as volume,'
+      '       sum(i.volume) as volume,'
       '    sum(0) as amount'
       '    from sessions s'
       '    join techreturn i on s.id = i.session_id'
@@ -349,7 +350,7 @@ object DM: TDM
       '    h.pumpnum,'
       '    h.numinpump,'
       '    h.hosetype,'
-      '    coalesce(sum(o.volume), 0) as volume,'
+      '    sum(coalesce(o.volume, 0)) as volume,'
       '--    sum(ss.volume) as invol,'
       '     ss.volume as invol,'
       '     1 as lastuser_id,'

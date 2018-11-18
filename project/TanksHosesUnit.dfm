@@ -2,6 +2,24 @@ inherited TanksHosesForm: TTanksHosesForm
   Caption = 'TanksHoses'
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvDBGrid: TJvDBUltimGrid
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'AZSCODE'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TANKNUM'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'HOSENUM'
+        Visible = True
+      end>
+  end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = 'Tanks/Hoses'
@@ -9,7 +27,7 @@ inherited TanksHosesForm: TTanksHosesForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12687,5 +12705,17 @@ inherited TanksHosesForm: TTanksHosesForm
       8007800380030000801F800380030000801F800380030000801F800380038001
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
+  end
+  inherited FDQuery: TFDQuery
+    Connection = DM.FDConnection
+    SQL.Strings = (
+      
+        'select h.azscode, h.id as hid, t.id as tid, h.tanknum, h.hosenum' +
+        ' from'
+      '        choses h'
+      '        join ctanks t'
+      '        on t.tanknum=h.tanknum and t.azscode=h.azscode '
+      'order by h.azscode, h.tanknum, h.hosenum'
+      '')
   end
 end

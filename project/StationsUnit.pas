@@ -58,7 +58,7 @@ procedure TStationsForm.FormCreate(Sender: TObject);
 begin
   inherited;
   with FDQuery do
-    begin
+  begin
     Transaction.StartTransaction;
 //    UpdateTransaction.StartTransaction;
     try

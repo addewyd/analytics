@@ -30,16 +30,12 @@ implementation
 
 {$R *.dfm}
 
-uses MainUnit;
+uses MainUnit, DmUnit;
 
 procedure TTanksHosesForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  with FDQuery do
-  begin
-    SqL.Text := 'select h.azscode, h.tanknum, h.hosenum from ' +
-        'ctanks t join choses h on t.tanknum=h.tanknum order by h.azscode, h.tanknum, h.hosenum';
-  end;
+  LoadData;
 end;
 
 end.

@@ -167,6 +167,8 @@ type
     QueryOutItemsSum: TFDQuery;
     QueryIOTHSumCALC: TFloatField;
     QueryIOTHSumOUTCOME: TFloatField;
+    QueryIOTHSumCALCIN: TFloatField;
+    QueryIOTHSumCALCREST: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -812,7 +814,7 @@ var
   th, tf, tm, tmp: String;
   sumth, sumtf, sumtm: String;
   len, i: Integer;
-  st: String;
+  st, WN: String;
 begin
   result := '';
 
@@ -836,35 +838,38 @@ begin
 
   for i := 0 to len - 1 do
   begin
-    st := IntToStr(i);
-    tm := 'coalesce((select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.code=i1.ware_code '
-      + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
+    ST := IntToStr(i);
+    WN := warelist.Names[i];
+    tm := 'coalesce((select sum(i1.volume) from inoutgsm i1'
+      + ' join wares w1 on w1.code=i1.ware_code '
+      + '    where w1.code= '#$27 + WN + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
-      + '0)  as volume_' + st + ',';
+      + '0)  as volume_' + ST + ',';
 
-    tm := tm + '(select price from getprice(0, :session_id,'#$27 + warelist.Names[i] + #$27')) '
-      + ' as price_' + st + ',';
+    tm := tm + '(select price from getprice(0, :session_id,'#$27 + WN + #$27')) '
+      + ' as price_' + ST + ',';
 
-    tmp := 'coalesce((select sum((select price from getprice(1, :session_id,'#$27 + warelist.Names[i] + #$27')) * i1.volume) from inoutgsm i1 '
+    tmp := 'coalesce((select sum((select price from getprice(1, :session_id,'#$27
+      + WN + #$27')) * i1.volume) from inoutgsm i1 '
       + '  join wares w1 on w1.code=i1.ware_code '
-      + '    where w1.code= '#$27 + warelist.Names[i] + #$27 +
+      + '    where w1.code= '#$27 + WN + #$27 +
       '        and i1.direction=0 ' +
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
-      + '0)  as amount_' + st + ',';
+      + '0)  as amount_' + ST + ',';
 
     th := th + tm + tmp;
 
-    sumtm := sumtm + ' sum(volume_' + st + ') as volume_' + st + ',';
+    sumtm := sumtm + ' sum(volume_' + ST + ') as volume_' + ST + ',';
 
   end;
-  sumtf := ' ' + '0' + ' as nol' + '    from (';
-  tf := ' 0 as nol ' + ' from inoutgsm i' +
+  sumtf := ' 0 as nol  from (';
+
+  tf := ' 0 as nol from inoutgsm i' +
     '    join sessions s on s.id=i.session_id' +
     '    join paymentmodes p on i.payment_code = p.code' +
-
     '    where ' +
-    '   s.id = :session_id ' + '   and i.azscode=:azscode' +
+    '   s.id = :session_id  and i.azscode=:azscode' +
     '   and  i.direction = 0' +
     ' group by session_id,stdt,payment_code, pmode'
     + ' order by stdt';
