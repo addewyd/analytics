@@ -879,6 +879,7 @@ begin
 
   result := th + tf;
 //  ErrorMessageBox(self, result);
+//addtolog(result);
 
 end;
 
@@ -2101,7 +2102,7 @@ var
   f: String;
 begin
   inherited;
-  f := FieldName;
+  f := UpperCase(FieldName);
   with QueryRealPmSum do
   begin
     if Active and (not eof) then
@@ -2791,7 +2792,7 @@ procedure TTabForm.RealPMGridDrawColumnTitle(Sender: TObject; ACanvas: TCanvas;
 
 begin
 
-  fn := AColumn.FieldName;
+  fn := UpperCase(AColumn.FieldName);
 
   if LeftStr(fn, 7) = 'VOLUME_' then
   begin

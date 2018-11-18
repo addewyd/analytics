@@ -1054,7 +1054,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001800010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001840010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14124,69 +14124,8 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Transaction = TransPM
     UpdateTransaction = TransPM
-    SQL.Strings = (
-      'select'
-      '    i.session_id,'
-      '    cast(s.startdatetime as date) as stdt,'
-      '    i.payment_code,'
-      '    p.name as pmode,'
-      ''
-      ''
-      '    sum(i.volume) as volume,'
-      
-        '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
-        'code=i1.ware_code'
-      '        where w1.code='#39'00000000001'#39
-      '            and i1.direction=0  and i1.session_id=:session_id'
-      '            and i1.payment_code = i.payment_code)'
-      '        as volume_ai92,'
-      
-        '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
-        'code=i1.ware_code'
-      '        where w1.code='#39'00000000030'#39
-      '            and i1.direction=0 and i1.session_id=:session_id'
-      '            and i1.payment_code = i.payment_code)'
-      '        as volume_ai95,'
-      
-        '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
-        'code=i1.ware_code'
-      '        where w1.code='#39'00000000041'#39
-      '            and i1.direction=0 and i1.session_id=:session_id'
-      '            and i1.payment_code = i.payment_code)'
-      '        as volume_dt,'
-      
-        '    (select sum(i1.volume) from inoutgsm i1 join wares w1 on w1.' +
-        'code=i1.ware_code'
-      '        where w1.code='#39'00000000042'#39
-      '            and i1.direction=0 and i1.session_id=:session_id'
-      '            and i1.payment_code = i.payment_code)'
-      '        as volume_dtf'
-      ''
-      '    from inoutgsm i'
-      '    join sessions s on s.id=i.session_id'
-      '    join paymentmodes p on i.payment_code = p.code'
-      ''
-      ''
-      '    where s.startdatetime >= cast(:start_session_t as TIMESTAMP)'
-      '   and azscode=:azscode'
-      '   and  i.direction = 0'
-      'group by session_id,stdt,payment_code, pmode'
-      'order by stdt')
     Left = 204
     Top = 149
-    ParamData = <
-      item
-        Name = 'SESSION_ID'
-        ParamType = ptInput
-      end
-      item
-        Name = 'START_SESSION_T'
-        ParamType = ptInput
-      end
-      item
-        Name = 'AZSCODE'
-        ParamType = ptInput
-      end>
   end
   object QuerySST: TFDQuery
     Connection = DM.FDConnection

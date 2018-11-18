@@ -99,6 +99,7 @@ uses MainUnit;
     try
 
       s := StringReplace(s, ',', ds, [rfReplaceAll]);
+      s := StringReplace(s, '.', ds, [rfReplaceAll]);
       result := StrToFloatDef(s, d);
     except
       //
