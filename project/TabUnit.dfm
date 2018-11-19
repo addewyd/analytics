@@ -1054,7 +1054,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001840010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180018C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13940,7 +13940,7 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '    i.invol as calcin,'
+      '    round(i.invol, 3) as calcin,'
       
         '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
         'as calc,'
@@ -14268,7 +14268,7 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '    i.invol as calcin,'
+      '    round(i.invol, 3) as calcin,'
       
         '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
         'as calc,'
