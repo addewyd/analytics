@@ -2066,7 +2066,7 @@ begin
     CommitActionExecute(Sender);
     key := 0;
   end;
-  if key = VK_F10 then
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then
   begin
     RollbackActionExecute(Sender);
     key := 0;
@@ -2085,7 +2085,7 @@ begin
     CommitActionExecute(Sender);
     key := 0;
   end;
-  if key = VK_F10 then
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then
   begin
     RollbackActionExecute(Sender);
     key := 0;
@@ -2481,7 +2481,7 @@ begin
     CommitActionExecute(Sender);
     key := 0;
   end;
-  if key = VK_F10 then
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then
   begin
     RollbackActionExecute(Sender);
     key := 0;
@@ -2844,7 +2844,7 @@ begin
     CommitActionExecute(Sender);
     key := 0;
   end;
-  if key = VK_F10 then
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then
   begin
     RollbackActionExecute(Sender);
     key := 0;

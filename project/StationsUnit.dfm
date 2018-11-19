@@ -7,10 +7,13 @@ inherited StationsForm: TStationsForm
       Left = 46
       Top = 0
       Action = UpdateAction
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inherited JvDBGrid: TJvDBUltimGrid
     OnDblClick = JvDBGridDblClick
+    OnKeyDown = JvDBGridKeyDown
     OnKeyPress = JvDBGridKeyPress
     AutoAppend = True
     Columns = <
@@ -34,9 +37,13 @@ inherited StationsForm: TStationsForm
       end>
   end
   inherited ActionList: TActionList
+    inherited RefreshAction: TAction
+      Caption = #1054#1090#1084#1077#1085#1072
+      Hint = #1054#1090#1084#1077#1085#1072
+    end
     object UpdateAction: TAction
-      Caption = 'Update'
-      Hint = 'Commit'
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       ImageIndex = 361
       OnExecute = UpdateActionExecute
     end
@@ -51,7 +58,7 @@ inherited StationsForm: TStationsForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -30,6 +30,8 @@ type
     procedure JvDBGridDblClick(Sender: TObject);
     procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
     procedure TransUPDAfterCommit(Sender: TObject);
+    procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -105,6 +107,17 @@ begin
 
   msg.Msg := WM_STATION_CHANGED;
   MainForm.SendMsgs(msg);
+
+end;
+
+// .............................................................................
+
+procedure TStationsForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if Key = VK_F2 then  UpdateActionExecute(Sender);
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then  RefreshActionExecute(Sender);
 
 end;
 

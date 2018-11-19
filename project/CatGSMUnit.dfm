@@ -13,6 +13,8 @@ inherited CatGSMForm: TCatGSMForm
       Left = 46
       Top = 0
       Action = CommitAction
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inherited JvStatusBar1: TJvStatusBar
@@ -30,6 +32,12 @@ inherited CatGSMForm: TCatGSMForm
   inherited JvDBGrid: TJvDBUltimGrid
     Width = 477
     Height = 269
+    OnCellClick = JvDBGridCellClick
+    OnColEnter = JvDBGridColEnter
+    OnColExit = JvDBGridColExit
+    OnDrawColumnCell = JvDBGridDrawColumnCell
+    OnKeyDown = JvDBGridKeyDown
+    OnKeyPress = JvDBGridKeyPress
     AutoAppend = True
     Columns = <
       item
@@ -64,8 +72,13 @@ inherited CatGSMForm: TCatGSMForm
       end>
   end
   inherited ActionList: TActionList
+    inherited RefreshAction: TAction
+      Caption = #1054#1090#1084#1077#1085#1072
+      Hint = #1054#1090#1084#1077#1085#1072' (Esc)'
+    end
     object CommitAction: TAction
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' (F2)'
       ImageIndex = 361
       OnExecute = CommitActionExecute
     end
@@ -73,11 +86,14 @@ inherited CatGSMForm: TCatGSMForm
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = #1043#1057#1052
+      object N2: TMenuItem [0]
+        Action = CommitAction
+      end
     end
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
