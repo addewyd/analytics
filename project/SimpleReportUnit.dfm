@@ -2,6 +2,13 @@ inherited SimpleReportForm: TSimpleReportForm
   Caption = 'Simple Report'
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvToolBar1: TJvToolBar
+    object ToolButton3: TToolButton
+      Left = 46
+      Top = 0
+      Action = ToXlsAction
+    end
+  end
   inherited JvStatusBar1: TJvStatusBar
     Panels = <
       item
@@ -73,7 +80,7 @@ inherited SimpleReportForm: TSimpleReportForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180013C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
