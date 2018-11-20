@@ -292,8 +292,8 @@ begin
   inherited;
   session_id := FDQuery.FieldByName('id').AsInteger;
   _state := FDQuery.FieldByName('state').AsInteger;
-  if _state <> S_CLOSED then Exit;
-  
+  if (_state <> S_CLOSED) then Exit;
+
   if IsNextSessionOpened(session_id) then
   begin
     yn := TYNForm.Create(self);
@@ -320,6 +320,42 @@ end;
 
 // .............................................................................
 
+procedure TSessionListForm.VerifiedActionExecute(Sender: TObject);
+  var
+    yn : TYNForm;
+    msg: TMessage;
+    session_id: Integer;
+    _state: Integer;
+begin
+  inherited;
+  session_id := FDQuery.FieldByName('id').AsInteger;
+  _state := FDQuery.FieldByName('state').AsInteger;
+  if _state <= S_VERIFIED then
+  begin
+    yn := TYNForm.Create(self);
+    yn.Memo1.Text := 'Смена проверена?';
+    if yn.ShowModal <> mrOK then Exit;
+
+    UpdateState('sessions', 'id', session_id, S_VERIFIED);
+    UpdateState('inoutgsm', 'session_id', session_id, S_VERIFIED);
+    UpdateState('iotankshoses', 'session_id', session_id, S_VERIFIED);
+    UpdateState('inoutitems', 'session_id', session_id, S_VERIFIED);
+    msg.WParam := S_VERIFIED;
+    msg.Msg := WM_STATE_CHANGED;
+    MainForm.SendMsgs(msg);
+    LoadData;
+    FDQuery.Locate('id', session_id);
+  end
+  else
+  begin
+    ErrorMessageBox(self, 'Смена не закрыта');
+    Exit;
+
+  end;
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.CloseSessActionExecute(Sender: TObject);
   var
     yn : TYNForm;
@@ -334,7 +370,6 @@ begin
   _state := FDQuery.FieldByName('state').AsInteger;
 
   if _state = S_CLOSED then Exit;
-
 
   if not PrevClosed(session_id) then
   begin
@@ -757,13 +792,6 @@ begin
   AddToLog('STATIONCANGED');
   PrepareAndLoad;
 end;
-
-procedure TSessionListForm.VerifiedActionExecute(Sender: TObject);
-begin
-  inherited;
-//
-end;
-
 
 // .............................................................................
 
