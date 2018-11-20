@@ -1879,7 +1879,7 @@ procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
   var
     orderpath: String;
     files: TStringDynArray;
-    cnt, i, len, hosenum, r: Integer;
+    cnt, i, k, len, hosenum, r: Integer;
     nL: IDOMNodeList;
     attrs: IDOMNamedNodeMap;
     fuelcode, fuelname, paymentcode,
@@ -1888,10 +1888,15 @@ procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
     tanknum, hosename, sDat, sTime,
       remark: String;
     sVolume, sAmount, sMass, sOrigprice: String;
+    PartnerExtCode: String;
     Volume, Amount, Mass, Origprice: Extended;
     bHasOrder: boolean;
     dt: TDateTime;
     odt: String;
+    cn: IXmlNodeList;
+    cni: IDomNodeList;
+    el, elc: IXMLNode;
+    OwnerDocument: IXMlDocument;
 
 begin
   // load orders first
@@ -2021,17 +2026,30 @@ begin
         UpdateWarePices(id, fuelcode, origprice, 'price_o');
       end;
 
+      PartnerExtCode := '';
+      OwnerDocument := TXMLDocument.Create(nil);
+//      cni := nL.item[i].childNodes;
+      el := TXMLNode.Create(nL.item[i],nil, (OwnerDocument as IXMLDocumentAccess).DocumentObject);
+      elc := el.ChildNodes.FindNode('PartnerExtCode');
+      if elc <> nil then
+      begin
+        PartnerExtCode := elc.Text;
+        CheckLink('CONTRAGENTS', partnerextcode, 'NO NAME', []);
+        CheckContracts(partnerextcode);
+
+      end;
+
       with DM.FDQuery do
       begin
         SQL.Text := 'insert into OutcomesByOffice ' +
           '(session_id, odt, tanknum,  hosename,  fuelname, ' +
               'fuelextcode, paymentmodename, paymentmodeextcode, ' +
               'volume, amount, mass, ' +
-              'origprice, remark, hasorder)' +
+              'origprice, remark, hasorder, partnerextcode)' +
           ' values ' +
           '(:session_id, :odt, :tanknum, :hosename, :fuelname, ' +
             ':fuelextcode,:paymentmodename,:paymentmodeextcode, ' +
-            ':volume,:amount,:mass,:origprice,:remark,:hasorder)';
+            ':volume,:amount,:mass,:origprice,:remark,:hasorder, :partnerextcode)';
         with params do
         begin
           Clear;
@@ -2119,6 +2137,12 @@ begin
             DataType := ftBoolean;
             ParamType := ptInput;
           end;
+          with Add do
+          begin
+            Name := 'partnerextcode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
 
         end;
 
@@ -2135,6 +2159,11 @@ begin
         ParamByName('mass').AsExtended := mass;
         ParamByName('origprice').AsExtended := Origprice;
         ParamByName('remark').AsString := remark;
+        if partnerextcode = '' then
+          ParamByName('partnerextcode').Clear
+        else
+          ParamByName('partnerextcode').AsString := partnerextcode;
+
         ParamByName('hasorder').AsBoolean := bHasOrder;
         Prepare;
         ExecSQL;

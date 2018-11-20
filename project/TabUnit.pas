@@ -850,7 +850,7 @@ begin
     tm := tm + '(select price from getprice(0, :session_id,'#$27 + WN + #$27')) '
       + ' as price_' + ST + ',';
 
-    tmp := '(select amount from inoutgsm i1 '
+    tmp := '(select sum(amount) from inoutgsm i1 '
       + '  join wares w1 on w1.code=i1.ware_code '
       + '    where w1.code= '#$27 + WN + #$27 +
       '        and i1.direction=0 ' +

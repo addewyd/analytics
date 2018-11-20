@@ -534,6 +534,7 @@ end;
 procedure TMainForm.ClearDBActionExecute(Sender: TObject);
   var
     msg: TMessage;
+    fm: TForm;
 begin
 
   YNForm := TYNForm.Create(self);
@@ -610,8 +611,8 @@ begin
 
           ExecSQL('delete from paymentmodes');
           AddToLog('deleted from paymentmodes');
-          //ExecSQL('delete from contragents');
-          //AddToLog('deleted from contragents');
+          ExecSQL('delete from wareprices');
+          AddToLog('deleted from wareprices');
           ExecSQL('delete from sessions');
           AddToLog('deleted from sessions');
           UpdateTransaction.Commit;
@@ -621,7 +622,13 @@ begin
           Open;
 
           msg.Msg := WM_SESSION_DELETED;
+          if isWinOpen('tabform') then
+          begin
+              fm := GetMdiForm('tabform');
+              fm.Close;
+          end;
           SendMsgs(msg);
+
           DM.AddLogMsg(user_id, 'deleted all tables');
         except
           on e: Exception do

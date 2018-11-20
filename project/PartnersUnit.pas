@@ -16,7 +16,16 @@ uses
 
 type
   TPartnersForm = class(TFormWithGrid)
+    CommitAction: TAction;
+    ToolButton3: TToolButton;
+    N2: TMenuItem;
+    FDQueryCODE: TWideStringField;
+    FDQueryNAME: TWideStringField;
     procedure FormCreate(Sender: TObject);
+    procedure CommitActionExecute(Sender: TObject);
+    procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -32,12 +41,37 @@ implementation
 
 uses DmUnit;
 
+procedure TPartnersForm.CommitActionExecute(Sender: TObject);
+  var
+    code: String;
+begin
+  inherited;
+  with FDQuery do
+  begin
+    code := FieldByName('code').AsString;
+    Transaction.StartTransaction;
+    try
+      ApplyUpdates(0);
+      Close;
+      Transaction.Commit;
+      LoadData;
+      Locate('CODE', code);
+    except
+      on e: exception do
+      begin
+        Transaction.Rollback;
+        ErrorMessageBox(self, e.message);
+      end;
+    end;
+  end;
+end;
+
 procedure TPartnersForm.FormCreate(Sender: TObject);
 begin
   inherited;
   with FDQuery do
   begin
-    SQL.Text := 'select code, name from contragents';
+//    SQL.Text := 'select code, name from contragents';
     Transaction.StartTransaction;
     try
       Open;
@@ -48,6 +82,27 @@ begin
       Transaction.Rollback;
     end;
   end;
+
+end;
+
+procedure TPartnersForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if Key = VK_F2 then  CommitActionExecute(Sender);
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then  RefreshActionExecute(Sender);
+  if Key = VK_DELETE then
+  begin
+    FDQuery.Delete;
+  end;
+
+end;
+
+procedure TPartnersForm.RefreshActionExecute(Sender: TObject);
+begin
+  inherited;
+  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 
 end;
 

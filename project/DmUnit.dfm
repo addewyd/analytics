@@ -109,7 +109,6 @@ object DM: TDM
       '    STATE)'
       ''
       '/* session_id is input parameter */'
-      ''
       'select'
       '    sid,'
       '    azscode,'
@@ -150,11 +149,23 @@ object DM: TDM
       '    t.density as density,'
       '    r.paymentmodeextcode as pmec,'
       '    r.paymentmodename,'
-      '    r.partnerextcode, '
+      
+        '    iif(opa is not null, opa, r.partnerextcode) as partnerextcod' +
+        'e,'
       '    sum(r.volume) as volume,'
       '    sum(r.amount) as amount'
       '    from sessions s'
-      '    join outcomesbyretail r on s.id = r.session_id'
+      '    join'
+      
+        '        (select r.*, o.partnerextcode as opa from  outcomesbyret' +
+        'ail r'
+      
+        '            left join outcomesbyoffice o on r.session_id = o.ses' +
+        'sion_id'
+      
+        '                      and r.paymentmodeextcode=o.paymentmodeextc' +
+        'ode and r.remark=o.remark)'
+      '        as r on s.id = r.session_id'
       '    join         (select session_id, tanknum, warecode, density'
       '            from iotankshoses where session_id=:session_id'
       '                group by'
@@ -166,6 +177,7 @@ object DM: TDM
       
         '    join wareprices wp on wp.session_id = r.session_id and wp.wa' +
         're_code=t.warecode'
+      ''
       '   where'
       '    r.session_id = :session_id'
       '    and r.tanknum = t.tanknum'
@@ -268,7 +280,7 @@ object DM: TDM
       ' ) as a'
       '    join  wares as w'
       '        on a.fuelextcode=w.code'
-      '    join contragents p'
+      '    left join contragents p'
       '        on a.partnerextcode = p.code'
       '    left join contracts c'
       '        on a.partnerextcode = c.partner_code'
@@ -369,7 +381,7 @@ object DM: TDM
       '             on ss.tnum=t.tanknum and ss.sid = s.id'
       ''
       '    where t.session_id = :session_id'
-      '            and s.id = t.session_id'
+      '            and s.id = t.session_id and t.warecode is not null'
       '    group by'
       '    s.id, '
       '    s.azscode,'

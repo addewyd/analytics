@@ -57,7 +57,7 @@ implementation
 
 uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1, YNUnit, StationsUnit;
 
-
+        // проверено, закрыть смену, открыть смену
 procedure TSessionListForm.PrepareAndLoad;
 var
   sst: String;
