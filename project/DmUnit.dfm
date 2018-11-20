@@ -159,12 +159,14 @@ object DM: TDM
       
         '        (select r.*, o.partnerextcode as opa from  outcomesbyret' +
         'ail r'
-      
-        '            left join outcomesbyoffice o on r.session_id = o.ses' +
-        'sion_id'
-      
-        '                      and r.paymentmodeextcode=o.paymentmodeextc' +
-        'ode and r.remark=o.remark)'
+      '            left join '
+      '            outcomesbyoffice o on r.session_id = o.session_id'
+      '            and r.paymentmodeextcode=o.paymentmodeextcode '
+      '            and r.remark=o.remark'
+      '            and r.tanknum=o.tanknum'
+      '            and r.hosename=o.hosename'
+      '            and o.volume=r.volume'
+      '            )'
       '        as r on s.id = r.session_id'
       '    join         (select session_id, tanknum, warecode, density'
       '            from iotankshoses where session_id=:session_id'
