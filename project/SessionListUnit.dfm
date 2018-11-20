@@ -1,13 +1,13 @@
 inherited SessionListForm: TSessionListForm
-  Caption = 'Session List'
-  ClientHeight = 364
-  ClientWidth = 551
-  ExplicitWidth = 567
-  ExplicitHeight = 423
+  Caption = #1057#1084#1077#1085#1099
+  ClientHeight = 423
+  ClientWidth = 612
+  ExplicitWidth = 628
+  ExplicitHeight = 482
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    Width = 551
+    Width = 612
     ExplicitWidth = 551
     object ToolButton3: TToolButton
       Left = 46
@@ -21,22 +21,43 @@ inherited SessionListForm: TSessionListForm
       Top = 0
       Action = ChangeStationAction
     end
+    object ToolButton5: TToolButton
+      Left = 92
+      Top = 0
+      Action = CloseSessAction
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object ToolButton6: TToolButton
+      Left = 115
+      Top = 0
+      Action = ClearCloseAction
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object ToolButton7: TToolButton
+      Left = 138
+      Top = 0
+      Action = VerifiedAction
+      ParentShowHint = False
+      ShowHint = True
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
-    Top = 345
-    Width = 551
+    Top = 404
+    Width = 612
     ExplicitTop = 345
     ExplicitWidth = 551
   end
   inherited JvDBGridFooter: TJvDBGridFooter
-    Top = 326
-    Width = 551
+    Top = 385
+    Width = 612
     ExplicitTop = 326
     ExplicitWidth = 551
   end
   inherited JvDBGrid: TJvDBUltimGrid
-    Width = 551
-    Height = 297
+    Width = 612
+    Height = 356
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
     OnDrawColumnCell = JvDBGridDrawColumnCell
@@ -74,7 +95,7 @@ inherited SessionListForm: TSessionListForm
   end
   inherited ActionList: TActionList
     object DeleteLastAction: TAction
-      Caption = 'Delete Last'
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1089#1083#1077#1076#1085#1102#1102
       Hint = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1089#1083#1077#1076#1085#1102#1102
       ImageIndex = 131
       OnExecute = DeleteLastActionExecute
@@ -84,6 +105,24 @@ inherited SessionListForm: TSessionListForm
       Hint = #1057#1084#1077#1085#1080#1090#1100' '#1040#1047#1057
       ImageIndex = 320
       OnExecute = ChangeStationActionExecute
+    end
+    object CloseSessAction: TAction
+      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      ImageIndex = 8
+      OnExecute = CloseSessActionExecute
+    end
+    object ClearCloseAction: TAction
+      Caption = #1054#1090#1082#1088#1099#1090#1100
+      Hint = #1054#1090#1082#1088#1099#1090#1100
+      ImageIndex = 3
+      OnExecute = ClearCloseActionExecute
+    end
+    object VerifiedAction: TAction
+      Caption = #1055#1088#1086#1074#1077#1088#1077#1085#1086
+      Hint = #1055#1088#1086#1074#1077#1088#1077#1085#1086
+      ImageIndex = 322
+      OnExecute = VerifiedActionExecute
     end
   end
   inherited MainMenu: TMainMenu
@@ -95,11 +134,20 @@ inherited SessionListForm: TSessionListForm
       object N2: TMenuItem
         Action = ChangeStationAction
       end
+      object N3: TMenuItem
+        Action = CloseSessAction
+      end
+      object N4: TMenuItem
+        Action = ClearCloseAction
+      end
+      object N5: TMenuItem
+        Action = VerifiedAction
+      end
     end
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12838,5 +12886,38 @@ inherited SessionListForm: TSessionListForm
     FetchOptions.AssignedValues = [evUnidirectional]
     Left = 408
     Top = 168
+  end
+  object GenQuery: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = GenTrans
+    Left = 60
+    Top = 264
+  end
+  object GenTrans: TFDTransaction
+    Connection = DM.FDConnection
+    Left = 116
+    Top = 261
+  end
+  object GenUpdQuery: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = GenUpdTrans
+    UpdateTransaction = GenUpdTransUPD
+    Left = 284
+    Top = 277
+  end
+  object GenUpdTrans: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 360
+    Top = 301
+  end
+  object GenUpdTransUPD: TFDTransaction
+    Options.Isolation = xiSnapshot
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Connection = DM.FDConnection
+    Left = 452
+    Top = 309
   end
 end

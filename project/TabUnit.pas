@@ -244,6 +244,7 @@ type
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
+    procedure statechanged(var Msg: TMessage); message WM_STATE_CHANGED;
     procedure SetControlsOnSessionState(st: Integer);
     function IsNextSessionOpened: boolean;
     function SetSessionState(st: Integer): boolean;
@@ -2334,13 +2335,9 @@ begin
 //    JvStatusBar1.Visible := b;
 
     CloseSessAction.Enabled := st < S_CLOSED;
-    
     RollbackAction.Enabled := st < S_CLOSED;
-    
     CommitAction.Enabled := st < S_CLOSED;
-    
     ClearCloseAction.Enabled := st = S_CLOSED;
-
     VerifiedAction.Enabled := st < S_VERIFIED;
 
     with JvStatusBar1 do
@@ -2896,4 +2893,15 @@ begin
 //    Close;
 end;
 
+// .............................................................................
+
+procedure TTabForm.statechanged(var Msg: TMessage);
+begin
+  AddToLog('sess state changed in tabs');
+  //DM.FDConnection.Close;
+  //DM.FDConnection.Open();
+  RollbackActionExecute(self);
+  UpdateAllStates(msg.WParam);
+  ShowAllData;
+end;
 end.

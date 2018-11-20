@@ -25,6 +25,20 @@ type
     ToolButton4: TToolButton;
     ChangeStationAction: TAction;
     N2: TMenuItem;
+    CloseSessAction: TAction;
+    ClearCloseAction: TAction;
+    VerifiedAction: TAction;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    GenQuery: TFDQuery;
+    GenTrans: TFDTransaction;
+    GenUpdQuery: TFDQuery;
+    GenUpdTrans: TFDTransaction;
+    GenUpdTransUPD: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -35,6 +49,9 @@ type
     procedure JvDBGridDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure ChangeStationActionExecute(Sender: TObject);
+    procedure CloseSessActionExecute(Sender: TObject);
+    procedure ClearCloseActionExecute(Sender: TObject);
+    procedure VerifiedActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -46,6 +63,10 @@ type
     procedure sessionupdated(var Msg: TMessage); message WM_SESSION_UPDATED;
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
     procedure PrepareAndLoad;
+    function PrevClosed(sid: Integer) : boolean;
+    procedure UpdateState(tablename, idname: String; id, _state: Integer);
+    procedure SetControls(st: Integer);
+    function IsNextSessionOpened(id: Integer): boolean;
   end;
 
 var
@@ -58,6 +79,16 @@ implementation
 uses HttpServiceUnit, MainUnit, TabUnit, BaseFormUnit1, YNUnit, StationsUnit;
 
         // проверено, закрыть смену, открыть смену
+
+procedure TSessionListForm.SetControls(st: Integer);
+begin
+    CloseSessAction.Enabled := st < S_CLOSED;
+    ClearCloseAction.Enabled := st = S_CLOSED;
+    VerifiedAction.Enabled := st < S_VERIFIED;
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.PrepareAndLoad;
 var
   sst: String;
@@ -106,6 +137,91 @@ end;
 
 // .............................................................................
 
+procedure TSessionListForm.UpdateState(tablename, idname: String;
+  id, _state: Integer);
+var
+  Msg: TMessage;
+begin
+  with GenUpdQuery do
+  begin
+    Transaction.StartTransaction;
+    UpdateTransaction.StartTransaction;
+    try
+      if AnsiSameText(tablename, 'sessions') then
+        sql.Text := 'update !table set state = :state ' +
+          ' where !session_id = :session_id'// and state < ' + SS_CLOSED
+      else
+        sql.Text := 'update !table set state = :state, lastuser_id=:user_id ' +
+          ' where !session_id = :session_id'; // and state < ' + SS_CLOSED;
+      with Macros do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'table';
+          DataType := mdRaw;
+        end;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := mdRaw;
+        end;
+      end;
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'state';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        if not AnsiSameText(tablename, 'sessions') then
+          with Add do
+        begin
+          Name := 'user_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      MacroByName('table').asRaw := tablename;
+      MacroByName('session_id').asRaw := idname;
+      ParamByName('state').AsInteger := _state;
+      ParamByName('session_id').AsInteger := id;
+      if not AnsiSameText(tablename, 'sessions') then
+        ParamByName('user_id').AsInteger := user_id;
+
+      prepare;
+      ExecSQL;
+      AddToLog('updating ' + tablename);
+
+      UpdateTransaction.Commit;
+      Transaction.Commit;
+
+      DM.AddLogMsg(user_id, format('Updated %s session_id %d',
+        [tablename, id]));
+      AddToLog(format('Updated %s state to %d', [tablename, _state]));
+    except
+      on e: Exception do
+      begin
+        UpdateTransaction.Rollback;
+        Transaction.Rollback;
+        AddToLog(e.Message);
+        raise;
+      end;
+
+    end;
+  end;
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.ChangeStationActionExecute(Sender: TObject);
   var
     tb: TForm;
@@ -127,6 +243,131 @@ end;
 
 // .............................................................................
 
+function TSessionListForm.IsNextSessionOpened(id: Integer): boolean;
+begin
+  result := false;
+  with GenQuery do
+  begin
+    sql.Text := 'select first 1 id, state from sessions where ' +
+    'azscode = :azscode and id > :id order by id';
+    with params do
+    begin
+      Clear;
+      with Add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+      with Add do
+      begin
+        Name := 'id';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := current_azscode;
+    ParamByName('id').AsInteger := id;
+    Prepare;
+    Open;
+    if RecordCount < 1 then Result := true
+    else
+    begin
+      if FieldByName('state').AsInteger < S_CLOSED then Result := true;
+
+    end;
+    Close;
+  end;
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.ClearCloseActionExecute(Sender: TObject);
+  var
+    yn : TYNForm;
+    msg: TMessage;
+    session_id: Integer;
+    _state: Integer;
+begin
+  inherited;
+  session_id := FDQuery.FieldByName('id').AsInteger;
+  _state := FDQuery.FieldByName('state').AsInteger;
+  if _state <> S_CLOSED then Exit;
+  
+  if IsNextSessionOpened(session_id) then
+  begin
+    yn := TYNForm.Create(self);
+    yn.Memo1.Text := 'Открыть смену?';
+    if yn.ShowModal <> mrOK then Exit;
+
+    UpdateState('sessions', 'id', session_id, S_CHANGED);
+    UpdateState('inoutgsm', 'session_id', session_id, S_CHANGED);
+    UpdateState('iotankshoses', 'session_id', session_id, S_CHANGED);
+    UpdateState('inoutitems', 'session_id', session_id, S_CHANGED);
+    msg.WParam := S_CHANGED;
+    msg.Msg := WM_STATE_CHANGED;
+    MainForm.SendMsgs(msg);
+    LoadData;
+    FDQuery.Locate('id', session_id);
+  end
+  else
+  begin
+    ErrorMessageBox(self, 'Не открыта следующая смена');
+    Exit;
+
+  end;
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.CloseSessActionExecute(Sender: TObject);
+  var
+    yn : TYNForm;
+    msg: TMessage;
+    session_id: Integer;
+    _state: Integer;
+
+begin
+  inherited;
+
+  session_id := FDQuery.FieldByName('id').AsInteger;
+  _state := FDQuery.FieldByName('state').AsInteger;
+
+  if _state = S_CLOSED then Exit;
+
+
+  if not PrevClosed(session_id) then
+  begin
+    ErrorMessageBox(self, 'Не закрыта предыдущая смена');
+    Exit;
+  end;
+
+  yn := TYNForm.Create(self);
+  yn.Memo1.Text := 'Закрыть смену?';
+  if yn.ShowModal <> mrOK then Exit;
+
+  try
+    UpdateState('sessions', 'id', session_id, S_CLOSED);
+    UpdateState('inoutgsm', 'session_id', session_id, S_CLOSED);
+    UpdateState('iotankshoses', 'session_id', session_id, S_CLOSED);
+    UpdateState('inoutitems', 'session_id', session_id, S_CLOSED);
+    msg.WParam := S_CLOSED;
+    msg.Msg := WM_STATE_CHANGED;
+    MainForm.SendMsgs(msg);
+    LoadData;
+    FDQuery.Locate('id', session_id);
+
+  except
+      on e: Exception do
+      begin
+        AddToLog('oblom ' + e.Message);
+      end;
+  end;
+
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.DeleteLastActionExecute(Sender: TObject);
   var
     Key: Word;
@@ -142,6 +383,7 @@ procedure TSessionListForm.FormCreate(Sender: TObject);
 begin
   inherited;
   PrepareAndLoad;
+
 end;
 
 // .............................................................................
@@ -515,5 +757,78 @@ begin
   AddToLog('STATIONCANGED');
   PrepareAndLoad;
 end;
+
+procedure TSessionListForm.VerifiedActionExecute(Sender: TObject);
+begin
+  inherited;
+//
+end;
+
+
+// .............................................................................
+
+function TSessionListForm.PrevClosed(sid: Integer) : boolean;
+  var
+    i, id, prevstate: Integer;
+begin
+  Result := false;
+  with GenQuery do
+  begin
+    sql.Text := 'select id, state from sessions where azscode=:azscode order by id';
+    with Params do
+    begin
+      Clear;
+      with add do
+      begin
+        Name := 'sid';
+        DataType := ftInteger;
+        ParamType := ptInput;
+      end;
+      with add do
+      begin
+        Name := 'azscode';
+        DataType := ftString;
+        ParamType := ptInput;
+      end;
+    end;
+    ParamByName('sid').AsInteger := sid;
+    ParamByName('azscode').AsString := current_azscode;
+    i := 0;
+    prevstate := 0;
+    Prepare;
+    Open;
+    while not Eof do
+    begin
+
+      id := FieldByName('id').AsInteger;
+
+      if i = 0 then
+      begin
+        if sid = id then
+        begin
+          result := true;
+          Exit;
+        end;
+      end
+      else
+      begin
+        if sid = id then
+        begin
+          if prevstate > S_VERIFIED then
+          begin
+            result := true;
+            exit;
+          end;
+        end;
+      end;
+      prevstate := FieldByName('state').AsInteger;
+
+      Next;
+      i := i + 1;
+    end;
+  end;
+end;
+
+
 
 end.

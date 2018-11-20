@@ -1054,7 +1054,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180018C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001900010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14210,7 +14210,7 @@ inherited TabForm: TTabForm
     Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
-    Left = 188
+    Left = 196
     Top = 277
   end
   object QueryRealPmSum: TFDQuery
@@ -14739,12 +14739,12 @@ inherited TabForm: TTabForm
   object GenQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = GenTrans
-    Left = 28
-    Top = 333
+    Left = 44
+    Top = 341
   end
   object GenTrans: TFDTransaction
     Connection = DM.FDConnection
-    Left = 116
+    Left = 108
     Top = 333
   end
   object DSOutItems: TJvDataSource
