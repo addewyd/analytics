@@ -1,5 +1,6 @@
 object DM: TDM
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 527
   Width = 608
   object FDQuery: TFDQuery

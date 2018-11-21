@@ -2384,6 +2384,9 @@ begin
   inherited;
   SetControlsOnSessionState(session_state);
 
+  QueryInOut.SQL.Text := IOGSQL;
+  QueryInOutSum.SQL.Text := IOGSQLSum;
+
   warelist := TStringList.Create;
   dirtyGSM := false;
   dirtyItem := false;

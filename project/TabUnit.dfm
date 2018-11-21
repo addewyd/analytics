@@ -13744,6 +13744,7 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
+      'SEE DMUnit'
       ''
       'select '
       '   i.id,'
@@ -13762,10 +13763,11 @@ inherited TabForm: TTabForm
       '   round(volume * density / 1000,3) as mass,'
       '   i.nds, -- '#1089#1090#1072#1074#1082#1072
       '    round(amount * cast(nds as double precision) / '
-      '       118.0, 2) as sumnds,'
+      '       (100+cast(nds as double precision)), 2) as sumnds,'
       '    amount as whole,'
       '    round(amount - amount * '
-      'cast(nds as double precision) / 118.0, 2) as amount0'
+      '      cast(nds as double precision) / '
+      '     (100+cast(nds as double precision)), 2) as amount0'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'
@@ -14349,6 +14351,8 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
+      'SEE DMUnit'
+      ''
       
         'select sum(volume) as volume,sum(amount0) as amount0, sum(sumnds' +
         ') as sumnds, sum(whole) as whole, sum(mass) as mass'
@@ -14368,12 +14372,13 @@ inherited TabForm: TTabForm
       '   i.price,'
       'i.density,'
       '   round(volume * density / 1000,3) as mass,'
-      'i.nds, -- '#1089#1090#1072#1074#1082#1072
+      '   i.nds, -- '#1089#1090#1072#1074#1082#1072
       '    round(amount * cast(nds as double precision) / '
-      '       118.0, 2) as sumnds,'
+      '       (100+cast(nds as double precision)), 2) as sumnds,'
       '    amount as whole,'
       '    round(amount - amount * '
-      'cast(nds as double precision) / 118.0, 2) as amount0'
+      '      cast(nds as double precision) / '
+      '     (100+cast(nds as double precision)), 2) as amount0'
       ''
       '   from inoutgsm i'
       '   join sessions s on s.id = i.session_id'

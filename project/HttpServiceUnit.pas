@@ -29,13 +29,19 @@ uses DmUnit, MainUnit;
 type IOGRec =
     record
       session_id: Integer;
-      sdt: Extended;
+      azscode: String;
+      dir: string;
+      sdate: TDateTime;
+      clientcode: String;
+      clientname: String;
     end;
 
 var
   query: TFDQuery;
   conn: TFDConnection;
   tran: TFDTransaction;
+
+// .............................................................................
 
 Procedure CreateConn;
 begin
@@ -80,16 +86,38 @@ begin
 
 end;
 
+// .............................................................................
 
 procedure SendMsgs(m: TMessage);
 begin
   MainForm.SendMsgs(m);
 end;
 
-function BuildResponse(recs: Array of IOGRec): String;
-begin
-  result := IntToStr(Length(recs));
+// .............................................................................
 
+function BuildResponse(recs: Array of IOGRec): String;
+  var rsp: String;
+    k: integer;
+begin
+          rsp := '['#13#10;
+          for k := 0 to Length(recs) - 1 do
+          begin
+            rsp := rsp + format(
+              '[%d,%s,%s,%s,%s,%s]',
+              [
+                recs[k].session_id,
+                recs[k].azscode,
+                recs[k].dir,
+                DateTimeToStr(recs[k].sdate),
+                recs[k].clientcode,
+                recs[k].clientname
+              ]);
+            if k < Length(recs) - 1 then rsp := rsp + ','#13#10
+            else rsp := rsp + #13#10;
+
+          end;
+          rsp := rsp + ']'#13#10;
+  result := rsp;
 end;
 
 // .............................................................................
@@ -97,12 +125,13 @@ end;
 procedure LoadDocs(Response: TIdHTTPResponseInfo);
 var
   msg: TMessage;
-  rc, k: Integer;
+  rc, k, c: Integer;
   recs: Array of IOGRec;
   rsp: String;
 begin
   AddToLogT('received LoadDocs');
   query := TFDQuery.Create(nil);
+  Response.CharSet := 'utf-8';
   try
     with query do
     begin
@@ -111,41 +140,47 @@ begin
       Transaction := tran;
 
       query.FetchOptions.AutoFetchAll := afAll;
+      query.SQL.Text := IOGSQLH;
       Transaction.StartTransaction;
       try
 
-        SQL.Text := 'select s.id as id, s.startdatetime as sdt from sessions s ' +
-                    'join inoutgsm i on s.id=i.session_id ' +
-                    'where s.state = ' + SS_CLOSED +
-                    ' order by startdatetime';
-
         Prepare;
         Open;
+        FetchAll;
         rc := RecordCount;
         if rc > 0 then
         begin
 
           SetLength(recs, rc);
           k := 0;
+
           while not Eof do
           begin
-            recs[k].session_id := FieldByName('id').AsInteger;
-            recs[k].sdt := FieldByName('sdt').AsDateTime;
+            recs[k].session_id := FieldByName('session_id').AsInteger;
+            recs[k].dir := FieldByName('dir').AsString;
+            recs[k].azscode := FieldByName('azscode').AsString;
+            recs[k].sdate := FieldByName('sdate').AsDateTime;
+            recs[k].clientcode := FieldByName('clientcode').AsString;
+            recs[k].clientname := FieldByName('clientname').AsString;
             Next;
             k := k + 1;
           end;
-          rsp := BuildResponse(recs);
 
-          Response.CharSet := 'utf-8';
-          Response.ContentType := 'applocation/json; charset=utf-8';
+          rsp := BuildResponse(recs);
+          Response.ContentType := 'application/json; charset=utf-8';
           Response.ContentText := rsp;
 
-      end;
+        end
+        else
+        begin
+          rsp := '0';
+        end;
 
         Transaction.Commit;
         msg.Msg := WM_STATE_CHANGED_FEXT;
         msg.WParam := S_SENT;
         msg.LParam := 0;
+
       TThread.Queue(nil,
         procedure
         begin
@@ -158,6 +193,7 @@ begin
           Transaction.Rollback;
           MainForm.IdServerInterceptLogFile.LogWriteString(e.Message);
           AddToLogT(e.Message);
+          Response.ContentText := e.Message;
         end;
       end;
     end;
@@ -451,7 +487,6 @@ begin
       else if u = '/LoadDocs' then
       begin
         LoadDocs(Response);
-
       end
       else
       begin
