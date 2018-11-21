@@ -39,6 +39,8 @@ type
     GenUpdQuery: TFDQuery;
     GenUpdTrans: TFDTransaction;
     GenUpdTransUPD: TFDTransaction;
+    ToolButton8: TToolButton;
+    ToolButton9: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -62,6 +64,7 @@ type
     procedure sessionclosed(var Msg: TMessage); message WM_SESSION_CLOSED;
     procedure sessionupdated(var Msg: TMessage); message WM_SESSION_UPDATED;
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
+    procedure statechangedfext(var Msg: TMessage); message WM_STATE_CHANGED_FEXT;
     procedure PrepareAndLoad;
     function PrevClosed(sid: Integer) : boolean;
     procedure UpdateState(tablename, idname: String; id, _state: Integer);
@@ -793,6 +796,16 @@ begin
   AddToLog('STATIONCANGED');
   PrepareAndLoad;
 end;
+
+// .............................................................................
+
+procedure TSessionListForm.statechangedfext(var Msg: TMessage);
+begin
+  AddToLog('STATECANGED from http to ' + IntToStr(msg.WPARAM));
+  PrepareAndLoad;
+
+end;
+
 
 // .............................................................................
 

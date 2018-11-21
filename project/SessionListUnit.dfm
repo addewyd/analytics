@@ -16,27 +16,39 @@ inherited SessionListForm: TSessionListForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton4: TToolButton
+    object ToolButton9: TToolButton
       Left = 69
+      Top = 0
+      Caption = 'ToolButton9'
+      Enabled = False
+    end
+    object ToolButton4: TToolButton
+      Left = 92
       Top = 0
       Action = ChangeStationAction
     end
+    object ToolButton8: TToolButton
+      Left = 115
+      Top = 0
+      Caption = 'ToolButton8'
+      Enabled = False
+    end
     object ToolButton5: TToolButton
-      Left = 92
+      Left = 138
       Top = 0
       Action = CloseSessAction
       ParentShowHint = False
       ShowHint = True
     end
     object ToolButton6: TToolButton
-      Left = 115
+      Left = 161
       Top = 0
       Action = ClearCloseAction
       ParentShowHint = False
       ShowHint = True
     end
     object ToolButton7: TToolButton
-      Left = 138
+      Left = 184
       Top = 0
       Action = VerifiedAction
       ParentShowHint = False

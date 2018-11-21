@@ -143,7 +143,7 @@ begin
       end;
 
         Transaction.Commit;
-        msg.Msg := WM_STATE_CHANGED;
+        msg.Msg := WM_STATE_CHANGED_FEXT;
         msg.WParam := S_SENT;
         msg.LParam := 0;
       TThread.Queue(nil,

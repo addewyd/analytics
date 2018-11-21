@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -506,12 +506,6 @@ inherited TabForm: TTabForm
               FieldName = 'FUELCODE'
               Title.Caption = #1050#1086#1076' '#1043#1057#1052
               Width = 60
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'EI'
-              Width = 12
               Visible = True
             end
             item
@@ -13894,7 +13888,6 @@ inherited TabForm: TTabForm
       FieldName = 'SUMNDS'
       Origin = 'SUMNDS'
       ProviderFlags = []
-      ReadOnly = True
     end
     object QueryInOutWHOLE: TFloatField
       FieldName = 'WHOLE'
@@ -13906,7 +13899,6 @@ inherited TabForm: TTabForm
       FieldName = 'AMOUNT0'
       Origin = 'AMOUNT0'
       ProviderFlags = []
-      ReadOnly = True
     end
     object QueryInOutMASS: TFloatField
       AutoGenerateValue = arDefault

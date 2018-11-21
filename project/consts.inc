@@ -11,6 +11,7 @@ const
   WM_STATION_CHANGED = WM_USER + 9;
   WM_CONN_REOPEN = WM_USER + 10;
   WM_STATE_CHANGED = WM_USER + 11;
+  WM_STATE_CHANGED_FEXT = WM_USER + 12;
 
 
   // session states

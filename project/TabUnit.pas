@@ -244,6 +244,7 @@ type
     procedure sessionadded(var Msg: TMessage); message WM_SESSION_ADDED;
     procedure sessiondeleted(var Msg: TMessage); message WM_SESSION_DELETED;
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
+    procedure statechangedfext(var Msg: TMessage); message WM_STATE_CHANGED_FEXT;
     procedure statechanged(var Msg: TMessage); message WM_STATE_CHANGED;
     procedure SetControlsOnSessionState(st: Integer);
     function IsNextSessionOpened: boolean;
@@ -297,7 +298,7 @@ end;
 procedure TTabForm.DSInOutFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
-  v, m, d: Extended;
+  e, v, m, d, nds: Extended;
 begin
   inherited;
   fname := Field.FieldName;
@@ -305,7 +306,7 @@ begin
 
 
   // ??        PRICE must be read only!
-  if fname = 'PRICE' then 
+  if fname = 'PRICE' then
   begin
     v := QueryInOut.FieldByName('VOLUME').AsExtended;
     d := Field.AsExtended;
@@ -313,22 +314,22 @@ begin
     m :=  d * v / 1000.0;      // ???
 
     QueryInOut.FieldByName('WHOLE').AsExtended := m;
-  
+
   end;
 
-  if fname = 'VOLUME' then 
+  if fname = 'VOLUME' then
   begin
     v := QueryInOut.FieldByName('PRICE').AsExtended;
     d := Field.AsExtended;
 
     m :=  d * v / 1000.0;
 
-    QueryInOut.FieldByName('WHOLE').AsExtended := m;
-  
+//    QueryInOut.FieldByName('WHOLE').AsExtended := m;
+
   end;
 
   // ??
-  if fname = 'DENSITY' then 
+  if fname = 'DENSITY' then
   begin
     v := QueryInOut.FieldByName('VOLUME').AsExtended;
     d := Field.AsExtended;
@@ -336,10 +337,10 @@ begin
     m :=  d * v / 1000.0;
 
     QueryInOut.FieldByName('MASS').AsExtended := m;
-  
+
   end;
 
-  if fname = 'VOLUME' then 
+  if fname = 'VOLUME' then
   begin
     v := QueryInOut.FieldByName('DENSITY').AsExtended;
     d := Field.AsExtended;
@@ -347,9 +348,31 @@ begin
     m :=  d * v / 1000.0;
 
     QueryInOut.FieldByName('MASS').AsExtended := m;
-  
+
   end;
-  
+
+  {
+      round(amount * cast(nds as double precision) /
+       118.0, 2) as sumnds,
+    amount as whole,
+    round(amount - amount *
+    cast(nds as double precision) / 118.0, 2) as amount0
+}
+
+  if fname = 'WHOLE' then
+  begin
+    v := QueryInOut.FieldByName('WHOLE').AsExtended;
+    d := Field.AsExtended;
+    nds := StrToExtDef(QueryInOut.FieldByName('NDS').AsString, 18);
+    m :=  d * nds / (100 + nds);
+
+
+    QueryInOut.FieldByName('SUMNDS').AsExtended := Round(m*100)/ 100;;
+    QueryInOut.FieldByName('AMOUNT0').AsExtended := Round((v - m) * 100)/ 100;;
+
+  end;
+
+
   AddToLog(fname + ' DSCh ' + f);
   dirtyGSM := true;
 
@@ -656,10 +679,10 @@ begin
   YNForm.Memo1.Font.Size := 18;
   with YNForm.Memo1.Lines do
   begin
-    Add('Do you really want to change');
-    Add(Format('%s to %s', [old, cap]));
+    Add('Вы действительно хотите заменить');
+    Add(Format('%s на %s', [old, cap]));
     Add(Format('codes %s to %s', [old_warecode, wareccode_new]));
-    Add(Format('At session id %d', [session_id]));
+    Add(Format('Для смены с ид %d', [session_id]));
     Add('???');
   end;
   if YNForm.ShowModal = mrOk then
@@ -2277,7 +2300,7 @@ begin
   begin
     yn := TYNForm.Create(self);
     yn.ButtonForget.Visible := true;
-    yn.Memo1.Text := 'Commit changes & close?';
+    yn.Memo1.Text := 'Сохранить изменения и закрыть окно?';
     mr := yn.ShowModal;
     if mr = mrOk then
     begin
@@ -2904,4 +2927,14 @@ begin
   UpdateAllStates(msg.WParam);
   ShowAllData;
 end;
+
+// .............................................................................
+
+procedure TTabForm.statechangedfext(var Msg: TMessage);
+begin
+  AddToLog('tabs: state from http');
+  ShowAllData;
+end;
+
+
 end.

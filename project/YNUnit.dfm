@@ -46,8 +46,6 @@ object YNForm: TYNForm
     Caption = 'OK'
     ModalResult = 1
     TabOrder = 1
-    ExplicitLeft = 116
-    ExplicitTop = 141
   end
   object Button2: TButton
     Left = 265
@@ -60,20 +58,16 @@ object YNForm: TYNForm
     Default = True
     ModalResult = 2
     TabOrder = 2
-    ExplicitLeft = 204
-    ExplicitTop = 141
   end
   object ButtonForget: TButton
-    Left = 87
+    Left = 72
     Top = 251
-    Width = 75
+    Width = 90
     Height = 25
     Anchors = [akRight, akBottom]
-    Caption = 'Forget'
+    Caption = #1053#1077' '#1089#1086#1093#1088#1072#1085#1103#1090#1100
     ModalResult = 3
     TabOrder = 3
     Visible = False
-    ExplicitLeft = 26
-    ExplicitTop = 141
   end
 end
