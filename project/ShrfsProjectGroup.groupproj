@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{CD7E69D5-4C18-4580-959A-B49FE43A1074}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Shrfs.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\projectPFC\ShrfsPFC.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Shrfs">
+        <MSBuild Projects="Shrfs.dproj"/>
+    </Target>
+    <Target Name="Shrfs:Clean">
+        <MSBuild Projects="Shrfs.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Shrfs:Make">
+        <MSBuild Projects="Shrfs.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ShrfsPFC">
+        <MSBuild Projects="..\projectPFC\ShrfsPFC.dproj"/>
+    </Target>
+    <Target Name="ShrfsPFC:Clean">
+        <MSBuild Projects="..\projectPFC\ShrfsPFC.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ShrfsPFC:Make">
+        <MSBuild Projects="..\projectPFC\ShrfsPFC.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Shrfs;ShrfsPFC"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Shrfs:Clean;ShrfsPFC:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Shrfs:Make;ShrfsPFC:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

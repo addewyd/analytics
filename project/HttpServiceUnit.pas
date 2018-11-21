@@ -1,9 +1,11 @@
 unit HttpServiceUnit;
 
 interface
+
 uses
-Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-IdContext, IdCustomHTTPServer, IdBaseComponent,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes,
+  IdContext, IdCustomHTTPServer, IdBaseComponent,
   IdComponent, IdCustomTCPServer, IdHTTPServer, IdCookieManager, IdIntercept,
   IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
@@ -12,96 +14,194 @@ IdContext, IdCustomHTTPServer, IdBaseComponent,
   FireDAC.Comp.DataSet, FireDAC.UI.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
   FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
   IdLogFile,
-  XML.xmldom, XML.XMLIntf,XML.XMLDoc,
+  XML.xmldom, XML.XMLIntf, XML.XMLDoc,
   ActiveX;
 
 {$I 'consts.inc'}
-Procedure CommandGet(Context: TIdContext;
-  Request: TIdHTTPRequestInfo; Response: TIdHTTPResponseInfo);
-
-
+Procedure CommandGet(Context: TIdContext; Request: TIdHTTPRequestInfo;
+  Response: TIdHTTPResponseInfo);
 
 implementation
 
 uses DmUnit, MainUnit;
 
-  var
-    query: TFDQuery;
-    conn: TFDConnection;
-    tran: TFDTransaction;
 
-    // .............................................................................
-
-  Procedure AddToLogT(msg: String);
-  begin
-    TThread.Queue(nil,
-      procedure
-      begin
-        AddToLog(msg);
-      end);
-
-  end;
-
-// .............................................................................
-
-  procedure LoadDocs(Response: TIdHTTPResponseInfo);
-    var
-      msg: TMessage;
-  begin
-    AddToLogT('received LoadDocs');
-    try
-      DM.FDConnection.Close;
-
-    finally
-      if not DM.FDConnection.Connected then  DM.FDConnection.Open;
-      msg.msg := WM_CONN_REOPEN;
-      MainForm.SendMsgs(msg);
+type IOGRec =
+    record
+      session_id: Integer;
+      sdt: Extended;
     end;
 
-  end;
+var
+  query: TFDQuery;
+  conn: TFDConnection;
+  tran: TFDTransaction;
+
+Procedure CreateConn;
+begin
+  conn := TFDConnection.Create(nil);
+  tran := TFDTransaction.Create(nil);
+
+  conn.Params.Assign(DM.FDConnection.Params);
+  conn.DriverName := 'FB';
+  conn.FetchOptions.Assign(DM.FDConnection.FetchOptions);
+  conn.ResourceOptions.Assign(DM.FDConnection.ResourceOptions);
+  conn.UpdateOptions.Assign(DM.FDConnection.UpdateOptions);
+  conn.Transaction := tran;
+  conn.UpdateTransaction := tran;
+
+  tran.Options.Assign(DM.FDTransaction.Options);
+  tran.Connection := conn;
+  conn.Open();
+end;
 
 // .............................................................................
 
-  Procedure SendTables(Response: TIdHTTPResponseInfo);
-  var
-    resp: String;
-  begin
-    resp := '';
+procedure FreeConn;
+begin
+  if tran.Active then
+    tran.Commit;
+  if conn.Connected then
+    conn.Close;
+  tran.Free;
+  conn.Free;
+end;
 
-    query := TFDQuery.Create(nil);
-    try
-      with query do
-      begin
-        conn.Transaction := tran;
-        conn.Params := DM.FDConnection.Params;
 
-        Connection := conn;
+// .............................................................................
 
-        conn.Open();
-        Transaction := tran;
-        SQL.Text := 'select id, tablename from tableslist';
-        Transaction.StartTransaction;
-        try
-          Open;
+Procedure AddToLogT(msg: String);
+begin
+  TThread.Queue(nil,
+    procedure
+    begin
+      AddToLog(msg);
+    end);
+
+end;
+
+
+procedure SendMsgs(m: TMessage);
+begin
+  MainForm.SendMsgs(m);
+end;
+
+function BuildResponse(recs: Array of IOGRec): String;
+begin
+  result := IntToStr(Length(recs));
+
+end;
+
+// .............................................................................
+
+procedure LoadDocs(Response: TIdHTTPResponseInfo);
+var
+  msg: TMessage;
+  rc, k: Integer;
+  recs: Array of IOGRec;
+  rsp: String;
+begin
+  AddToLogT('received LoadDocs');
+  query := TFDQuery.Create(nil);
+  try
+    with query do
+    begin
+
+      Connection := conn;
+      Transaction := tran;
+
+      query.FetchOptions.AutoFetchAll := afAll;
+      Transaction.StartTransaction;
+      try
+
+        SQL.Text := 'select s.id as id, s.startdatetime as sdt from sessions s ' +
+                    'join inoutgsm i on s.id=i.session_id ' +
+                    'where s.state = ' + SS_CLOSED +
+                    ' order by startdatetime';
+
+        Prepare;
+        Open;
+        rc := RecordCount;
+        if rc > 0 then
+        begin
+
+          SetLength(recs, rc);
+          k := 0;
           while not Eof do
           begin
-            resp := resp + FieldByName('tablename').AsString + ';';
+            recs[k].session_id := FieldByName('id').AsInteger;
+            recs[k].sdt := FieldByName('sdt').AsDateTime;
             Next;
+            k := k + 1;
           end;
+          rsp := BuildResponse(recs);
 
-        finally
-          Transaction.Commit;
+          Response.CharSet := 'utf-8';
+          Response.ContentType := 'applocation/json; charset=utf-8';
+          Response.ContentText := rsp;
+
+      end;
+
+        Transaction.Commit;
+        msg.Msg := WM_STATE_CHANGED;
+        msg.WParam := S_SENT;
+        msg.LParam := 0;
+      TThread.Queue(nil,
+        procedure
+        begin
+          SendMsgs(msg);
+        end);
+
+      except
+        on e: Exception do
+        begin
+          Transaction.Rollback;
+          MainForm.IdServerInterceptLogFile.LogWriteString(e.Message);
+          AddToLogT(e.Message);
         end;
       end;
-    finally
-      if conn.Connected then
-        conn.Close;
-
-      query.Free;
     end;
-    Response.ContentText := resp;
-
+  finally
+    query.Free;
   end;
+
+end;
+
+// .............................................................................
+
+Procedure SendTables(Response: TIdHTTPResponseInfo);
+var
+  resp: String;
+begin
+  resp := '';
+
+  query := TFDQuery.Create(nil);
+  try
+    with query do
+    begin
+      Connection := conn;
+      Transaction := tran;
+      SQL.Text := 'select id, tablename from tableslist';
+      Transaction.StartTransaction;
+      try
+        Open;
+        while not Eof do
+        begin
+          resp := resp + FieldByName('tablename').AsString + ';';
+          Next;
+        end;
+
+      finally
+        Transaction.Commit;
+      end;
+    end;
+  finally
+
+    query.Free;
+  end;
+  Response.ContentText := resp;
+
+end;
 
 // .............................................................................
 
@@ -116,11 +216,7 @@ begin
   try
     with query do
     begin
-      conn.Transaction := tran;
-      conn.Params := DM.FDConnection.Params;
       Connection := conn;
-
-      conn.Open();
       Transaction := tran;
       SQL.Text := qsql;
       Transaction.StartTransaction;
@@ -153,9 +249,6 @@ begin
       end;
     end;
   finally
-    if conn.Connected then
-      conn.Close;
-
     query.Free;
   end;
   Response.CharSet := 'utf-8';
@@ -193,8 +286,8 @@ var
   idoc: IDOMDocument;
   el, el2: IXMLNode;
   nL: IXMLNodeList;
-  len, i,  j, cnt: Integer;
-  Text, cname, res, sql, tablename: String;
+  len, i, j, cnt: Integer;
+  Text, cname, res, SQL, tablename: String;
   flist, vlist: TstringList;
   ii: IXMLDocument;
 begin
@@ -203,13 +296,11 @@ begin
   len := 0;
   cnt := 0;
   CoInitialize(nil);
-  flist := TStringList.Create;
-  vlist := TStringList.Create;
+  flist := TstringList.Create;
+  vlist := TstringList.Create;
   query := TFDQuery.Create(nil);
   with query do
   begin
-    conn.Transaction := tran;
-    conn.Params := DM.FDConnection.Params;
     Connection := conn;
     Transaction := tran;
   end;
@@ -231,23 +322,23 @@ begin
         query.Params.Clear;
         for j := 0 to nL[i].ChildNodes.Count - 1 do
         begin
-            cname := nL[i].ChildNodes[j].NodeName;
-            text := nL[i].ChildNodes[j].Text;
-            flist.Add(cname);
-            vlist.Add(':' + cname);
-            with Query.Params.Add do
-            begin
-              Name := cname;
-              DataType := ftString;
-              ParamType := ptInput;
-            end;
-            query.ParamByName(cname).AsString := Text;
+          cname := nL[i].ChildNodes[j].NodeName;
+          Text := nL[i].ChildNodes[j].Text;
+          flist.Add(cname);
+          vlist.Add(':' + cname);
+          with query.Params.Add do
+          begin
+            Name := cname;
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          query.ParamByName(cname).AsString := Text;
         end;
-        sql := 'insert into ' + tablename + ' (' + flist.CommaText
-          + ') values ('+vlist.CommaText+')'#13#10;
-        query.SQL.Text := sql;
-        res := sql;
-        cnt := cnt + ExecInsSql(query);
+        SQL := 'insert into ' + tablename + ' (' + flist.CommaText +
+          ') values (' + vlist.CommaText + ')'#13#10;
+        query.SQL.Text := SQL;
+        res := SQL;
+        cnt := cnt + ExecInsSQL(query);
       end;
     except
       on e: Exception do
@@ -257,26 +348,20 @@ begin
       end;
     end;
   finally
-    if conn.Connected then
-      conn.Close;
-    Query.Free;
+    query.Free;
     vlist.Free;
     flist.Free;
     CoUninitialize;
   end;
   res := Format('Inserted %d of %d records', [cnt, len]);
-  TThread.Queue(nil,
-    procedure
-    begin
-      AddToLog(res);
-    end);
+  AddToLogT(res);
   Response.ContentText := res;
 end;
 
 // .............................................................................
 
 Procedure CommandGet(Context: TIdContext; Request: TIdHTTPRequestInfo;
-  Response: TIdHTTPResponseInfo);
+Response: TIdHTTPResponseInfo);
 var
   s, r, u, d, ip, postdata: string;
   slen, i: Integer;
@@ -288,7 +373,7 @@ begin
   d := Request.Document;
   r := '';
 
-//  ip := Request.RemoteIP;
+  // ip := Request.RemoteIP;
 
   ip := Context.Binding.PeerIP;
   ok := false;
@@ -302,13 +387,7 @@ begin
     end;
   end;
 
-  TThread.Queue(nil,
-    procedure
-    begin
-
-      AddToLog(u + ' ' + ip);
-    end);
-
+  AddToLogT(u + ' ' + ip);
 
   if not ok then
   begin
@@ -317,22 +396,11 @@ begin
   end;
 
   try
-    conn := TFDConnection.Create(nil);
-    tran := TFDTransaction.Create(nil);
-    conn.DriverName := 'FB';
-    conn.FetchOptions := DM.FDConnection.FetchOptions;
-    conn.ResourceOptions := DM.FDConnection.ResourceOptions;
-    conn.UpdateOptions := DM.FDConnection.UpdateOptions;
-    conn.UpdateTransaction := tran;
-
-    tran.Options := DM.FDTransaction.Options;
-    tran.Connection := conn;
-
+    CreateConn;
     try
 
       if u = '/Version' then
       begin
-
         Response.ContentText := Format('R: %s ' + chr($0D) + chr($0A) +
           'U: %s D: %s', [Request.Params.Text, u, d]);
       end
@@ -347,12 +415,8 @@ begin
         Request.PostStream.ReadData(buf, slen);
 
         postdata := StringOf(buf);
-        Response.ContentText := Format('%s size: %d'
-          + chr($0D) + chr($0A) +
-          ' %s'
-          + chr($0D) + chr($0A) +
-          'Command P: %s '
-          + chr($0D) + chr($0A) +
+        Response.ContentText := Format('%s size: %d' + chr($0D) + chr($0A) +
+          ' %s' + chr($0D) + chr($0A) + 'Command P: %s ' + chr($0D) + chr($0A) +
           'U: %s D: %s', [Request.Command, slen, postdata,
           Request.Params.Text, u, d]);
 
@@ -364,7 +428,7 @@ begin
         Request.PostStream.ReadData(buf, slen);
 
         postdata := StringOf(buf);
-         ExecAnySQL(response, postdata);
+        ExecAnySQL(Response, postdata);
 
       end
       else if u = '/PostContr' then
@@ -375,29 +439,27 @@ begin
         Request.PostStream.ReadData(buf, slen);
 
         postdata := StringOf(buf);
-        CheckContr(response, postdata);
+        CheckContr(Response, postdata);
 
       end
       else if u = '/SQLG' then
       begin
         postdata := 'select * from outcomesbyretail';
-        ExecAnySQL(response, postdata);
+        ExecAnySQL(Response, postdata);
 
       end
       else if u = '/LoadDocs' then
       begin
-        LoadDocs(response);
+        LoadDocs(Response);
 
       end
       else
       begin
-        Response.ContentText := Format('Unknown command P: %s '
-          + chr($0D) + chr($0A) +
-          'U: %s D: %s', [Request.Params.Text, u, d]);
+        Response.ContentText := Format('Unknown command P: %s ' + chr($0D) +
+          chr($0A) + 'U: %s D: %s', [Request.Params.Text, u, d]);
       end;
     finally
-      tran.Free;
-      conn.Free;
+      FreeConn;
     end;
 
   except
@@ -409,6 +471,5 @@ begin
   end;
 
 end;
-
 
 end.
