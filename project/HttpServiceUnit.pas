@@ -115,7 +115,7 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '[%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%.3f,%.2f,%.3f,%.3f,%s,%.2f,%.2f,%.2f]',
+              '[%d,"%s","%s","%s","%s","%s","%s","%s","%s","%s",%.3f,%.2f,%.3f,%.3f,"%s",%.2f,%.2f,%.2f]',
               [
                 recs[k].session_id,
                 recs[k].azscode,
