@@ -351,7 +351,19 @@ endProcedure
 	Request.ResourceAddress = "LoadDocs";
 	Response = Conn.get(Request);
 	r = Response.GetBodyAsString();
-	Message(r);
+	//Message(r);
+	
+	ЧтениеJSON = Новый ЧтениеJSON;
+	ЧтениеJSON.УстановитьСтроку(r);
+	jr = ПрочитатьJSON(ЧтениеJSON);
+	ЧтениеJSON.Закрыть();
+	Message(jr);
+	
+	Для Каждого el из jr Цикл
+        Сообщить(el);
+		Message("" + el[0] + " " + el[1] + " " +  el[2] + " " +  el[3]);
+		
+    КонецЦикла;	
 	
 	LoadDocsНаСервере();
 	Conn.Удалить(Request);

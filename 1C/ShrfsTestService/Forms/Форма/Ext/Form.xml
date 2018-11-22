@@ -154,7 +154,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
-											<v8:content>Загрузить документы</v8:content>
+											<v8:content>Загрузить документы (ГСМ)</v8:content>
 										</v8:item>
 									</Title>
 									<ExtendedTooltip name="LoadDocsButРасширеннаяПодсказка" id="56"/>
