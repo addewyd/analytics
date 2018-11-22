@@ -589,9 +589,8 @@ begin
           ExecSQL('delete from wareprices');
           AddToLog('deleted from wareprices');
 
-
-          ExecSQL('delete from wares');
-          AddToLog('deleted from wares');
+//          ExecSQL('delete from wares');
+//          AddToLog('deleted from wares');
 
           ExecSQL('delete from storages');
           AddToLog('deleted from storages');
