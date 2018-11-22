@@ -176,8 +176,16 @@ procedure TCatGSMForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   inherited;
-  if Key = VK_F2 then  CommitActionExecute(Sender);
-  if (Key = VK_F10) or (Key = VK_ESCAPE) then  RefreshActionExecute(Sender);
+  if Key = VK_F2 then
+  begin
+    CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if (Key = VK_F10) or (Key = VK_ESCAPE) then
+  begin
+    RefreshActionExecute(Sender);
+    key := 0;
+  end;
 
 end;
 
