@@ -2709,6 +2709,10 @@ begin
       Itemid := StrToIntDef(sItemid, 0);
       IsReturn := StrToIntDef(sIsReturn, 0);
       Quantity := StrToIntDef(sQuantity, 0);
+      if isreturn > 0 then
+      begin
+        Quantity := -Quantity;
+      end;
 
       Amount := StrToextDef(sAmount, 0);
       Pricefasttrade := StrToextDef(sPricefasttrade, 0);
@@ -2959,6 +2963,11 @@ begin
       Itemid := StrToIntDef(sItemid, 0);
       IsReturn := StrToIntDef(sIsReturn, 0);
       Quantity := StrToIntDef(sQuantity, 0);
+      if isreturn > 0 then
+      begin
+        Quantity := -Quantity;
+      end;
+
 
       Amount := StrToextDef(sAmount, 0);
       Price := StrToextDef(sPrice, 0);
