@@ -20,7 +20,7 @@ uses Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
 procedure ParseInputFile(Doc: IDOMDocument; quiet: boolean);
 function ParseSessionFile(Doc: IDOMDocument; quiet: boolean) : Integer;
 function ParseOrderFile(Doc: IXMLNode; azs, filename: String): integer;
-procedure LoadTanks(node: IDOMNode; id: integer);
+procedure LoadTanks(node: IDOMNode; id: integer; azs: String);
 procedure LoadHoses(node: IDOMNode; id: integer);
 procedure LoadOBR(node: IDOMNode; id: integer);
 procedure LoadOBC(node: IDOMNode; id: integer);
@@ -720,7 +720,7 @@ begin
 
       if nname = 'Tanks' then
       begin
-        LoadTanks(n1, id);
+        LoadTanks(n1, id, azs);
       end
       else if nname = 'Hoses' then
       begin
@@ -1113,7 +1113,7 @@ end;
 
 // .............................................................................
 
-procedure LoadTanks(node: IDOMNode; id: integer);
+procedure LoadTanks(node: IDOMNode; id: integer; azs: String);
   var i, len, rc: integer;
     NL: IDOMNodeList;
     n: IDOMNode;
@@ -1188,9 +1188,9 @@ begin
       with DM.FDQuery do
       begin
         SQL.Text := 'insert into tanks ' +
-          '(session_id, tanknum, enddensity, startfuelvolume, endfactvolume, endtemperature, endheight, endmass, endwater, deadrest, deadrestliter)' +
+          '(session_id, tanknum, enddensity, startfuelvolume, endfactvolume, endtemperature, endheight, endmass, endwater, deadrest, deadrestliter, azscode)' +
           ' values ' +
-          '(:id, :tn, :dens, :startfuelvolume, :endfactvolume, :endtemperature, :endheight, :endmass, :endwater, :deadrest, :deadrestliter)';
+          '(:id, :tn, :dens, :startfuelvolume, :endfactvolume, :endtemperature, :endheight, :endmass, :endwater, :deadrest, :deadrestliter, :azscode)';
         with Params do begin
           Clear;
           with Add do
@@ -1259,10 +1259,17 @@ begin
             DataType := ftExtended;
             ParamType := ptInput;
           end;
+          with Add do
+          begin
+            Name := 'azscode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
 
         end;
         ParamByName('id').AsInteger := id;
         ParamByName('tn').AsString := tn;
+        ParamByName('azscode').AsString := azs;
         if dens = '' then
         begin
           AddToLog('warning: empty density');

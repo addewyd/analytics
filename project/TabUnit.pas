@@ -228,6 +228,7 @@ type
       const FieldName: string; var CalcValue: Variant);
     procedure DSOutItemsActiveChanged(Sender: TObject);
     procedure DSOutItemsFieldChanged(Sender: TObject; Field: TField);
+    procedure ggg1Click(Sender: TObject);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -664,7 +665,7 @@ end;
 procedure TTabForm.FPMClick(Sender: TObject);
 var
   cap, old_warecode, old, wareccode_new: String;
-  sqlt, tanknum: String;
+  sqlt, sqlt2, tanknum: String;
   session_id, ind: Integer;
   tm: TMenuItem;
   msg: TMessage;
@@ -696,6 +697,10 @@ begin
   sqlt := 'update iotankshoses set warecode = :warecode_new, state = ' + SS_CHANGED +
     ' where session_id >= :session_id and azscode= :azs ' +
     'and tanknum = :tanknum and warecode = :old_warecode and state < ' + SS_CLOSED;
+
+  sqlt2 := 'update tanks set warecode = :warecode_new ' +
+    ' where session_id >= :session_id and azscode= :azs ' +
+    'and tanknum = :tanknum and warecode = :old_warecode'; // and state < ' + SS_CLOSED;
 
   YNForm := TYNForm.Create(self);
   // YNForm.Height := 400;
@@ -830,6 +835,54 @@ begin
         ParamByName('azs').AsString := current_azscode;
         Prepare;
         ExecSQL;
+      end;
+        // .....................................................................
+
+      with GenUpdQuery do
+      begin
+        Sql.Text := sqlt2;
+        with Params do
+        begin
+          Clear;
+          with Add do
+          begin
+            Name := 'session_id';
+            DataType := ftInteger;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'warecode_new';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'old_warecode';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'tanknum';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          with Add do
+          begin
+            Name := 'azs';
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+        end;
+        ParamByName('session_id').AsInteger := session_id;
+        ParamByName('warecode_new').AsString := wareccode_new;
+        ParamByName('old_warecode').AsString := old_warecode;
+        ParamByName('tanknum').AsString := tanknum;
+        ParamByName('azs').AsString := current_azscode;
+        Prepare;
+        ExecSQL;
+
 
       end;
 
@@ -979,6 +1032,12 @@ begin
     end;
 
   end;
+
+end;
+
+procedure TTabForm.ggg1Click(Sender: TObject);
+begin
+  inherited;
 
 end;
 

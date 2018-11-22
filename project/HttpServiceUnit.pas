@@ -28,6 +28,7 @@ uses DmUnit, MainUnit;
 
 type IOGRec =
     record
+      id: Integer;
       session_id: Integer;
       azscode: String;
       dir: string;
@@ -115,8 +116,9 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '[%d,"%s","%s","%s","%s","%s","%s","%s","%s","%s",%.3f,%.2f,%.3f,%.3f,"%s",%.2f,%.2f,%.2f]',
+              '["%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f"]',
               [
+                recs[k].id,
                 recs[k].session_id,
                 recs[k].azscode,
                 recs[k].dir,
@@ -156,6 +158,7 @@ begin
   AddToLogT('received LoadDocs');
   query := TFDQuery.Create(nil);
   Response.CharSet := 'utf-8';
+  Response.ContentType := 'application/json; charset=utf-8';
   try
     with query do
     begin
@@ -180,6 +183,7 @@ begin
 
           while not Eof do
           begin
+            recs[k].id := FieldByName('id').AsInteger;
             recs[k].session_id := FieldByName('session_id').AsInteger;
             recs[k].dir := FieldByName('dir').AsString;
             recs[k].azscode := FieldByName('azscode').AsString;
@@ -201,17 +205,16 @@ begin
 
             Next;
             k := k + 1;
+
           end;
 
           rsp := BuildResponse(recs);
-          Response.ContentType := 'application/json; charset=utf-8';
-          Response.ContentText := rsp;
-
         end
         else
         begin
-          rsp := '0';
+          rsp := '[]';
         end;
+        Response.ContentText := rsp;
 
         Transaction.Commit;
         msg.Msg := WM_STATE_CHANGED_FEXT;
@@ -238,6 +241,14 @@ begin
     query.Free;
   end;
 
+end;
+
+// .............................................................................
+
+Procedure PostLDResults(Response: TIdHTTPResponseInfo; postdata: String);
+begin
+  AddToLogT(postdata);
+  Response.ContentText := 'OK';
 end;
 
 // .............................................................................
@@ -524,6 +535,16 @@ begin
       else if u = '/LoadDocs' then
       begin
         LoadDocs(Response);
+      end
+      else if u = '/PostLDResults' then
+      begin
+        slen := Request.PostStream.Size;
+        SetLength(buf, slen);
+
+        Request.PostStream.ReadData(buf, slen);
+
+        postdata := StringOf(buf);
+        PostLDResults(Response, postdata);
       end
       else
       begin

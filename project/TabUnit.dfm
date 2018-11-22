@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -14106,6 +14106,7 @@ inherited TabForm: TTabForm
     Top = 101
     object ggg1: TMenuItem
       Caption = 'ggg'
+      OnClick = ggg1Click
     end
   end
   object DSRealPM: TJvDataSource
