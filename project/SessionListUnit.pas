@@ -352,7 +352,7 @@ begin
   end
   else
   begin
-    ErrorMessageBox(self, 'Смена не закрыта');
+    ErrorMessageBox(self, 'Смена закрыта');
     Exit;
 
   end;

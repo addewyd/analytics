@@ -1048,7 +1048,7 @@ inherited TabForm: TTabForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001900010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14474,11 +14474,15 @@ inherited TabForm: TTabForm
       '    i.price,'
       '    i.nds,'
       '    round(quantity * price * '
-      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
-      '    round(quantity * price,2) as whole,'
       
-        '    round(quantity * price - quantity * price * cast(nds as doub' +
-        'le precision) / 118.0, 2) as summ'
+        '        cast(nds as double precision) / (100+cast(nds as double ' +
+        'precision) ), 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
+      '    round(quantity * price '
+      '          - quantity * price '
+      
+        '          * cast(nds as double precision) / (100+cast(nds as dou' +
+        'ble precision) ), 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14658,11 +14662,15 @@ inherited TabForm: TTabForm
       '    i.price,'
       '    i.nds,'
       '    round(quantity * price * '
-      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
-      '    round(quantity * price,2) as whole,'
       
-        '    round(quantity * price - quantity * price * cast(nds as doub' +
-        'le precision) / 118.0, 2) as summ'
+        '        cast(nds as double precision) / (100+cast(nds as double ' +
+        'precision) ), 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
+      '    round(quantity * price '
+      '          - quantity * price '
+      
+        '          * cast(nds as double precision) / (100+cast(nds as dou' +
+        'ble precision) ), 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14746,7 +14754,8 @@ inherited TabForm: TTabForm
   end
   object DSOutItems: TJvDataSource
     DataSet = QueryOutItems
-    OnFieldChanged = DSInOutItemsFieldChanged
+    OnActiveChanged = DSOutItemsActiveChanged
+    OnFieldChanged = DSOutItemsFieldChanged
     Left = 300
     Top = 333
   end
@@ -14780,11 +14789,15 @@ inherited TabForm: TTabForm
       '    i.price,'
       '    i.nds,'
       '    round(quantity * price * '
-      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
-      '    round(quantity * price,2) as whole,'
       
-        '    round(quantity * price - quantity * price * cast(nds as doub' +
-        'le precision) / 118.0, 2) as summ'
+        '        cast(nds as double precision) / (100+cast(nds as double ' +
+        'precision) ), 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
+      '    round(quantity * price '
+      '          - quantity * price '
+      
+        '          * cast(nds as double precision) / (100+cast(nds as dou' +
+        'ble precision) ), 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'
@@ -14958,11 +14971,15 @@ inherited TabForm: TTabForm
       '    i.price,'
       '    i.nds,'
       '    round(quantity * price * '
-      '        cast(nds as double precision) / 118.0, 2) as sumnds,'
-      '    round(quantity * price,2) as whole,'
       
-        '    round(quantity * price - quantity * price * cast(nds as doub' +
-        'le precision) / 118.0, 2) as summ'
+        '        cast(nds as double precision) / (100+cast(nds as double ' +
+        'precision) ), 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
+      '    round(quantity * price '
+      '          - quantity * price '
+      
+        '          * cast(nds as double precision) / (100+cast(nds as dou' +
+        'ble precision) ), 2) as summ'
       ''
       '   from inoutitems i'
       '   join sessions s on s.id = i.session_id'

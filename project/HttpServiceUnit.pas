@@ -34,6 +34,18 @@ type IOGRec =
       sdate: TDateTime;
       clientcode: String;
       clientname: String;
+      paymentcode: String;
+      paymentname: String;
+      fuelcode: String;
+      fuelname: String;
+      volume: Extended;
+      price: Extended;
+      density: Extended;
+      mass: Extended;
+      nds: String;
+      sumnds: Extended;
+      whole: Extended;
+      amount0: Extended;
     end;
 
 var
@@ -103,14 +115,26 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '[%d,%s,%s,%s,%s,%s]',
+              '[%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%.3f,%.2f,%.3f,%.3f,%s,%.2f,%.2f,%.2f]',
               [
                 recs[k].session_id,
                 recs[k].azscode,
                 recs[k].dir,
                 DateTimeToStr(recs[k].sdate),
                 recs[k].clientcode,
-                recs[k].clientname
+                recs[k].clientname,
+                recs[k].paymentcode,
+                recs[k].paymentname,
+                recs[k].fuelcode,
+                recs[k].fuelname,
+                recs[k].volume,
+                recs[k].price,
+                recs[k].density,
+                recs[k].mass,
+                recs[k].nds,
+                recs[k].sumnds,
+                recs[k].whole,
+                recs[k].amount0
               ]);
             if k < Length(recs) - 1 then rsp := rsp + ','#13#10
             else rsp := rsp + #13#10;
@@ -162,6 +186,19 @@ begin
             recs[k].sdate := FieldByName('sdate').AsDateTime;
             recs[k].clientcode := FieldByName('clientcode').AsString;
             recs[k].clientname := FieldByName('clientname').AsString;
+            recs[k].paymentcode := FieldByName('paymentcode').AsString;
+            recs[k].paymentname := FieldByName('paymentmode').AsString;
+            recs[k].fuelcode := FieldByName('fuelcode').AsString;
+            recs[k].fuelname := FieldByName('fuelname').AsString;
+            recs[k].volume := FieldByName('volume').AsExtended;
+            recs[k].price := FieldByName('price').AsExtended;
+            recs[k].density := FieldByName('density').AsExtended;
+            recs[k].mass := FieldByName('mass').AsExtended;
+            recs[k].nds := FieldByName('nds').AsString;
+            recs[k].sumnds := FieldByName('sumnds').AsExtended;
+            recs[k].whole := FieldByName('whole').AsExtended;
+            recs[k].amount0 := FieldByName('amount0').AsExtended;
+
             Next;
             k := k + 1;
           end;

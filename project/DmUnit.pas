@@ -125,10 +125,11 @@ begin
 '   cast(s.startdatetime as date) as sdate, ' +
 '   c.name as clientname, ' +
 '   c.code as clientcode, ' +
-'    cn.nomer || ' + #$27' '#$27  + ' || cn.name as contract, ' +
-'    p.name as paymentmode, ' +
-'    w.name as fuelname, ' +
-'    w.code as fuelcode, ' +
+'   cn.nomer || ' + #$27' '#$27  + ' || cn.name as contract, ' +
+'   p.name as paymentmode, ' +
+'   p.code as paymentcode, ' +
+'   w.name as fuelname, ' +
+'   w.code as fuelcode, ' +
 '   i.ei, ' +
 '   i.volume, ' +
 '   i.price, ' +
@@ -136,10 +137,10 @@ begin
 '   i.density,   ' +
 '   round(volume * density / 1000,3) as mass, ' +
 '   i.nds, ' +
-'    round(amount * cast(nds as double precision) / ' +
+'   round(amount * cast(nds as double precision) / ' +
 '       (100+cast(nds as double precision)), 2) as sumnds, ' +
-'    amount as whole, ' +
-'    round(amount - amount * ' +
+'   amount as whole, ' +
+'   round(amount - amount * ' +
 '      cast(nds as double precision) / ' +
 '     (100+cast(nds as double precision)), 2) as amount0 ' +
 

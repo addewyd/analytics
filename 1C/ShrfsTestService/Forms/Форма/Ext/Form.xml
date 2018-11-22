@@ -59,6 +59,7 @@
 							<ExtendedTooltip name="Группа5РасширеннаяПодсказка" id="22"/>
 							<ChildItems>
 								<UsualGroup name="Группа7" id="49">
+									<Visible>false</Visible>
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
@@ -116,6 +117,7 @@
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Группа6" id="27">
+							<Visible>false</Visible>
 							<Title>
 								<v8:item>
 									<v8:lang>ru</v8:lang>

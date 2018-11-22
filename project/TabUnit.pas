@@ -226,6 +226,8 @@ type
     procedure TransIOTHAfterCommit(Sender: TObject);
     procedure GridFooterOutItemsCalculate(Sender: TJvDBGridFooter;
       const FieldName: string; var CalcValue: Variant);
+    procedure DSOutItemsActiveChanged(Sender: TObject);
+    procedure DSOutItemsFieldChanged(Sender: TObject; Field: TField);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -379,7 +381,7 @@ begin
 end;
 
 // .............................................................................
-// the same for 2 queries 
+
 procedure TTabForm.DSInOutItemsFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
@@ -394,6 +396,21 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.DSOutItemsFieldChanged(Sender: TObject; Field: TField);
+var
+  f, fname: String;
+begin
+  inherited;
+  fname := Field.FieldName;
+  f := Field.AsString;
+  AddToLog(fname + ' DSCh ' + f);
+  dirtyOItem := true;
+
+end;
+
+
+// .............................................................................
+
 procedure TTabForm.DSIOTHFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
@@ -402,7 +419,7 @@ begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-  if fname = 'DENSITY' then 
+  if fname = 'DENSITY' then
   begin
     v := QueryIOTH.FieldByName('CALC').AsExtended;
     d := Field.AsExtended;
@@ -410,9 +427,9 @@ begin
     m :=  d * v / 1000.0;
 
     QueryIOTH.FieldByName('MASS').AsExtended := m;
-  
+
   end;
-  if (fname = 'STCNT') or (fname = 'ECNT') then 
+  if (fname = 'STCNT') or (fname = 'ECNT') then
   begin
     v := QueryIOTH.FieldByName('STCNT').AsExtended;
     d := QueryIOTH.FieldByName('ECNT').AsExtended;
@@ -422,9 +439,15 @@ begin
 //    QueryIOTH.FieldByName('OUTCOME').AsExtended := m;
 //  IOTHFooter.ReCalc;
   end;
-  
+
   AddToLog(fname + ' DSCh ' + f);
   dirtyIOTH := true;
+end;
+
+procedure TTabForm.DSOutItemsActiveChanged(Sender: TObject);
+begin
+  inherited;
+
 end;
 
 // .............................................................................
@@ -760,7 +783,8 @@ begin
 
       sqlt := 'update inoutgsm set ware_code = :warecode_new ' +
         ' where session_id >= :session_id and azscode=:azs ' +
-        'and tanknum = :tanknum and ware_code = :old_warecode and state = ' + SS_CHANGED;
+        'and tanknum = :tanknum and ware_code = :old_warecode and state = '
+        + SS_CHANGED;
 
       with GenUpdQuery do
       begin
@@ -1936,7 +1960,7 @@ begin
         if dirtyOItem then
         begin
           Close;
-          Transaction.Commit;       
+          Transaction.Commit;
           UpdateAllStates(S_CHANGED);
           ShowOItemsData;
           dirtyOItem := false;
@@ -2372,7 +2396,7 @@ begin
                   S_SENT: Panels[0].Text := 'Смена отправлена';
       else  Panels[0].Text := 'Unknown state';
       end;
-    
+
     end;
 
 end;
@@ -2494,6 +2518,8 @@ begin
   //
   ErrorMessageBox(self, Sender.ClassName);
 end;
+
+// .............................................................................
 
 procedure TTabForm.IOTHGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
