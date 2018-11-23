@@ -175,6 +175,7 @@ type
     QueryIOTHSumPREVCOUNTER: TFloatField;
     QueryIOTHVDIFF: TFloatField;
     QueryIOTHSumVBDIFF: TFloatField;
+    QueryOutItemsSum2: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -1420,6 +1421,8 @@ begin
       Close;
     if QueryOutItemsSum.Active then
       QueryOutItemsSum.Close;
+    if QueryOutItemsSum2.Active then
+      QueryOutItemsSum2.Close;
     if Transaction.Active then
       Transaction.Commit;
 
@@ -1444,6 +1447,9 @@ begin
     QueryOutItemsSum.Params.Assign(Params);
     QueryOutItemsSum.ParamByName('session_id').AsInteger := session_id;
     QueryOutItemsSum.ParamByName('azscode').AsString := current_azscode;
+    QueryOutItemsSum2.Params.Assign(Params);
+    QueryOutItemsSum2.ParamByName('session_id').AsInteger := session_id;
+    QueryOutItemsSum2.ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
@@ -1451,6 +1457,8 @@ begin
       Open;
       QueryOutItemsSum.Prepare;
       QueryOutItemsSum.Open;
+      QueryOutItemsSum2.Prepare;
+      QueryOutItemsSum2.Open;
       GridFooterOutItems.ReCalc;
       // Transaction.Commit;
     except
@@ -2162,6 +2170,7 @@ procedure TTabForm.GridFooterOutItemsCalculate(Sender: TJvDBGridFooter;
 var
   f: String;
 begin
+// overrided by ownerdraw
   inherited;
   f := FieldName;
   CalcValue := f;
@@ -2225,8 +2234,8 @@ begin
       StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
 
       StatusBar.Canvas.Font.Color := clBlue;
-      txt := 'Б:' + ' nnn';
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+      txt := QueryOutItemsSum2.FieldByName(fldn).AsString;
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
     end;
   end;
 end;

@@ -15092,11 +15092,80 @@ inherited TabForm: TTabForm
         'AMP)*/'
       '      s.id = :session_id'
       '      and i.azscode=:azscode'
-      '      and direction=0'
+      '      and direction=0 and payment_code = '#39'01'#1041#1057#1058'0'#39
+      ''
       ''
       ')')
     Left = 556
     Top = 333
+    ParamData = <
+      item
+        Name = 'SESSION_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'AZSCODE'
+        DataType = ftWideString
+        ParamType = ptInput
+        Size = 10
+      end>
+  end
+  object QueryOutItemsSum2: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = TransOutItems
+    UpdateTransaction = TransOutItems
+    FetchOptions.AssignedValues = [evAutoClose]
+    FetchOptions.AutoClose = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvUpdateMode, uvUpdateNonBaseFields, uvAutoCommitUpdates]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateTableName = 'INOUTITEMS'
+    SQL.Strings = (
+      'select sum (amount) as amount, sum(summ) as summ, '
+      '       sum(sumnds) as sumnds, sum(whole) as whole from'
+      '(select '
+      '   i.id,'
+      '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
+      '   cast(s.startdatetime as date) as sdate,'
+      '    c.name as clientname,'
+      '    cn.nomer || '#39' '#39' || cn.name as contract,'
+      '    p.name as paymentmode,'
+      '    w.name as itemname,'
+      '    w.code as itemcode,'
+      '    i.amount,'
+      '    i.ei,'
+      '    i.quantity,'
+      '    i.price,'
+      '    i.nds,'
+      '    round(quantity * price * '
+      
+        '        cast(nds as double precision) / (100+cast(nds as double ' +
+        'precision) ), 2) as sumnds,'
+      '    round(quantity * price,2) as whole,'
+      '    round(quantity * price '
+      '          - quantity * price '
+      
+        '          * cast(nds as double precision) / (100+cast(nds as dou' +
+        'ble precision) ), 2) as summ'
+      ''
+      '   from inoutitems i'
+      '   join sessions s on s.id = i.session_id'
+      '   join items w on w.code=i.item_code'
+      '   join contragents c on c.code=i.client_code'
+      '   join contracts cn on cn.partner_code=c.code'
+      '   join paymentmodes p on p.code=i.payment_code'
+      ''
+      
+        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
+        'AMP)*/'
+      '      s.id = :session_id'
+      '      and i.azscode=:azscode'
+      '      and direction=0 and payment_code = '#39'02'#1041#1057#1058'0'#39
+      ''
+      ')')
+    Left = 556
+    Top = 389
     ParamData = <
       item
         Name = 'SESSION_ID'
