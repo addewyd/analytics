@@ -173,6 +173,8 @@ type
     QueryIOTHSumCALCRESTPREV: TFloatField;
     QueryIOTHPREVCOUNTER: TFloatField;
     QueryIOTHSumPREVCOUNTER: TFloatField;
+    QueryIOTHVDIFF: TFloatField;
+    QueryIOTHSumVBDIFF: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -234,6 +236,10 @@ type
     procedure DSOutItemsFieldChanged(Sender: TObject; Field: TField);
     procedure ggg1Click(Sender: TObject);
     procedure QueryIOTHSumCALCRESTChange(Sender: TField);
+    procedure GridFooterOutItemsDrawPanel(StatusBar: TStatusBar;
+      Panel: TStatusPanel; const Rect: TRect);
+    procedure GridFooterOutItemsDisplayText(Sender: TJvDBGridFooter;
+      Column: TFooterColumn; const Value: Variant; var Text: string);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -1039,6 +1045,8 @@ begin
   end;
 
 end;
+
+// .............................................................................
 
 procedure TTabForm.ggg1Click(Sender: TObject);
 begin
@@ -2123,7 +2131,7 @@ begin
     begin
       CalcValue := FieldByName(f).AsExtended;
       if f = 'WHOLE' then amountsum_io := calcvalue;
-      
+
     end;
   end;
 end;
@@ -2165,6 +2173,62 @@ begin
     end;
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterOutItemsDisplayText(Sender: TJvDBGridFooter;
+  Column: TFooterColumn; const Value: Variant; var Text: string);
+begin
+//  inherited;
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterOutItemsDrawPanel(StatusBar: TStatusBar;
+  Panel: TStatusPanel; const Rect: TRect);
+  Var
+    gr: TJvDBGrid;
+    f : TJvDBGridFooter;
+    cls : TFooterColumns;
+    gcls : TDBGridColumns;
+    pind: Integer;
+    fldn, txt: String;
+    c, k: integer;
+begin
+  // inherited;
+
+  {
+01БСТ0
+02БСТ0
+  }
+
+  f := StatusBar as  TJvDBGridFooter;
+
+  gr := f.DBGrid;
+
+  cls := f.Columns;
+  gcls := gr.Columns;
+
+  pind := Panel.Index;
+
+  fldn := gcls.items[pind - 1].FieldName;
+  StatusBar.Canvas.Font.Color := clBlue;
+
+  for c := 0 to cls.Count -1 do
+  begin
+    if AnsiSameText(cls.Items[c].FieldName, fldn) then
+    begin
+      StatusBar.Canvas.Font.Color := clGreen;
+      txt := QueryOutItemsSum.FieldByName(fldn).AsString;
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+
+      StatusBar.Canvas.Font.Color := clBlue;
+      txt := 'Б:' + ' nnn';
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+    end;
+  end;
 end;
 
 // .............................................................................
@@ -2328,23 +2392,23 @@ begin
       if Copy(fldn, 1, 7) = 'VOLUME_' then
       begin
         st := Copy(fldn, 8, 1);
-      
+
       end else st := '';
-      
+
       StatusBar.Canvas.Font.Color := clBlue;
       if (abs(volumesum_pm - volumesum_ioth) > 0.001) then
       begin
-         StatusBar.Canvas.Font.Color := clRed;  
+         StatusBar.Canvas.Font.Color := clRed;
       end;
 
       if (abs(amountsum_pm - amountsum_io) > 0.001) then
       begin
          StatusBar.Canvas.Font.Color := $006069;
       end;
-      
+
       if st <> '' then
       begin
-        price := QueryRealPm.FieldByName('price_' + st).AsExtended;      
+        price := QueryRealPm.FieldByName('price_' + st).AsExtended;
         amount := QueryRealPmSum.FieldByName('amount_' + st).AsExtended;
 
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, Format('%12.2f', [amount]));
@@ -2356,9 +2420,9 @@ begin
       end;
 
     end;
-  
+
   end;
-    
+
 end;
 
 // .............................................................................

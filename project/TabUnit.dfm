@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -95,6 +95,7 @@ inherited TabForm: TTabForm
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
           OnDisplayText = RealPMFooterDisplayText
+          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -247,6 +248,17 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'ENDFACTVOLUME'
               Title.Caption = #1060#1072#1082#1090'. '#1054#1089#1090'.'
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'VDIFF'
+              Title.Caption = #1048#1079#1083'/'#1053#1077#1076
               Title.Font.Charset = DEFAULT_CHARSET
               Title.Font.Color = clWindowText
               Title.Font.Height = -11
@@ -803,32 +815,35 @@ inherited TabForm: TTabForm
       ImageIndex = 3
       object GridFooterOutItems: TJvDBGridFooter
         Left = 0
-        Top = 455
+        Top = 436
         Width = 727
-        Height = 19
+        Height = 38
         SizeGrip = True
+        OnDrawPanel = GridFooterOutItemsDrawPanel
         Columns = <
           item
-            FieldName = 'AMOUNT'
-          end
-          item
             FieldName = 'SUMM'
-          end
-          item
-            FieldName = 'WHOLE'
+            Style = psOwnerDraw
           end
           item
             FieldName = 'SUMNDS'
+            Style = psOwnerDraw
+          end
+          item
+            FieldName = 'WHOLE'
+            Style = psOwnerDraw
           end>
         DataSource = DSOutItems
         DBGrid = GridOutItems
         OnCalculate = GridFooterOutItemsCalculate
+        OnDisplayText = GridFooterOutItemsDisplayText
+        ExplicitTop = 455
       end
       object GridOutItems: TJvDBUltimGrid
         Left = 0
         Top = 0
         Width = 727
-        Height = 455
+        Height = 436
         Align = alClient
         DataSource = DSOutItems
         TabOrder = 1
@@ -868,7 +883,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 200
+            Width = 140
             Visible = True
           end
           item
@@ -916,7 +931,7 @@ inherited TabForm: TTabForm
             Title.Font.Height = -11
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
-            Width = 100
+            Width = 73
             Visible = True
           end
           item
@@ -929,16 +944,6 @@ inherited TabForm: TTabForm
             Title.Font.Name = 'Tahoma'
             Title.Font.Style = [fsBold]
             Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'AMOUNT'
-            Title.Font.Charset = DEFAULT_CHARSET
-            Title.Font.Color = clWindowText
-            Title.Font.Height = -11
-            Title.Font.Name = 'Tahoma'
-            Title.Font.Style = [fsBold]
-            Visible = False
           end
           item
             Expanded = False
@@ -13972,6 +13977,10 @@ inherited TabForm: TTabForm
       '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
       '    '
       '    i.endfactvolume,'
+      '    round((select volume from '
+      
+        '       calcrest(s.id, i.tanknum)) - i.endfactvolume, 3) as vdiff' +
+        ','
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
@@ -14148,6 +14157,13 @@ inherited TabForm: TTabForm
       ProviderFlags = []
       ReadOnly = True
     end
+    object QueryIOTHVDIFF: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'VDIFF'
+      Origin = 'VDIFF'
+      ProviderFlags = []
+      ReadOnly = True
+    end
   end
   object FuelPopupMenu: TPopupMenu
     Left = 28
@@ -14202,7 +14218,6 @@ inherited TabForm: TTabForm
     Top = 189
   end
   object TransIOTH: TFDTransaction
-    Options.AutoStart = False
     Options.AutoStop = False
     Connection = DM.FDConnection
     AfterCommit = TransIOTHAfterCommit
@@ -14303,7 +14318,8 @@ inherited TabForm: TTabForm
       '     sum(calcin) as calcin, '
       '     sum(calcrest) as calcrest, '
       '     sum(calcrestprev) as calcrestprev,'
-      '     sum(prevcounter) as prevcounter'
+      '     sum(prevcounter) as prevcounter,'
+      '     sum(vdiff) as vbdiff'
       'from'
       '('
       'select'
@@ -14323,6 +14339,11 @@ inherited TabForm: TTabForm
       '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
       '    '
       '    i.endfactvolume,'
+      '    round((select volume from '
+      
+        '       calcrest(s.id, i.tanknum)) - i.endfactvolume, 3) as vdiff' +
+        ','
+      ''
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
@@ -14408,6 +14429,13 @@ inherited TabForm: TTabForm
       AutoGenerateValue = arDefault
       FieldName = 'PREVCOUNTER'
       Origin = 'PREVCOUNTER'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHSumVBDIFF: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'VBDIFF'
+      Origin = 'VBDIFF'
       ProviderFlags = []
       ReadOnly = True
     end
@@ -15025,9 +15053,8 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
-      
-        'select sum (amount) as amount, sum(summ) as summ, sum(sumnds) as' +
-        ' sumnds, sum(whole) as whole from'
+      'select sum (amount) as amount, sum(summ) as summ, '
+      '       sum(sumnds) as sumnds, sum(whole) as whole from'
       '(select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
