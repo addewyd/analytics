@@ -189,6 +189,17 @@ inherited TabForm: TTabForm
             end
             item
               Expanded = False
+              FieldName = 'CALCRESTPREV'
+              Title.Caption = #1056#1054' '#1055#1088#1057#1084
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'STARTFUELVOLUME'
               PopupMenu = StartVPMenu
               Title.Caption = #1053#1072#1095' '#1054#1073#1098#1105#1084
@@ -225,6 +236,11 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'CALCREST'
               Title.Caption = #1056#1072#1089#1095' '#1086#1089#1090#1072#1090#1086#1082
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
               Visible = True
             end
             item
@@ -298,6 +314,17 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'WATER'
               Title.Caption = #1042#1086#1076#1072
+              Title.Font.Charset = DEFAULT_CHARSET
+              Title.Font.Color = clWindowText
+              Title.Font.Height = -11
+              Title.Font.Name = 'Tahoma'
+              Title.Font.Style = [fsBold]
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'PREVCOUNTER'
+              Title.Caption = #1057#1095' '#1055#1088#1057#1084
               Title.Font.Charset = DEFAULT_CHARSET
               Title.Font.Color = clWindowText
               Title.Font.Height = -11
@@ -13939,7 +13966,10 @@ inherited TabForm: TTabForm
         '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
         'as calc,'
       '--    i.volume as calc,'
-      '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
+      '    (select volume from '
+      '       calcrest(s.id, i.tanknum)) as calcrest,'
+      '    (select volume from '
+      '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
       '    '
       '    i.endfactvolume,'
       '    i.hosenum,'
@@ -13950,6 +13980,10 @@ inherited TabForm: TTabForm
       '    height,'
       '    mass,'
       '    water,'
+      '    (select volume from '
+      
+        '       getprevcounter(s.id, i.tanknum, i.hosenum)) as prevcounte' +
+        'r,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
       '    round(endcounter - startcounter /* - '
@@ -14097,6 +14131,20 @@ inherited TabForm: TTabForm
       AutoGenerateValue = arDefault
       FieldName = 'OUTCOME'
       Origin = 'OUTCOME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHCALCRESTPREV: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALCRESTPREV'
+      Origin = 'VOLUME'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHPREVCOUNTER: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'PREVCOUNTER'
+      Origin = 'VOLUME'
       ProviderFlags = []
       ReadOnly = True
     end
@@ -14251,9 +14299,11 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableUpdate = False
     UpdateOptions.KeyFields = 'CALC;OUTCOME'
     SQL.Strings = (
-      
-        'select sum(calc) as calc, sum(outcome) as OUTCOME, sum(calcin) a' +
-        's calcin, sum(calcrest) as calcrest'
+      'select sum(calc) as calc, sum(outcome) as OUTCOME, '
+      '     sum(calcin) as calcin, '
+      '     sum(calcrest) as calcrest, '
+      '     sum(calcrestprev) as calcrestprev,'
+      '     sum(prevcounter) as prevcounter'
       'from'
       '('
       'select'
@@ -14269,6 +14319,8 @@ inherited TabForm: TTabForm
         'as calc,'
       '--    i.volume as calc,'
       '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
+      '    (select volume from '
+      '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
       '    '
       '    i.endfactvolume,'
       '    i.hosenum,'
@@ -14279,6 +14331,10 @@ inherited TabForm: TTabForm
       '    height,'
       '    mass,'
       '    water,'
+      '    (select volume from '
+      
+        '       getprevcounter(s.id, i.tanknum, i.hosenum)) as prevcounte' +
+        'r,'
       '    warecode,'
       '    round(i.endfactvolume - i.startfuelvolume, 3) as fact,'
       '    round(endcounter - startcounter /* - '
@@ -14337,6 +14393,21 @@ inherited TabForm: TTabForm
       AutoGenerateValue = arDefault
       FieldName = 'CALCREST'
       Origin = 'CALCREST'
+      ProviderFlags = []
+      ReadOnly = True
+      OnChange = QueryIOTHSumCALCRESTChange
+    end
+    object QueryIOTHSumCALCRESTPREV: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CALCRESTPREV'
+      Origin = 'CALCRESTPREV'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryIOTHSumPREVCOUNTER: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'PREVCOUNTER'
+      Origin = 'PREVCOUNTER'
       ProviderFlags = []
       ReadOnly = True
     end

@@ -8,6 +8,7 @@ Procedure SaveOptions()
     
     opts.insert("host", ServiceHost);
     opts.insert("port", ServicePort);
+    opts.insert("Орг", Организация);
     
     ХранилищеОбщихНастроек.Сохранить(ObjKey, OptKey, opts,,Owner);
 	message("save options");
@@ -33,6 +34,7 @@ function RestoreOptions()
     if opts <> Undefined then
         ServiceHost = opts["host"];
         ServicePort = opts["port"];
+		Организация = opts["Орг"];
     endif;
 	return opts;
 	
@@ -339,10 +341,69 @@ endProcedure
 КонецПроцедуры
 
 &НаСервере
-Процедура LoadDocsНаСервере()
-	Message("Loading documents");
+function LoadDocsНаСервере(jr)
 	
-КонецПроцедуры
+// 0      id: Integer;
+// 1     session_id: Integer;
+// 2      sessionnum: Integer;
+// 3      azscode: String;
+// 4      azsextcode: String;
+// 5      dir: string;
+// 6      sdate: TDateTime;
+// 7      clientcode: String;
+// 8      clientname: String;
+// 9      paymentcode: String;
+//10      paymentname: String;
+//11      fuelcode: String;
+//12      fuelname: String;
+//13      volume: Extended;
+//14      price: Extended;
+//15      density: Extended;
+//16      mass: Extended;
+//17      nds: String;
+//18      sumnds: Extended;
+//19      whole: Extended;
+//20      amount0: Extended;	
+	
+	
+	Message("Loading documents");
+	res = "";	
+	L = jr.count();
+	Для Каждого el из jr Цикл
+		
+		success = "Y";
+		
+		eDocId = el[0];
+		SessionId = el[1];
+		SessionNum = el[2];
+		
+		AzsExtCode = el[4];
+		
+		fuelcode = el[11];
+		fuelname = el[12];
+		
+        doc = Документы.РеализацияТоваровУслуг.CreateDocument();
+        doc.ХозяйственнаяОперация = Перечисления.ХозяйственныеОперации.РеализацияКлиенту;
+		
+		ware = Справочники.Номенклатура.НайтиПоКоду(fuelcode);
+		Если ware = Справочники.Номенклатура.ПустаяСсылка() Тогда
+			Сообщить("Товар не найден: " + fuelname + " (" + fuelcode + ")");
+			success = "N";
+		Иначе
+			Сообщить("GSM found: " + ware.Наименование);
+		КонецЕсли;
+		
+		
+		res = res + """" + eDocId + ";" + success + """";
+		L = L - 1;
+		if L > 0 then 
+			res = res + ",";
+		endif;
+    КонецЦикла;	
+	return res;
+EndFunction
+
+// ......................................................................................
 
 &НаКлиенте
 Процедура LoadDocs(Команда)
@@ -352,20 +413,26 @@ endProcedure
 	Response = Conn.get(Request);
 	r = Response.GetBodyAsString();
 	//Message(r);
+	Conn.Удалить(Request);
 	
 	ЧтениеJSON = Новый ЧтениеJSON;
 	ЧтениеJSON.УстановитьСтроку(r);
 	jr = ПрочитатьJSON(ЧтениеJSON);
 	ЧтениеJSON.Закрыть();
 	Message(jr);
+				
+	res = LoadDocsНаСервере(jr);
 	
-	Для Каждого el из jr Цикл
-        Сообщить(el);
-		Message("" + el[0] + " " + el[1] + " " +  el[2] + " " +  el[3]);
-		
-    КонецЦикла;	
+	// send results
 	
-	LoadDocsНаСервере();
+	Conn = new HTTPConnection(ServiceHost, ServicePort);
+	Request = new HTTPRequest();
+	Request.ResourceAddress = "PostLDResults";
+	Request.SetBodyFromString(res);
+	
+	Response = Conn.post(Request);
+	r = Response.GetBodyAsString();
+	Message(r);
 	Conn.Удалить(Request);
 	
 КонецПроцедуры

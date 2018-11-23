@@ -30,7 +30,9 @@ type IOGRec =
     record
       id: Integer;
       session_id: Integer;
+      sessionnum: Integer;
       azscode: String;
+      azsextcode: String;
       dir: string;
       sdate: TDateTime;
       clientcode: String;
@@ -116,11 +118,13 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '["%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f"]',
+              '["%d","%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f"]',
               [
                 recs[k].id,
                 recs[k].session_id,
+                recs[k].sessionnum,
                 recs[k].azscode,
+                recs[k].azsextcode,
                 recs[k].dir,
                 DateTimeToStr(recs[k].sdate),
                 recs[k].clientcode,
@@ -167,7 +171,7 @@ begin
       Transaction := tran;
 
       query.FetchOptions.AutoFetchAll := afAll;
-      query.SQL.Text := IOGSQLH;
+      query.SQL.Text := CIOGSQLH;
       Transaction.StartTransaction;
       try
 
@@ -185,8 +189,10 @@ begin
           begin
             recs[k].id := FieldByName('id').AsInteger;
             recs[k].session_id := FieldByName('session_id').AsInteger;
+            recs[k].sessionnum := FieldByName('sessionnum').AsInteger;
             recs[k].dir := FieldByName('dir').AsString;
             recs[k].azscode := FieldByName('azscode').AsString;
+            recs[k].azsextcode := FieldByName('azsextcode').AsString;
             recs[k].sdate := FieldByName('sdate').AsDateTime;
             recs[k].clientcode := FieldByName('clientcode').AsString;
             recs[k].clientname := FieldByName('clientname').AsString;

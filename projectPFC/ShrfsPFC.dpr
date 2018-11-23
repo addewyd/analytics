@@ -5,11 +5,16 @@ program ShrfsPFC;
 {$R *.res}
 
 uses
-  System.SysUtils, System.Classes,
-  System.Variants, System.Types, System.IOUtils,
+  System.SysUtils,
+  System.Classes,
+  System.Variants,
+  System.Types,
+  System.IOUtils,
   XmlParseUnit in '..\project\XmlParseUnit.pas',
-  Xml.xmldom, Xml.XMLIntf,
-  Xml.XMLDoc, IniFiles,
+  Xml.xmldom,
+  Xml.XMLIntf,
+  Xml.XMLDoc,
+  IniFiles,
   DmConUnit in 'DmConUnit.pas';
 
 var

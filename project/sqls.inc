@@ -3,6 +3,7 @@
 '   s.id as session_id, ' +
 '   s.azscode, ' +
 '   a.extcode as azsextcode, ' +
+'   s.sessionnum, ' +
 '   iif( i.direction = 0,'+#$27'Расход'#$27+',' + #$27'Приход'#$27 +') as dir, ' +
 '   cast(s.startdatetime as date) as sdate, ' +
 '   c.name as clientname, ' +
@@ -43,7 +44,7 @@ const CIOGSQL = CIOGSQLCOMMON +
 
 const CIOGSQLH = CIOGSQLCOMMON
     + ' where s.state = ' + SS_CLOSED
-    + 'order by s.startdatetime, i.direction,paymentmode,clientname';
+    + 'order by s.azscode, s.startdatetime, i.direction,paymentmode,clientname';
 
 const CIOGSQLSum1 = 'select sum(volume) as volume,sum(amount0) as amount0, ' +
     'sum(sumnds) as sumnds, sum(whole) as whole, sum(mass) as mass ' +

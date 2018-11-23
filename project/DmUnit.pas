@@ -52,9 +52,12 @@ type
 var
   DM: TDM;
 
-  var IOGSQL, IOGSQLH, IOGSQLSUm: String;
+{$I 'sqls.inc'}
+
+//  var IOGSQL, IOGSQLH, IOGSQLSUm: String;
 
 implementation
+
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
@@ -115,12 +118,13 @@ uses MainUnit;
 procedure TDM.DataModuleCreate(Sender: TObject);
   var s: String;
 begin
-
+{
   s :=
 'select ' +
 '   i.id,   ' +
 '   s.id as session_id, ' +
 '   s.azscode, ' +
+'   a.extcode as azsextcode, ' +
 '   iif( i.direction = 0,'+#$27'Расход'#$27+',' + #$27'Приход'#$27 +') as dir, ' +
 '   cast(s.startdatetime as date) as sdate, ' +
 '   c.name as clientname, ' +
@@ -149,7 +153,8 @@ begin
 '   join wares w on w.code=i.ware_code ' +
 '   join contragents c on c.code=i.client_code ' +
 '   join contracts cn on cn.partner_code=c.code ' +
-'   join paymentmodes p on p.code=i.payment_code ';
+'   join paymentmodes p on p.code=i.payment_code ' +
+'   join stations a on a.code=s.azscode ';
 
 
   IOGSQL := s +
@@ -170,6 +175,7 @@ begin
        IOGSQL +
        ')';
    //AddToLog(IOGSQL);
+   }
 end;
 
 procedure TDM.UpdUserId(tablename: String; sid: Integer);

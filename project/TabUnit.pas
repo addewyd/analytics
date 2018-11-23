@@ -169,6 +169,10 @@ type
     QueryIOTHSumOUTCOME: TFloatField;
     QueryIOTHSumCALCIN: TFloatField;
     QueryIOTHSumCALCREST: TFloatField;
+    QueryIOTHCALCRESTPREV: TFloatField;
+    QueryIOTHSumCALCRESTPREV: TFloatField;
+    QueryIOTHPREVCOUNTER: TFloatField;
+    QueryIOTHSumPREVCOUNTER: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -229,6 +233,7 @@ type
     procedure DSOutItemsActiveChanged(Sender: TObject);
     procedure DSOutItemsFieldChanged(Sender: TObject; Field: TField);
     procedure ggg1Click(Sender: TObject);
+    procedure QueryIOTHSumCALCRESTChange(Sender: TField);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -2467,8 +2472,8 @@ begin
   inherited;
   SetControlsOnSessionState(session_state);
 
-  QueryInOut.SQL.Text := IOGSQL;
-  QueryInOutSum.SQL.Text := IOGSQLSum;
+  QueryInOut.SQL.Text := CIOGSQL;
+  QueryInOutSum.SQL.Text := CIOGSQLSum;
 
   warelist := TStringList.Create;
   dirtyGSM := false;
@@ -2521,6 +2526,7 @@ procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
   var
     TextRect:TRect;
+    var stcnt, prevcnt: Extended;
 begin
   inherited;
   if (Column.FieldName = 'R') then
@@ -2545,6 +2551,20 @@ begin
       IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2, TextRect.Top + 2, 'R');
 
     end;
+  end;
+  if (Column.FieldName = 'STCNT') then
+  begin
+    stcnt := QueryIOTH.FieldByName(Column.fieldname).AsExtended;
+    prevcnt := QueryIOTH.FieldByName('prevcounter').AsExtended;
+    if(abs(stcnt-prevcnt) > 0.01) and (not (gdFocused in state)) then
+    begin
+      TextRect := Rect;
+      TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
+      IOTHGrid.Canvas.Font.Color := clRed;
+      IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2,
+        TextRect.Top + 2, Format('%.3f', [stcnt]));
+    end;
+
   end;
 
 end;
@@ -2818,6 +2838,12 @@ procedure TTabForm.QueryIOTHBeforeInsert(DataSet: TDataSet);
 begin
   inherited;
   Abort;
+end;
+
+procedure TTabForm.QueryIOTHSumCALCRESTChange(Sender: TField);
+begin
+  inherited;
+
 end;
 
 // .............................................................................
