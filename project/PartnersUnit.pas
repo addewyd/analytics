@@ -85,6 +85,8 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TPartnersForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin

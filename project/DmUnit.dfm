@@ -11,8 +11,8 @@ object DM: TDM
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvParamCreate]
     ResourceOptions.ParamCreate = False
-    Left = 40
-    Top = 48
+    Left = 296
+    Top = 56
   end
   object FDUpdateSQL: TFDUpdateSQL
     Connection = FDConnection
@@ -47,8 +47,8 @@ object DM: TDM
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
-    Left = 296
-    Top = 56
+    Left = 120
+    Top = 16
   end
   object FDTransaction: TFDTransaction
     Options.AutoStart = False
