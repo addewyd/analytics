@@ -49,6 +49,7 @@ type IOGRec =
       sumnds: Extended;
       whole: Extended;
       amount0: Extended;
+      cn: String;
     end;
 
 var
@@ -118,7 +119,7 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '["%d","%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f"]',
+              '["%d","%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f","%s"]',
               [
                 recs[k].id,
                 recs[k].session_id,
@@ -140,7 +141,8 @@ begin
                 recs[k].nds,
                 recs[k].sumnds,
                 recs[k].whole,
-                recs[k].amount0
+                recs[k].amount0,
+                recs[k].cn
               ]);
             if k < Length(recs) - 1 then rsp := rsp + ','#13#10
             else rsp := rsp + #13#10;
@@ -208,6 +210,7 @@ begin
             recs[k].sumnds := FieldByName('sumnds').AsExtended;
             recs[k].whole := FieldByName('whole').AsExtended;
             recs[k].amount0 := FieldByName('amount0').AsExtended;
+            recs[k].cn := FieldByName('cn').asString;
 
             Next;
             k := k + 1;

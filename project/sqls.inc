@@ -8,6 +8,7 @@
 '   cast(s.startdatetime as date) as sdate, ' +
 '   c.name as clientname, ' +
 '   c.code as clientcode, ' +
+'   cn.nomer as cn, ' +
 '   cn.nomer || ' + #$27' '#$27  + ' || cn.name as contract, ' +
 '   p.name as paymentmode, ' +
 '   p.code as paymentcode, ' +
