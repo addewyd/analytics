@@ -176,6 +176,7 @@ type
     QueryIOTHVDIFF: TFloatField;
     QueryIOTHSumVBDIFF: TFloatField;
     QueryOutItemsSum2: TFDQuery;
+    setprevvolproc: TFDStoredProc;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -1262,21 +1263,69 @@ begin
   if mr = mrOk then
   begin
     UpdateAllStates(S_CHANGED);
-    AddToLog('ReplCnt mrOK');
+    AddToLog('ReplCnt OK');
     ShowIOTHData;
   end;
 
 end;
 
 // .............................................................................
-
+  // start volume
 procedure TTabForm.SetPrevSessionData1Click(Sender: TObject);
+  var
+    yn: TYNForm;
+    tn: String;
+    id: Integer;
 begin
   inherited;
-  if session_state > S_VERIFIED then Exit;
+  if session_state > S_VERIFIED then
+  begin
+    ErrorMessageBox(self, 'Смена закрыта');
+    Exit;
+  end;
+  yn := TYNForm.Create(self);
+  yn.Memo1.Text := 'Установить с предыдущей смены?';
+  if yn.ShowModal <> mrOk then Exit;
+  try
+    id := QueryIOTH.FieldByName('id').AsInteger;
+    tn := QueryIOTH.FieldByName('tanknum').AsString;
 
-  AddToLog(QueryIOTH.FieldByName('StartFuelVolume').AsString);
-  // WTD?
+    with setprevvolproc do
+    begin
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'tanknum';
+          ParamType := ptInput;
+          DataType := ftWideString;
+        end;
+        with Add do
+        begin
+          Name := 'session_id';
+          ParamType := ptInput;
+          DataType := ftInteger;
+        end;
+      end;
+      ParamByName('tanknum').AsWideString := tn;
+      ParamByName('session_id').AsInteger := session_id;
+      prepare;
+      ExecProc;
+
+    end;
+
+    AddToLog(format('%d %s', [id, tn]));
+    UpdateAllStates(S_CHANGED);
+    AddToLog('ReplVol OK');
+    ShowIOTHData;
+  except
+      on e: Exception do
+      begin
+        AddToLog(e.Message);
+      end;
+
+  end;
 end;
 
 // .............................................................................

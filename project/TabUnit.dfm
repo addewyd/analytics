@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet4
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -1079,6 +1079,8 @@ inherited TabForm: TTabForm
     end
   end
   inherited ImageList: TImageList
+    Left = 256
+    Top = 0
     Bitmap = {
       494C01017E018001940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
@@ -13968,9 +13970,9 @@ inherited TabForm: TTabForm
       '    i.startfuelvolume,'
       '    round(i.invol, 3) as calcin,'
       
-        '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
-        'as calc,'
-      '--    i.volume as calc,'
+        '--   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
+        ') as calc,'
+      '    i.volume as calc,'
       '    (select volume from '
       '       calcrest(s.id, i.tanknum)) as calcrest,'
       '    (select volume from '
@@ -14245,7 +14247,7 @@ inherited TabForm: TTabForm
     Left = 28
     Top = 181
     object SetPrevSessionData1: TMenuItem
-      Caption = 'Set Prev Session Data'
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1089' '#1087#1088#1077#1076#1099#1076#1091#1097#1077#1081' '#1089#1084#1077#1085#1099
       OnClick = SetPrevSessionData1Click
     end
   end
@@ -14331,9 +14333,9 @@ inherited TabForm: TTabForm
       '    i.startfuelvolume,'
       '    round(i.invol, 3) as calcin,'
       
-        '   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)) ' +
-        'as calc,'
-      '--    i.volume as calc,'
+        '    -- (select volume from calcoutcomes(s.id, i.tanknum,i.hosenu' +
+        'm)) as calc,'
+      '    i.volume as calc,'
       '    (select volume from calcrest(s.id, i.tanknum)) as calcrest,'
       '    (select volume from '
       '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
@@ -15178,5 +15180,13 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+  end
+  object setprevvolproc: TFDStoredProc
+    Connection = DM.FDConnection
+    Transaction = GenTrans
+    UpdateTransaction = GenUpdTransUPD
+    StoredProcName = 'SETPREVVOLUME'
+    Left = 188
+    Top = 373
   end
 end
