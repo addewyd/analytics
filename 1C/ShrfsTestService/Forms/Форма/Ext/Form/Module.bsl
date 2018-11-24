@@ -9,7 +9,9 @@ Procedure SaveOptions()
     opts.insert("host", ServiceHost);
     opts.insert("port", ServicePort);
     opts.insert("Орг", Организация);
-    
+    opts.insert("Контр99ПЛ", Контр99ПЛ);
+    opts.insert("Покупатель", Покупатель);
+    opts.insert("Склад", Склад);
     ХранилищеОбщихНастроек.Сохранить(ObjKey, OptKey, opts,,Owner);
 	message("save options");
     
@@ -35,6 +37,9 @@ function RestoreOptions()
         ServiceHost = opts["host"];
         ServicePort = opts["port"];
 		Организация = opts["Орг"];
+		Контр99ПЛ = opts["Контр99ПЛ"];
+		Покупатель = opts["Покупатель"];
+		Склад = opts["Склад"];
     endif;
 	return opts;
 	
