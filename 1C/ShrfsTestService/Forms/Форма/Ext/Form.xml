@@ -15,24 +15,12 @@
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Группа1" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>GAll</v8:content>
-				</v8:item>
-			</Title>
 			<Width>52</Width>
 			<Group>Vertical</Group>
 			<BackColor>#E4FFFD</BackColor>
 			<ExtendedTooltip name="Группа1РасширеннаяПодсказка" id="2"/>
 			<ChildItems>
 				<UsualGroup name="Группа2" id="8">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>G2</v8:content>
-						</v8:item>
-					</Title>
 					<Width>50</Width>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа2РасширеннаяПодсказка" id="9"/>
@@ -75,12 +63,6 @@
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа10" id="57">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>G10</v8:content>
-						</v8:item>
-					</Title>
 					<Width>50</Width>
 					<Group>Vertical</Group>
 					<BackColor>#FBFFBA</BackColor>
@@ -144,12 +126,6 @@
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа4" id="17">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>G4</v8:content>
-						</v8:item>
-					</Title>
 					<Group>Vertical</Group>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа4РасширеннаяПодсказка" id="18"/>
@@ -182,14 +158,20 @@
 										</Button>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="Группа8" id="51">
+								<UsualGroup name="Г4" id="51">
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
 											<v8:content>Обновить</v8:content>
 										</v8:item>
 									</Title>
-									<ExtendedTooltip name="Группа8РасширеннаяПодсказка" id="52"/>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Г4</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ExtendedTooltip name="Г4РасширеннаяПодсказка" id="52"/>
 									<ChildItems>
 										<Button name="ContrBut" id="45">
 											<Type>UsualButton</Type>
@@ -212,6 +194,17 @@
 												</v8:item>
 											</Title>
 											<ExtendedTooltip name="DogButРасширеннаяПодсказка" id="48"/>
+										</Button>
+										<Button name="КнСклады" id="82">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.ОтпрСклады</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Склады</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="КнСкладыРасширеннаяПодсказка" id="83"/>
 										</Button>
 									</ChildItems>
 								</UsualGroup>
@@ -557,6 +550,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>LoadDocs</Action>
+		</Command>
+		<Command name="ОтпрСклады" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Отпр склады</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Отпр склады</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ОтпрСклады</Action>
 		</Command>
 	</Commands>
 </Form>

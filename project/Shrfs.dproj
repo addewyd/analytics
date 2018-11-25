@@ -193,6 +193,10 @@
             <Form>TanksHosesForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="StoragesUnit.pas">
+            <Form>StoragesForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="sqls.inc"/>
         <None Include="consts.inc"/>
         <BuildConfiguration Include="Release">

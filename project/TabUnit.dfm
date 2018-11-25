@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -441,10 +441,11 @@ inherited TabForm: TTabForm
         TabOrder = 0
         object GridFooterInOut: TJvDBGridFooter
           Left = 1
-          Top = 454
+          Top = 435
           Width = 725
-          Height = 19
+          Height = 38
           SizeGrip = True
+          OnDrawPanel = GridFooterInOutDrawPanel
           Columns = <
             item
               FieldName = 'VOLUME'
@@ -454,22 +455,26 @@ inherited TabForm: TTabForm
             end
             item
               FieldName = 'AMOUNT0'
+              Style = psOwnerDraw
             end
             item
               FieldName = 'WHOLE'
+              Style = psOwnerDraw
             end
             item
               FieldName = 'SUMNDS'
+              Style = psOwnerDraw
             end>
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
+          ExplicitTop = 454
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
           Top = 1
           Width = 725
-          Height = 453
+          Height = 434
           Align = alClient
           DataSource = DSInOut
           Font.Charset = DEFAULT_CHARSET
@@ -496,11 +501,6 @@ inherited TabForm: TTabForm
           RowsHeight = 17
           TitleRowHeight = 17
           Columns = <
-            item
-              Expanded = False
-              FieldName = 'ID'
-              Visible = False
-            end
             item
               Expanded = False
               FieldName = 'DIR'

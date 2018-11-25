@@ -3,6 +3,7 @@
 '   s.id as session_id, ' +
 '   s.azscode, ' +
 '   a.extcode as azsextcode, ' +
+'   st.name as stname, ' +
 '   s.sessionnum, ' +
 '   iif( i.direction = 0,'+#$27'Расход'#$27+',' + #$27'Приход'#$27 +') as dir, ' +
 '   cast(s.startdatetime as date) as sdate, ' +
@@ -34,7 +35,8 @@
 '   join contragents c on c.code=i.client_code ' +
 '   join contracts cn on cn.partner_code=c.code ' +
 '   join paymentmodes p on p.code=i.payment_code ' +
-'   join stations a on a.code=s.azscode ';
+'   join stations a on a.code=s.azscode ' +
+'   left join storages st on st.azscode=s.azscode ';
 
 const CIOGSQL = CIOGSQLCOMMON +
  '     where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/ ' +

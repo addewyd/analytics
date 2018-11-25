@@ -50,12 +50,30 @@ type IOGRec =
       whole: Extended;
       amount0: Extended;
       cn: String;
+      stname: String;
     end;
 
 var
   query: TFDQuery;
   conn: TFDConnection;
   tran: TFDTransaction;
+
+function UniqStr(n: Integer): String;
+  var
+    possible: String;
+  var
+    i, r: Integer;
+begin
+  possible := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  Result := '';
+  for i := 1 to n do
+  begin
+    Randomize;
+    r := Random(Length(possible));
+    Result := Result + Copy(possible, r, 1);
+  end
+
+end;
 
 // .............................................................................
 
@@ -119,7 +137,7 @@ begin
           for k := 0 to Length(recs) - 1 do
           begin
             rsp := rsp + format(
-              '["%d","%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f","%s"]',
+              '["%d","%d","%d","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%.3f","%.2f","%.3f","%.3f","%s","%.2f","%.2f","%.2f","%s","%s"]',
               [
                 recs[k].id,
                 recs[k].session_id,
@@ -142,7 +160,8 @@ begin
                 recs[k].sumnds,
                 recs[k].whole,
                 recs[k].amount0,
-                recs[k].cn
+                recs[k].cn,
+                recs[k].stname
               ]);
             if k < Length(recs) - 1 then rsp := rsp + ','#13#10
             else rsp := rsp + #13#10;
@@ -211,6 +230,7 @@ begin
             recs[k].whole := FieldByName('whole').AsExtended;
             recs[k].amount0 := FieldByName('amount0').AsExtended;
             recs[k].cn := FieldByName('cn').asString;
+            recs[k].stname := FieldByName('STNAME').asString;
 
             Next;
             k := k + 1;
@@ -255,9 +275,18 @@ end;
 // .............................................................................
 
 Procedure PostLDResults(Response: TIdHTTPResponseInfo; postdata: String);
+  var
+    list: TStringList;
 begin
   AddToLogT(postdata);
   Response.ContentText := 'OK';
+  list := TStringList.Create;
+  try
+    list.CommaText := postdata;
+
+  finally
+    list.Free;
+  end;
 end;
 
 // .............................................................................
@@ -453,6 +482,102 @@ end;
 
 // .............................................................................
 
+Procedure CheckStorages(Response: TIdHTTPResponseInfo; xmls: String);
+var
+  doc: TXMLDocument;
+  idoc: IDOMDocument;
+  el, el2: IXMLNode;
+  nL: IXMLNodeList;
+  len, i, j, cnt: Integer;
+  Text, cname, res, SQL, tablename: String;
+  flist, vlist: TstringList;
+  ii: IXMLDocument;
+begin
+
+  res := '';
+  len := 0;
+  cnt := 0;
+  CoInitialize(nil);
+  flist := TstringList.Create;
+  vlist := TstringList.Create;
+  query := TFDQuery.Create(nil);
+  with query do
+  begin
+    Connection := conn;
+    Transaction := tran;
+  end;
+
+  try
+    try
+      ii := LoadXMLData(xmls);
+
+      el := ii.DocumentElement;
+      tablename := el.NodeName;
+      nL := el.ChildNodes;
+      len := nL.Count;
+
+      cnt := 0;
+      for i := 0 to len - 1 do
+      begin
+        flist.Clear;
+        vlist.Clear;
+        query.Params.Clear;
+        for j := 0 to nL[i].ChildNodes.Count - 1 do
+        begin
+          cname := nL[i].ChildNodes[j].NodeName;
+          Text := nL[i].ChildNodes[j].Text;
+
+          if cname = 'code' then
+          begin
+            Text := UniqStr(10);
+          end;
+
+          flist.Add(cname);
+          vlist.Add(':' + cname);
+
+          with query.Params.Add do
+          begin
+            Name := cname;
+            DataType := ftString;
+            ParamType := ptInput;
+          end;
+          query.ParamByName(cname).AsString := Text;
+        end;
+        with query.Params.Add do
+        begin
+            Name := 'azscode';
+            DataType := ftString;
+            ParamType := ptInput;
+        end;
+        query.ParamByName('azscode').AsString := UniqStr(10);
+
+        SQL := 'insert into ' + tablename + ' (' + flist.CommaText
+          + ',azscode' +
+          ') values (' + vlist.CommaText + ',:azscode)'#13#10;
+        query.SQL.Text := SQL;
+        res := SQL;
+        cnt := cnt + ExecInsSQL(query);
+      end;
+    except
+      on e: Exception do
+      begin
+        MainForm.IdServerInterceptLogFile.LogWriteString(res);
+        MainForm.IdServerInterceptLogFile.LogWriteString(e.Message);
+      end;
+    end;
+  finally
+    query.Free;
+    vlist.Free;
+    flist.Free;
+    CoUninitialize;
+  end;
+  res := Format('Inserted %d of %d records', [cnt, len]);
+  AddToLogT(res);
+  Response.ContentText := res;
+end;
+
+// .............................................................................
+
 Procedure CommandGet(Context: TIdContext; Request: TIdHTTPRequestInfo;
 Response: TIdHTTPResponseInfo);
 var
@@ -495,7 +620,7 @@ begin
       if u = '/Version' then
       begin
         Response.ContentText := Format('R: %s ' + chr($0D) + chr($0A) +
-          'U: %s D: %s', [Request.Params.Text, u, d]);
+          'U: %s D: %s', [Request.Params.Text, u, '019']);
       end
       else if u = '/Tables' then
       begin
@@ -533,6 +658,17 @@ begin
 
         postdata := StringOf(buf);
         CheckContr(Response, postdata);
+
+      end
+      else if u = '/PostStorages' then
+      begin
+        slen := Request.PostStream.Size;
+        SetLength(buf, slen);
+
+        Request.PostStream.ReadData(buf, slen);
+
+        postdata := StringOf(buf);
+        CheckStorages(Response, postdata);
 
       end
       else if u = '/SQLG' then

@@ -2,23 +2,45 @@ inherited TanksHosesForm: TTanksHosesForm
   Caption = 'TanksHoses'
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvToolBar1: TJvToolBar
+    object ToolButton3: TToolButton
+      Left = 46
+      Top = 0
+      Action = CommitAction
+      ParentShowHint = False
+      ShowHint = True
+    end
+  end
   inherited JvDBGrid: TJvDBUltimGrid
+    OnKeyDown = JvDBGridKeyDown
+    AutoAppend = True
     Columns = <
       item
         Expanded = False
         FieldName = 'AZSCODE'
+        Title.Caption = #1050#1086#1076' '#1040#1047#1057
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'TANKNUM'
+        Title.Caption = #1056#1077#1079#1077#1088#1074#1091#1072#1088
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'HOSENUM'
+        Title.Caption = #1056#1091#1082#1072#1074
         Visible = True
       end>
+  end
+  inherited ActionList: TActionList
+    object CommitAction: TAction
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' F2'
+      ImageIndex = 361
+      OnExecute = CommitActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
@@ -27,7 +49,7 @@ inherited TanksHosesForm: TTanksHosesForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12707,7 +12729,9 @@ inherited TanksHosesForm: TTanksHosesForm
       000000000000}
   end
   inherited FDQuery: TFDQuery
+    CachedUpdates = True
     Connection = DM.FDConnection
+    UpdateTransaction = Trans
     SQL.Strings = (
       
         'select h.azscode, h.id as hid, t.id as tid, h.tanknum, h.hosenum' +

@@ -112,6 +112,8 @@ type
     CatTHAction: TAction;
     anksHoses1: TMenuItem;
     ImageList: TImageList;
+    StoragesAction: TAction;
+    N10: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -142,6 +144,7 @@ type
     procedure UsersActionExecute(Sender: TObject);
     procedure ViewLogActionExecute(Sender: TObject);
     procedure CatTHActionExecute(Sender: TObject);
+    procedure StoragesActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -193,7 +196,7 @@ implementation
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
-  WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit;
+  WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit;
 
 
 // .............................................................................
@@ -592,8 +595,8 @@ begin
 //          ExecSQL('delete from wares');
 //          AddToLog('deleted from wares');
 
-          ExecSQL('delete from storages');
-          AddToLog('deleted from storages');
+//          ExecSQL('delete from storages');
+//          AddToLog('deleted from storages');
           ExecSQL('delete from firms');
           AddToLog('deleted from firms');
 
@@ -1111,6 +1114,18 @@ begin
     TStationsForm.Create(self, 'stations');
   end
   else GetMDIForm('stations').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.StoragesActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('storages') then
+  begin
+    TStoragesForm.Create(self, 'storages');
+  end
+  else GetMDIForm('storages').Show;
+
 end;
 
 // .............................................................................

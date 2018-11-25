@@ -242,6 +242,8 @@ type
       Panel: TStatusPanel; const Rect: TRect);
     procedure GridFooterOutItemsDisplayText(Sender: TJvDBGridFooter;
       Column: TFooterColumn; const Value: Variant; var Text: string);
+    procedure GridFooterInOutDrawPanel(StatusBar: TStatusBar;
+      Panel: TStatusPanel; const Rect: TRect);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -2191,6 +2193,50 @@ begin
 
     end;
   end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterInOutDrawPanel(StatusBar: TStatusBar;
+  Panel: TStatusPanel; const Rect: TRect);
+
+  var
+    gr: TJvDBGrid;
+    f : TJvDBGridFooter;
+    cls : TFooterColumns;
+    gcls : TDBGridColumns;
+    pind: Integer;
+    fldn, txt: String;
+    c: integer;
+begin
+  //inherited;
+  f := StatusBar as  TJvDBGridFooter;
+
+  gr := f.DBGrid;
+
+  cls := f.Columns;
+  gcls := gr.Columns;
+
+  pind := Panel.Index;
+
+  fldn := gcls.items[pind - 1].FieldName;
+  StatusBar.Canvas.Font.Color := clBlue;
+
+  for c := 0 to cls.Count -1 do
+  begin
+    if AnsiSameText(cls.Items[c].FieldName, fldn) then
+    begin
+      StatusBar.Canvas.Font.Color := clGreen;
+      txt := QueryInOutSum.FieldByName(fldn).AsString;
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+
+      StatusBar.Canvas.Font.Color := clBlue;
+      txt := 'sumb';
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+    end;
+  end;
+
+
 end;
 
 // .............................................................................

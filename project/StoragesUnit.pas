@@ -1,4 +1,4 @@
-unit TanksHosesUnit;
+unit StoragesUnit;
 
 interface
 
@@ -15,14 +15,18 @@ uses
   Vcl.ToolWin, JvToolBar;
 
 type
-  TTanksHosesForm = class(TFormWithGrid)
+  TStoragesForm = class(TFormWithGrid)
     CommitAction: TAction;
     ToolButton3: TToolButton;
-    procedure FormCreate(Sender: TObject);
+    N2: TMenuItem;
+    FDQueryCODE: TWideStringField;
+    FDQueryNAME: TWideStringField;
+    FDQueryAZSCODE: TWideStringField;
     procedure CommitActionExecute(Sender: TObject);
-    procedure RefreshActionExecute(Sender: TObject);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -30,15 +34,15 @@ type
   end;
 
 var
-  TanksHosesForm: TTanksHosesForm;
+  StoragesForm: TStoragesForm;
 
 implementation
 
 {$R *.dfm}
 
-uses MainUnit, DmUnit;
+uses DmUnit, MainUnit;
 
-procedure TTanksHosesForm.CommitActionExecute(Sender: TObject);
+procedure TStoragesForm.CommitActionExecute(Sender: TObject);
 begin
   inherited;
   with FDQuery do
@@ -57,16 +61,15 @@ begin
       end;
     end;
   end;
-
 end;
 
-procedure TTanksHosesForm.FormCreate(Sender: TObject);
+procedure TStoragesForm.FormCreate(Sender: TObject);
 begin
   inherited;
   LoadData;
 end;
 
-procedure TTanksHosesForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
+procedure TStoragesForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   inherited;
@@ -88,11 +91,12 @@ begin
 
 end;
 
-procedure TTanksHosesForm.RefreshActionExecute(Sender: TObject);
+procedure TStoragesForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+
 end;
 
 end.
