@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -95,7 +95,6 @@ inherited TabForm: TTabForm
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
           OnDisplayText = RealPMFooterDisplayText
-          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -468,7 +467,6 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
-          ExplicitTop = 454
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -837,7 +835,6 @@ inherited TabForm: TTabForm
         DBGrid = GridOutItems
         OnCalculate = GridFooterOutItemsCalculate
         OnDisplayText = GridFooterOutItemsDisplayText
-        ExplicitTop = 455
       end
       object GridOutItems: TJvDBUltimGrid
         Left = 0
@@ -1082,7 +1079,7 @@ inherited TabForm: TTabForm
     Left = 256
     Top = 0
     Bitmap = {
-      494C01017E018001940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180019C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13968,7 +13965,8 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '    round(i.invol, 3) as calcin,'
+      '--    round(i.invol, 3) as calcin,'
+      'i.invol as calcin,'
       
         '--   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
         ') as calc,'
@@ -13979,10 +13977,8 @@ inherited TabForm: TTabForm
       '       calcrestprev(s.id, i.tanknum)) as calcrestprev,'
       '    '
       '    i.endfactvolume,'
-      '    round((select volume from '
-      
-        '       calcrest(s.id, i.tanknum)) - i.endfactvolume, 3) as vdiff' +
-        ','
+      '    round(i.endfactvolume -(select volume from '
+      '       calcrest(s.id, i.tanknum)), 3) as vdiff,'
       '    i.hosenum,'
       '    i.startcounter as stcnt,'
       '    endcounter as ecnt,'
@@ -14067,6 +14063,7 @@ inherited TabForm: TTabForm
     object QueryIOTHCALCIN: TFloatField
       FieldName = 'CALCIN'
       Origin = 'INVOL'
+      Required = True
     end
     object QueryIOTHCALC: TFloatField
       FieldName = 'CALC'

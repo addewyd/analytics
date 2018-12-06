@@ -53,6 +53,14 @@ type IOGRec =
       stname: String;
     end;
 
+type RespRec =
+  Record
+    id: Integer;
+    session_id: Integer;
+    res: String;
+    descr: String;
+  end;
+
 var
   query: TFDQuery;
   conn: TFDConnection;
@@ -173,6 +181,43 @@ end;
 
 // .............................................................................
 
+procedure HandleRsp(rsp: String);
+  var
+    RspList, DocList: TStringList;
+    i, k: Integer;
+    sep, ws: TsysCharSet;
+    ARespRec: Array of RespRec;
+begin
+  RspList := TStringList.Create;
+  DocList := TStringList.Create;
+  sep := [';'];
+  ws := [' '];
+  k := RspList.Count;
+  SetLength(ARespRec, k);
+  try
+    RspList.CommaText := rsp;
+
+
+    for i := 0 to k - 1 do
+    begin
+      DocList.Clear;
+      ExtractStrings(sep, ws, PChar(RspList[i]), DocList);
+      ARespRec[k].id := StrToIntDef(DocList[0], 0);
+      ARespRec[k].session_id := StrToIntDef(DocList[1], 0);
+      ARespRec[k].res := DocList[2];
+      ARespRec[k].descr := DocList[3];
+ AddToLogT(DocList.CommaText);
+    end;
+
+  finally
+    DocList.Free;
+    RspList.Free;
+  end;
+
+end;
+
+// .............................................................................
+
 procedure LoadDocs(Response: TIdHTTPResponseInfo);
 var
   msg: TMessage;
@@ -280,13 +325,7 @@ Procedure PostLDResults(Response: TIdHTTPResponseInfo; postdata: String);
 begin
   AddToLogT(postdata);
   Response.ContentText := 'OK';
-  list := TStringList.Create;
-  try
-    list.CommaText := postdata;
-
-  finally
-    list.Free;
-  end;
+  HandleRsp(postdata);
 end;
 
 // .............................................................................

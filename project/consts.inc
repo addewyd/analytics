@@ -21,13 +21,15 @@ const
   S_CHANGED = 1;
   S_VERIFIED = 2;
   S_CLOSED = 3;
-  S_SENT = 4;
+  S_PARTLY = 4;
+  S_SENT = 5;
 
   SS_NEW = '0';
   SS_CHANGED = '1';
   SS_VERIFIED = '2';
   SS_CLOSED = '3';
-  SS_SENT = '4';
+  SS_PARTLY = '4';
+  SS_SENT = '5';
 
 type Rec =
     record

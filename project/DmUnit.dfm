@@ -151,8 +151,8 @@ object DM: TDM
       
         '    iif(opa is not null, opa, r.partnerextcode) as partnerextcod' +
         'e,'
-      '--    sum(r.volume) as volume,'
-      '    sum(iif(ova is not null,  ova, r.volume)) as volume,'
+      '    sum(r.volume) as volume,'
+      '--    sum(iif(ova is not null,  ova, r.volume)) as volume,'
       '    sum(r.amount) as amount'
       '    from sessions s'
       '    join'
@@ -160,15 +160,19 @@ object DM: TDM
         '        (select r.*, o.partnerextcode as opa, o.volume as ova fr' +
         'om  outcomesbyretail r'
       '            left join '
+      '            (select session_id,partnerextcode,'
       
-        '            (select session_id,partnerextcode,paymentmodeextcode' +
-        ',remark,tanknum,hosename,sum(volume) as volume'
+        '                paymentmodeextcode,remark,tanknum,hosename,sum(v' +
+        'olume) as volume'
       
         '                from outcomesbyoffice where session_id=:session_' +
         'id'
-      
-        '                group by session_id,partnerextcode,paymentmodeex' +
-        'tcode,remark,tanknum,hosename)'
+      '                group by '
+      '                   session_id,'
+      '                   partnerextcode,'
+      '                   paymentmodeextcode,'
+      '                   remark,tanknum,hosename'
+      '            )'
       ''
       '            o on r.session_id = o.session_id'
       '            and r.paymentmodeextcode=o.paymentmodeextcode '
@@ -374,6 +378,7 @@ object DM: TDM
       '    h.numinpump,'
       '    h.hosetype,'
       '    sum(coalesce(o.volume, 0)) as volume,'
+      '--    sum(select volume from getrovolume(s.id)) as volume,'
       '--    sum(ss.volume) as invol,'
       '     ss.volume as invol,'
       '     1 as lastuser_id,'

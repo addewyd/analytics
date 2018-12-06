@@ -46,7 +46,7 @@ const CIOGSQL = CIOGSQLCOMMON +
  '  order by s.startdatetime, i.direction,paymentmode,clientname';
 
 const CIOGSQLH = CIOGSQLCOMMON
-    + ' where s.state = ' + SS_CLOSED
+    + ' where i.sent < 1 and (s.state = ' + SS_CLOSED + ' or s.state = ' + SS_PARTLY + ') '
     + 'order by s.azscode, s.startdatetime, i.direction,paymentmode,clientname';
 
 const CIOGSQLSum1 = 'select sum(volume) as volume,sum(amount0) as amount0, ' +

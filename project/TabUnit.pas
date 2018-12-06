@@ -2625,6 +2625,7 @@ begin
                   S_CHANGED: Panels[0].Text := 'Смена изменена';
                   S_VERIFIED: Panels[0].Text := 'Смена проверена';
                   S_CLOSED: Panels[0].Text := 'Смена закрыта!';
+                  S_PARTLY: Panels[0].Text := 'Смена отправлена (p)';
                   S_SENT: Panels[0].Text := 'Смена отправлена';
       else  Panels[0].Text := 'Unknown state';
       end;
@@ -2724,7 +2725,7 @@ begin
   begin
     stcnt := QueryIOTH.FieldByName(Column.fieldname).AsExtended;
     prevcnt := QueryIOTH.FieldByName('prevcounter').AsExtended;
-    if(abs(stcnt-prevcnt) > 0.01) and (not (gdFocused in state)) then
+    if(abs(stcnt-prevcnt) > 0.001) and (not (gdFocused in state)) then
     begin
       TextRect := Rect;
       TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
