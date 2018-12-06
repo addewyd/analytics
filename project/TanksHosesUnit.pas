@@ -28,6 +28,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
   end;
 
 var
@@ -143,5 +144,15 @@ begin
 //  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
   PrepareAndLoad;
 end;
+
+// .............................................................................
+
+procedure TTanksHosesForm.stationchanged(var Msg: TMessage);
+begin
+//  AddToLog('STATIONCANGED');
+  Caption := 'Рукава АЗС ' + current_azscode;
+  PrepareAndLoad;
+end;
+
 
 end.
