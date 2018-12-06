@@ -49,7 +49,7 @@ inherited TanksHosesForm: TTanksHosesForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12739,7 +12739,14 @@ inherited TanksHosesForm: TTanksHosesForm
       '        choses h'
       '        join ctanks t'
       '        on t.tanknum=h.tanknum and t.azscode=h.azscode '
+      'where h.azscode = :azscode'
       'order by h.azscode, h.tanknum, h.hosenum'
       '')
+    ParamData = <
+      item
+        Name = 'AZSCODE'
+        ParamType = ptInput
+        Value = Null
+      end>
   end
 end

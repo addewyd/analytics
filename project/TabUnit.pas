@@ -963,7 +963,7 @@ begin
       '        and i1.payment_code = i.payment_code and i1.session_id=:session_id), '
       + '0)  as volume_' + ST + ',';
 
-    tm := tm + '(select price from getprice(0, :session_id,'#$27 + WN + #$27')) '
+    tm := tm + '(select price from getprice(1 /* 0 ? */, :session_id,'#$27 + WN + #$27')) '
       + ' as price_' + ST + ',';
 
     tmp := '(select sum(amount) from inoutgsm i1 '

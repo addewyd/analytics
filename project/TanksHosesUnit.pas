@@ -19,6 +19,7 @@ type
     CommitAction: TAction;
     ToolButton3: TToolButton;
     procedure FormCreate(Sender: TObject);
+    procedure PrepareAndLoad;
     procedure CommitActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
@@ -38,17 +39,57 @@ implementation
 
 uses MainUnit, DmUnit;
 
+procedure TTanksHosesForm.PrepareAndLoad;
+begin
+  with FDQuery do
+  begin
+
+    with params do
+    begin
+      Clear;
+      with add do
+      begin
+        Name:= 'azscode';
+        DataType := ftString;
+        ParamType:= ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := current_azscode;
+
+
+  end;
+  inherited;
+  inherited LoadData;
+  JvDBGrid.Refresh;
+
+end;
+
+// .............................................................................
+
 procedure TTanksHosesForm.CommitActionExecute(Sender: TObject);
 begin
   inherited;
   with FDQuery do
   begin
+
+    with params do
+    begin
+      Clear;
+      with add do
+      begin
+        Name:= 'azscode';
+        DataType := ftString;
+        ParamType:= ptInput;
+      end;
+    end;
+    ParamByName('azscode').AsString := current_azscode;
+
     Transaction.StartTransaction;
     try
       ApplyUpdates(0);
       Close;
       Transaction.Commit;
-      LoadData;
+      PrepareAndLoad;
     except
       on e: exception do
       begin
@@ -60,11 +101,16 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TTanksHosesForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadData;
+  Caption := 'Рукава АЗС ' + current_azscode;
+  PrepareAndLoad;
 end;
+
+// .............................................................................
 
 procedure TTanksHosesForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -88,11 +134,14 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TTanksHosesForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
-  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
-  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+//  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+//  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+  PrepareAndLoad;
 end;
 
 end.
