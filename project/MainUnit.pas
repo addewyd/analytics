@@ -339,7 +339,7 @@ begin
       sql.Text :=
         'insert into USEROPTIONS '+
         '(user_id,opname1,optvalue1,optfullname1,opname2,optvalue2,optfullname2,opname3,optfullname3,optvalue3) values ' +
-        '(:user_id,:opname1,:optvalue1,:optfullname1,:opname2,:optvalue2,:optfullname2,:opname3,:optvalue3,:optfullname3)';
+        '(:user_id,:opname1,:optvalue1,:optfullname1,:opname2,:optvalue2,:optfullname2,:opname3,:optfullname3,:optvalue3)';
 
       with Params do
       begin
