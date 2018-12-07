@@ -129,7 +129,7 @@ end;
 procedure TCatGSMForm.JvDBGridColEnter(Sender: TObject);
 begin
   inherited;
- with TDBGrid(Sender) do
+  with TDBGrid(Sender) do
     if SelectedField.FieldName = 'INCL' then
       Options := Options - [dgEditing]
     else

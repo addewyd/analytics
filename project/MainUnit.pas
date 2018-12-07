@@ -600,8 +600,8 @@ begin
           ExecSQL('delete from firms');
           AddToLog('deleted from firms');
 
-          ExecSQL('delete from items');
-          AddToLog('deleted from items');
+          //ExecSQL('delete from items');
+          //AddToLog('deleted from items');
 
 //          ExecSQL('delete from tahoa');
 //          AddToLog('deleted from tahoa');
@@ -611,8 +611,8 @@ begin
           ExecSQL('delete from hoses');
           AddToLog('deleted from hoses');
 
-          ExecSQL('delete from paymentmodes');
-          AddToLog('deleted from paymentmodes');
+          //ExecSQL('delete from paymentmodes');
+          //AddToLog('deleted from paymentmodes');
           ExecSQL('delete from wareprices');
           AddToLog('deleted from wareprices');
           ExecSQL('delete from sessions');
