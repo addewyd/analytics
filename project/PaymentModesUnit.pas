@@ -176,12 +176,12 @@ begin
   begin
     if Column.Field.AsInteger > 0 then
       begin
-        style := DFCS_CHECKED or DFCS_FLAT;
+        style := DFCS_CHECKED;
         cbrect:=rect;
       end
       else
       begin
-        style := DFCS_BUTTONCHECK or DFCS_FLAT;
+        style := DFCS_BUTTONCHECK;
         cbrect:=rect;
       end;
       DrawFrameControl(TDBGrid(Sender).Canvas.Handle,

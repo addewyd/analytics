@@ -1,8 +1,11 @@
 inherited PaymentModesForm: TPaymentModesForm
   Caption = #1042#1080#1076#1099' '#1054#1087#1083#1072#1090#1099
+  ClientWidth = 523
+  ExplicitWidth = 539
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
+    Width = 523
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
@@ -11,59 +14,88 @@ inherited PaymentModesForm: TPaymentModesForm
       ShowHint = True
     end
   end
+  inherited JvStatusBar1: TJvStatusBar
+    Width = 523
+  end
+  inherited JvDBGridFooter: TJvDBGridFooter
+    Width = 523
+  end
   inherited JvDBGrid: TJvDBUltimGrid
+    Width = 523
     ReadOnly = True
     OnCellClick = JvDBGridCellClick
     OnColEnter = JvDBGridColEnter
     OnDrawColumnCell = JvDBGridDrawColumnCell
     OnKeyDown = JvDBGridKeyDown
     OnKeyPress = JvDBGridKeyPress
+    AutoSizeRows = False
+    TitleRowHeight = 35
+    WordWrap = True
     Columns = <
       item
         Expanded = False
         FieldName = 'CODE'
+        Title.Caption = #1050#1086#1076
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'NAME'
         ReadOnly = False
+        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+        Width = 183
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RNT'
         ReadOnly = False
+        Title.Caption = #1056#1086#1079#1085' '#1053#1072#1083' '#1058#1086#1087#1083
+        Width = 43
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RBT'
         ReadOnly = False
+        Title.Caption = #1056#1086#1079#1085' '#1041#1072#1085#1082' '#1058#1086#1087#1083
+        Width = 37
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RNM'
         ReadOnly = False
+        Title.Caption = #1056#1086#1079#1085' '#1053#1072#1083' '#1052#1072#1075#1072#1079#1080#1085
+        Width = 33
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RBM'
         ReadOnly = False
+        Title.Caption = #1056#1086#1079#1085' '#1041#1072#1085#1082' '#1052#1072#1075#1072#1079#1080#1085
+        Width = 32
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CAOT'
         ReadOnly = False
+        Title.Caption = #1050#1086#1085#1090#1088' '#1058#1086#1087#1083#1080#1074#1086
+        Width = 48
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CAOM'
         ReadOnly = False
+        Title.Caption = #1050#1086#1085#1090#1088' '#1052#1072#1075#1072#1079#1080#1085
         Visible = True
       end>
   end
