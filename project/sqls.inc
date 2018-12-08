@@ -45,6 +45,13 @@ const CIOGSQL = CIOGSQLCOMMON +
 
  '  order by s.startdatetime, i.direction,paymentmode,clientname';
 
+const CIOGSQLPMODES = CIOGSQLCOMMON +
+ '     where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/ ' +
+ '     s.id = :session_id ' +
+ '     and i.azscode=:azscode ' +
+ '     and i.payment_code in (!pmodelist) ' +
+ '  order by s.startdatetime, i.direction,paymentmode,clientname';
+
 const CIOGSQLH = CIOGSQLCOMMON
     + ' where i.sent < 1 and (s.state = ' + SS_CLOSED + ' or s.state = ' + SS_PARTLY + ') '
     + 'order by s.azscode, s.startdatetime, i.direction,paymentmode,clientname';
@@ -58,3 +65,9 @@ const CIOGSQLSum1 = 'select sum(volume) as volume,sum(amount0) as amount0, ' +
 const CIOGSQLSum = CIOGSQLSum1  +
        CIOGSQL +
        ')';
+
+const CIOGSQLSumPMODES = CIOGSQLSum1  +
+       CIOGSQLPMODES +
+       ')';
+
+

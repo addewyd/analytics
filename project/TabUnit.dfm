@@ -14816,6 +14816,7 @@ inherited TabForm: TTabForm
   object GenQuery: TFDQuery
     Connection = DM.FDConnection
     Transaction = GenTrans
+    UpdateTransaction = GenTrans
     Left = 44
     Top = 341
   end

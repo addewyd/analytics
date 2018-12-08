@@ -57,4 +57,22 @@ type
 
 
 
+  type PMode =
+    record
+      code: string;
+      RNT,
+      RBT   ,
+      RNM   ,
+      RBM   ,
+      CAOT  ,
+      CAOM:  Boolean;
+    end;
 
+type PMSums =
+  record
+    rnt_volume, rbt_volume, rnm_quantity, rbm_quantity, caot_volume, caom_quantity: Extended;
+    rnt_amount0, rbt_amount0, rnm_amount0, rbm_amount0, caot_amount0, caom_amount0: Extended;
+    // nds, sumnds, whole
+    // ///
+    dirty: Boolean;
+  end;

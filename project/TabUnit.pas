@@ -272,12 +272,16 @@ type
     sst: String;
     startdate: String;
     session_state: Integer;
+    APmodes: Array of PMode;
+    PMSumsCache: PMSums;
+
     constructor Create(pr: TComponent; fname: String;
       _sid, _snum: Integer; _sdt: String; _state: Integer);
       reintroduce; overload;
 
     procedure ShowAllData();
-
+    procedure ClearAllCaches;
+    procedure GetCachedGIOSums;
     procedure ShowGSMData();
     procedure ShowItemsData();
     procedure ShowOItemsData();
@@ -305,6 +309,144 @@ begin
   startdate := _sdt;
   session_state := _state;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.ClearAllCaches;
+begin
+  PMSumsCache.dirty := true;
+  PMSumsCache.rnt_volume := 0;
+  PMSumsCache.rbt_volume := 0;
+  PMSumsCache.rnm_quantity := 0;
+  PMSumsCache.rbm_quantity := 0;
+  PMSumsCache.caot_volume := 0;
+  PMSumsCache.caom_quantity := 0;
+  // amount, nds, sumnds, whole
+end;
+
+// .............................................................................
+
+procedure TTabForm.GetCachedGIOSums;
+  var
+    i, len: Integer;
+    pmodelist: TStringList;
+    f0: boolean;
+begin
+  if PMSumsCache.dirty then
+  begin
+    pmodelist := TStringList.Create;
+    try
+
+    len := Length(APmodes);
+    WIth GenQuery do
+    begin
+      SQL.Text := CIOGSQLSumPMODES;
+      with Params do
+      begin
+        Clear;
+        with add do
+        begin
+          name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with add do
+        begin
+          name := 'session_id';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+
+
+      with Macros do
+      begin
+        Clear;
+        with add do
+        begin
+            Name := 'pmodelist';
+            DataType := mdRaw;
+        end;
+      end;
+
+      ParamByName('session_id').AsInteger := session_id;
+      ParamByName('azscode').AsString := current_azscode;
+
+      // six pmodelists with codes in quotes
+      // 1. rnt
+
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RNT  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rnt_volume := FieldByName('volume').AsExtended;
+          PMSumsCache.rnt_amount0 := FieldByName('amount0').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rnt_volume := 0;
+        PMSumsCache.rnt_amount0 := 0;
+        // other
+      end;
+
+      // 2. rbt
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RBT  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rbt_volume := FieldByName('volume').AsExtended;
+          PMSumsCache.rbt_amount0 := FieldByName('amount0').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rbt_volume := 0;
+        PMSumsCache.rbt_amount0 := 0;
+        // other
+      end;
+
+      // ....
+
+
+    end;
+
+    PMSumsCache.dirty := false;
+    finally
+      pmodelist.Free;
+    end;
+  end
+  else
+  begin
+    // nothing
+  end;
 end;
 
 // .............................................................................
@@ -2094,7 +2236,9 @@ begin
         end;
       end;
     end;
-    
+
+    ClearAllCaches;
+
   except
     on e: Exception do
     begin
@@ -2218,6 +2362,9 @@ begin
   fldn := gcls.items[pind - 1].FieldName;
   StatusBar.Canvas.Font.Color := clBlue;
 
+  GetCachedGIOSums;
+
+  StatusBar.Canvas.Font.Style := [fsBold];
   for c := 0 to cls.Count -1 do
   begin
     if AnsiSameText(cls.Items[c].FieldName, fldn) then
@@ -2227,23 +2374,23 @@ begin
       if fldn = 'CLIENTNAME' then
       begin
         StatusBar.Canvas.Font.Color := clPurple;
-        txt := 'Σ 1';
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+        txt := format('Σ rnt_v %.2f', [PMSumsCache.rnt_volume]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
         StatusBar.Canvas.Font.Color := clNavy;
-        txt := 'Σ 2';
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+        txt := format('Σ rbt_v %.2f', [PMSumsCache.rbt_volume]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
       else if fldn = 'FUELNAME' then
       begin
         StatusBar.Canvas.Font.Color := clOlive;
-        txt := 'Σ 3';
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+        txt := format('Σ caot_v %.2f', [PMSumsCache.caot_volume]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
         StatusBar.Canvas.Font.Color := clDkGray;
-        txt := 'Σ 4';
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+        txt := 'Σ ?';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
       else
@@ -2253,7 +2400,7 @@ begin
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
 
         StatusBar.Canvas.Font.Color := clBlue;
-        txt := 'Σ 5';
+        txt := 'Σ ?';
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
 
       end
@@ -2662,8 +2809,43 @@ end;
 // .............................................................................
 
 procedure TTabForm.LoadPaymentModes;
+  var
+    len, i: Integer;
 begin
-  //here
+
+{
+    RNT   SMALLINT,
+    RBT   SMALLINT,
+    RNM   SMALLINT,
+    RBM   SMALLINT,
+    CAOT  SMALLINT,
+    CAOM  SMALLINT
+}
+  with GenQuery do
+  begin
+    SQL.Text := 'select code, rnt, rbt, rnm, rbm, caot, caom from paymentmodes';
+    Params.Clear;
+    Transaction.StartTransaction;
+    Open;
+    FetchAll;
+    len := RecordCount;
+    SetLength(APmodes, len);
+    First;
+    i := 0;
+    while not Eof do
+    begin
+      APmodes[i].code := FieldByName('code').AsString;
+      APmodes[i].rnt := FieldByName('rnt').AsInteger > 0;
+      APmodes[i].rbt := FieldByName('rbt').AsInteger > 0;
+      APmodes[i].rnm := FieldByName('rnm').AsInteger > 0;
+      APmodes[i].rbm := FieldByName('rbm').AsInteger > 0;
+      APmodes[i].caot := FieldByName('caot').AsInteger > 0;
+      APmodes[i].caom := FieldByName('caom').AsInteger > 0;
+//AddToLog(APmodes[i].code);
+      Next;
+      Inc(i);
+    end;
+  end;
 end;
 
 // .............................................................................
@@ -2672,6 +2854,7 @@ procedure TTabForm.FormCreate(Sender: TObject);
 begin
   inherited;
   LoadPaymentModes;
+  ClearAllCaches;
 
   SetControlsOnSessionState(session_state);
 
