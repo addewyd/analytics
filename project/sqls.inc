@@ -50,7 +50,9 @@ const CIOGSQLH = CIOGSQLCOMMON
     + 'order by s.azscode, s.startdatetime, i.direction,paymentmode,clientname';
 
 const CIOGSQLSum1 = 'select sum(volume) as volume,sum(amount0) as amount0, ' +
-    'sum(sumnds) as sumnds, sum(whole) as whole, sum(mass) as mass ' +
+    'sum(sumnds) as sumnds, sum(whole) as whole, sum(mass) as mass, ' +
+    '0 as clientname, ' +
+    '0 as fuelname ' +
     ' from ( ';
 
 const CIOGSQLSum = CIOGSQLSum1  +

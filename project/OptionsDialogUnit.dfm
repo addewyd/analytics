@@ -28,9 +28,9 @@ object OptionsDialog: TOptionsDialog
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'OK'
+    Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitTop = 451
   end
   object CancelButton: TButton
     Left = 349
@@ -42,7 +42,6 @@ object OptionsDialog: TOptionsDialog
     Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 1
-    ExplicitTop = 451
   end
   object JvPanel1: TJvPanel
     Left = 8
@@ -169,7 +168,6 @@ object OptionsDialog: TOptionsDialog
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 3
-    ExplicitTop = 107
     object HTTPCheckBox: TJvCheckBox
       Left = 6
       Top = 2
@@ -215,7 +213,6 @@ object OptionsDialog: TOptionsDialog
     BorderWidth = 1
     BorderStyle = bsSingle
     TabOrder = 4
-    ExplicitTop = 228
     object UserNameText: TJvStaticText
       Left = 12
       Top = 8
@@ -297,7 +294,6 @@ object OptionsDialog: TOptionsDialog
     BorderStyle = bsSingle
     TabOrder = 5
     Visible = False
-    ExplicitTop = 371
     object JvStaticText7: TJvStaticText
       Left = 8
       Top = 11

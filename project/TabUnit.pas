@@ -137,12 +137,7 @@ type
     QueryInOutSUMNDS: TFloatField;
     QueryInOutWHOLE: TFloatField;
     QueryInOutAMOUNT0: TFloatField;
-    QueryInOutSumVOLUME: TFloatField;
-    QueryInOutSumAMOUNT0: TFloatField;
-    QueryInOutSumSUMNDS: TFloatField;
-    QueryInOutSumWHOLE: TFloatField;
     QueryInOutMASS: TFloatField;
-    QueryInOutSumMASS: TFloatField;
     GridFooterOutItems: TJvDBGridFooter;
     GridOutItems: TJvDBUltimGrid;
     DSOutItems: TJvDataSource;
@@ -255,6 +250,7 @@ type
     sessionnum: Integer;
     volumesum_ioth, volumesum_pm, amountsum_io, amountsum_pm: Extended;
     procedure LoadWareList;
+    procedure LoadPaymentModes;
     function PrevClosed(sid: Integer): boolean;
     function GenPMSql(var sumsql: string): String;
     procedure warechanged(var Msg: TMessage); message WM_WARECHANGED;
@@ -2226,13 +2222,42 @@ begin
   begin
     if AnsiSameText(cls.Items[c].FieldName, fldn) then
     begin
-      StatusBar.Canvas.Font.Color := clGreen;
-      txt := QueryInOutSum.FieldByName(fldn).AsString;
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
 
-      StatusBar.Canvas.Font.Color := clBlue;
-      txt := 'sumb';
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+      // some additoanl sums
+      if fldn = 'CLIENTNAME' then
+      begin
+        StatusBar.Canvas.Font.Color := clPurple;
+        txt := 'Σ 1';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+
+        StatusBar.Canvas.Font.Color := clNavy;
+        txt := 'Σ 2';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+
+      end
+      else if fldn = 'FUELNAME' then
+      begin
+        StatusBar.Canvas.Font.Color := clOlive;
+        txt := 'Σ 3';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+
+        StatusBar.Canvas.Font.Color := clDkGray;
+        txt := 'Σ 4';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+
+      end
+      else
+      begin
+        StatusBar.Canvas.Font.Color := clGreen;
+        txt := QueryInOutSum.FieldByName(fldn).AsString;
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+
+        StatusBar.Canvas.Font.Color := clBlue;
+        txt := 'Σ 5';
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+
+      end
+
     end;
   end;
 
@@ -2636,9 +2661,18 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.LoadPaymentModes;
+begin
+  //here
+end;
+
+// .............................................................................
+
 procedure TTabForm.FormCreate(Sender: TObject);
 begin
   inherited;
+  LoadPaymentModes;
+
   SetControlsOnSessionState(session_state);
 
   QueryInOut.SQL.Text := CIOGSQL;

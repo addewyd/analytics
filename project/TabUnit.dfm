@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -462,6 +462,14 @@ inherited TabForm: TTabForm
             end
             item
               FieldName = 'SUMNDS'
+              Style = psOwnerDraw
+            end
+            item
+              FieldName = 'CLIENTNAME'
+              Style = psOwnerDraw
+            end
+            item
+              FieldName = 'FUELNAME'
               Style = psOwnerDraw
             end>
           DataSource = DSInOut
@@ -14508,41 +14516,6 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
-    object QueryInOutSumVOLUME: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'VOLUME'
-      Origin = 'VOLUME'
-      ProviderFlags = []
-      ReadOnly = True
-    end
-    object QueryInOutSumAMOUNT0: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'AMOUNT0'
-      Origin = 'AMOUNT0'
-      ProviderFlags = []
-      ReadOnly = True
-    end
-    object QueryInOutSumSUMNDS: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'SUMNDS'
-      Origin = 'SUMNDS'
-      ProviderFlags = []
-      ReadOnly = True
-    end
-    object QueryInOutSumWHOLE: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'WHOLE'
-      Origin = 'WHOLE'
-      ProviderFlags = []
-      ReadOnly = True
-    end
-    object QueryInOutSumMASS: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'MASS'
-      Origin = 'MASS'
-      ProviderFlags = []
-      ReadOnly = True
-    end
   end
   object QueryInOutItems: TFDQuery
     Connection = DM.FDConnection
