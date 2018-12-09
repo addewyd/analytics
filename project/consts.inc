@@ -70,9 +70,9 @@ type
 
 type PMSums =
   record
-    rnt_volume, rbt_volume, rnm_quantity, rbm_quantity, caot_volume, caom_quantity: Extended;
-    rnt_amount0, rbt_amount0, rnm_amount0, rbm_amount0, caot_amount0, caom_amount0: Extended;
-    // nds, sumnds, whole
-    // ///
+    rnt_volume, rbt_volume, rnm_amount, rbm_amount, caot_volume, caom_amount: Extended;
+    rnt_amount0, rbt_amount0, rnm_summ, rbm_summ, caot_amount0, caom_summ: Extended;
+    rnt_sumnds, rbt_sumnds, rnm_sumnds, rbm_sumnds, caot_sumnds, caom_sumnds: Extended;
+    rnt_whole, rbt_whole, rnm_whole, rbm_whole, caot_whole, caom_whole: Extended;
     dirty: Boolean;
   end;

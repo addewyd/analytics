@@ -316,13 +316,35 @@ end;
 procedure TTabForm.ClearAllCaches;
 begin
   PMSumsCache.dirty := true;
+
   PMSumsCache.rnt_volume := 0;
   PMSumsCache.rbt_volume := 0;
-  PMSumsCache.rnm_quantity := 0;
-  PMSumsCache.rbm_quantity := 0;
+  PMSumsCache.rnm_amount := 0;
+  PMSumsCache.rbm_amount := 0;
   PMSumsCache.caot_volume := 0;
-  PMSumsCache.caom_quantity := 0;
-  // amount, nds, sumnds, whole
+  PMSumsCache.caom_amount := 0;
+
+  PMSumsCache.rnt_amount0:= 0;
+  PMSumsCache.rbt_amount0 := 0;
+  PMSumsCache.rnm_summ := 0;
+  PMSumsCache.rbm_summ := 0;
+  PMSumsCache.caot_amount0 := 0;
+  PMSumsCache.caom_summ := 0;
+
+  PMSumsCache.rnt_sumnds:= 0;
+  PMSumsCache.rbt_sumnds := 0;
+  PMSumsCache.rnm_sumnds := 0;
+  PMSumsCache.rbm_sumnds := 0;
+  PMSumsCache.caot_sumnds := 0;
+  PMSumsCache.caom_sumnds := 0;
+
+  PMSumsCache.rnt_whole:= 0;
+  PMSumsCache.rbt_whole := 0;
+  PMSumsCache.rnm_whole := 0;
+  PMSumsCache.rbm_whole := 0;
+  PMSumsCache.caot_whole := 0;
+  PMSumsCache.caom_whole := 0;
+
 end;
 
 // .............................................................................
@@ -392,6 +414,8 @@ begin
         begin
           PMSumsCache.rnt_volume := FieldByName('volume').AsExtended;
           PMSumsCache.rnt_amount0 := FieldByName('amount0').AsExtended;
+          PMSumsCache.rnt_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.rnt_whole := FieldByName('whole').AsExtended;
         end
         else f0 := true;
       end
@@ -401,7 +425,8 @@ begin
       begin
         PMSumsCache.rnt_volume := 0;
         PMSumsCache.rnt_amount0 := 0;
-        // other
+        PMSumsCache.rnt_sumnds := 0;
+        PMSumsCache.rnt_whole := 0;
       end;
 
       // 2. rbt
@@ -421,6 +446,8 @@ begin
         begin
           PMSumsCache.rbt_volume := FieldByName('volume').AsExtended;
           PMSumsCache.rbt_amount0 := FieldByName('amount0').AsExtended;
+          PMSumsCache.rbt_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.rbt_whole := FieldByName('whole').AsExtended;
         end
         else f0 := true;
       end
@@ -430,10 +457,45 @@ begin
       begin
         PMSumsCache.rbt_volume := 0;
         PMSumsCache.rbt_amount0 := 0;
-        // other
+        PMSumsCache.rbt_sumnds := 0;
+        PMSumsCache.rbt_whole := 0;
       end;
 
-      // ....
+      // 3. caot
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].CAOT  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.caot_volume := FieldByName('volume').AsExtended;
+          PMSumsCache.caot_amount0 := FieldByName('amount0').AsExtended;
+          PMSumsCache.caot_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.caot_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.caot_volume := 0;
+        PMSumsCache.caot_amount0 := 0;
+        PMSumsCache.caot_sumnds := 0;
+        PMSumsCache.caot_whole := 0;
+      end;
+
+
+      // ....   other from outitems
+      SQL.Text := COITEMSSQLSumPMODES;
 
 
     end;
@@ -2860,6 +2922,8 @@ begin
 
   QueryInOut.SQL.Text := CIOGSQL;
   QueryInOutSum.SQL.Text := CIOGSQLSum;
+
+  QueryOutItems.SQL.Text := COITEMSSQL;
 
   warelist := TStringList.Create;
   dirtyGSM := false;
