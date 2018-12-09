@@ -2655,15 +2655,22 @@ begin
     begin
       StatusBar.Canvas.Font.Color := clGreen;
       txt := QueryOutItemsSum.FieldByName(fldn).AsString;
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
       StatusBar.Canvas.Font.Color := clBlue;
 //      txt := QueryOutItemsSum2.FieldByName(fldn).AsString;
 
       // test
-      txt := format('Σ rnm %.2f', [PMSumsCache.rnm_summ]);
+      txt := '';
+      if fldn = 'SUMM' then
+        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_summ])
+      else if fldn = 'SUMNDS' then
+        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_sumnds])
+      else if fldn = 'WHOLE' then
+        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_whole]);
 
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+
+      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
     end;
   end;
 end;

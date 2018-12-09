@@ -12,20 +12,25 @@ uses
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
   JvDBUltimGrid, JvDBGridFooter, Vcl.ComCtrls, JvExComCtrls, JvStatusBar,
-  Vcl.ToolWin, JvToolBar;
+  Vcl.ToolWin, JvToolBar, Vcl.StdCtrls;
 
 type
   TTanksHosesForm = class(TFormWithGrid)
     CommitAction: TAction;
     ToolButton3: TToolButton;
+    azsedit: TEdit;
+    Label1: TLabel;
+    ToolButton4: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure PrepareAndLoad;
     procedure CommitActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure azseditKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
+    acode: String;
   public
     { Public declarations }
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
@@ -55,13 +60,27 @@ begin
         ParamType:= ptInput;
       end;
     end;
-    ParamByName('azscode').AsString := current_azscode;
+    ParamByName('azscode').AsString := acode;
 
 
   end;
   inherited;
   inherited LoadData;
   JvDBGrid.Refresh;
+
+end;
+
+// .............................................................................
+
+procedure TTanksHosesForm.azseditKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if key = chr(13) then
+  begin
+    acode := azsedit.Text;
+    PrepareAndLoad;
+    key := chr(0);
+  end;
 
 end;
 
@@ -107,7 +126,9 @@ end;
 procedure TTanksHosesForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  Caption := 'Рукава АЗС ' + current_azscode;
+  acode := current_azscode;
+  Caption := 'Рукава АЗС ' + acode;
+  azsedit.Text := acode;
   PrepareAndLoad;
 end;
 

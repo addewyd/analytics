@@ -10,6 +10,32 @@ inherited TanksHosesForm: TTanksHosesForm
       ParentShowHint = False
       ShowHint = True
     end
+    object ToolButton4: TToolButton
+      Left = 69
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton4'
+      ImageIndex = 362
+      Style = tbsSeparator
+    end
+    object Label1: TLabel
+      AlignWithMargins = True
+      Left = 77
+      Top = 0
+      Width = 34
+      Height = 22
+      AutoSize = False
+      Caption = '   '#1040#1047#1057' '
+    end
+    object azsedit: TEdit
+      Left = 111
+      Top = 0
+      Width = 76
+      Height = 22
+      Anchors = [akTop, akRight]
+      TabOrder = 0
+      OnKeyPress = azseditKeyPress
+    end
   end
   inherited JvDBGrid: TJvDBUltimGrid
     OnKeyDown = JvDBGridKeyDown

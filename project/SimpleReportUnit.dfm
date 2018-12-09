@@ -80,7 +80,7 @@ inherited SimpleReportForm: TSimpleReportForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12781,7 +12781,7 @@ inherited SimpleReportForm: TSimpleReportForm
       '    from'
       '(select'
       '    s.id as sid,'
-      '    azscode,'
+      '    s.azscode,'
       '    sessionnum,'
       '    startdatetime,'
       '    '#39'R'#39' as tbl,'
@@ -12802,7 +12802,7 @@ inherited SimpleReportForm: TSimpleReportForm
       '    join Hoses h on s.id = h.session_id'
       '    join tanks t on t.session_id = s.id'
       '   where'
-      '    azscode = :azscode'
+      '    s.azscode = :azscode'
       '    and  startdatetime >= cast(:sdt as timestamp) '
       '    and enddatetime <= cast(:edt as timestamp)'
       '    /*and r.fuelextcode = '#39'00000000001'#39'*/'
@@ -12819,7 +12819,7 @@ inherited SimpleReportForm: TSimpleReportForm
       'union'
       'select'
       '    s.id as sid,'
-      '    azscode,'
+      '    s.azscode,'
       '    sessionnum,'
       '    startdatetime,'
       '    '#39'O'#39' as tbl,'
@@ -12840,7 +12840,7 @@ inherited SimpleReportForm: TSimpleReportForm
       '    join Hoses h on s.id = h.session_id'
       '    join tanks t on t.session_id = s.id'
       '   where'
-      '    azscode = :azscode'
+      '    s.azscode = :azscode'
       '    and  startdatetime >= cast(:sdt as timestamp)'
       '    and  enddatetime >= cast(:edt as timestamp)'
       '/*    and r.fuelextcode = '#39'00000000001'#39' */'
