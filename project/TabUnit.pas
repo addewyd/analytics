@@ -493,10 +493,106 @@ begin
         PMSumsCache.caot_whole := 0;
       end;
 
-
       // ....   other from outitems
       SQL.Text := COITEMSSQLSumPMODES;
+      // 4. rnm
 
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RNM  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rnm_amount := FieldByName('amount').AsExtended;
+          PMSumsCache.rnm_summ := FieldByName('summ').AsExtended;
+          PMSumsCache.rnm_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.rnm_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rnm_amount := 0;
+        PMSumsCache.rnm_summ := 0;
+        PMSumsCache.rnm_sumnds := 0;
+        PMSumsCache.rnm_whole := 0;
+      end;
+
+      // 5. rbm
+
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RBM  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rbm_amount := FieldByName('amount').AsExtended;
+          PMSumsCache.rbm_summ := FieldByName('summ').AsExtended;
+          PMSumsCache.rbm_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.rbm_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rbm_amount := 0;
+        PMSumsCache.rbm_summ := 0;
+        PMSumsCache.rbm_sumnds := 0;
+        PMSumsCache.rbm_whole := 0;
+      end;
+
+      // 6. caom
+
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].CAOM  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.caom_amount := FieldByName('amount').AsExtended;
+          PMSumsCache.caom_summ := FieldByName('summ').AsExtended;
+          PMSumsCache.caom_sumnds := FieldByName('sumnds').AsExtended;
+          PMSumsCache.caom_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.caom_amount := 0;
+        PMSumsCache.caom_summ := 0;
+        PMSumsCache.caom_sumnds := 0;
+        PMSumsCache.caom_whole := 0;
+      end;
 
     end;
 
@@ -1672,8 +1768,8 @@ begin
       Close;
     if QueryOutItemsSum.Active then
       QueryOutItemsSum.Close;
-    if QueryOutItemsSum2.Active then
-      QueryOutItemsSum2.Close;
+//    if QueryOutItemsSum2.Active then
+//      QueryOutItemsSum2.Close;
     if Transaction.Active then
       Transaction.Commit;
 
@@ -1698,9 +1794,10 @@ begin
     QueryOutItemsSum.Params.Assign(Params);
     QueryOutItemsSum.ParamByName('session_id').AsInteger := session_id;
     QueryOutItemsSum.ParamByName('azscode').AsString := current_azscode;
-    QueryOutItemsSum2.Params.Assign(Params);
-    QueryOutItemsSum2.ParamByName('session_id').AsInteger := session_id;
-    QueryOutItemsSum2.ParamByName('azscode').AsString := current_azscode;
+
+//    QueryOutItemsSum2.Params.Assign(Params);
+//    QueryOutItemsSum2.ParamByName('session_id').AsInteger := session_id;
+//    QueryOutItemsSum2.ParamByName('azscode').AsString := current_azscode;
 
     Transaction.StartTransaction;
     try
@@ -1708,8 +1805,8 @@ begin
       Open;
       QueryOutItemsSum.Prepare;
       QueryOutItemsSum.Open;
-      QueryOutItemsSum2.Prepare;
-      QueryOutItemsSum2.Open;
+//      QueryOutItemsSum2.Prepare;
+//      QueryOutItemsSum2.Open;
       GridFooterOutItems.ReCalc;
       // Transaction.Commit;
     except
@@ -2537,11 +2634,6 @@ procedure TTabForm.GridFooterOutItemsDrawPanel(StatusBar: TStatusBar;
 begin
   // inherited;
 
-  {
-01БСТ0
-02БСТ0
-  }
-
   f := StatusBar as  TJvDBGridFooter;
 
   gr := f.DBGrid;
@@ -2552,7 +2644,10 @@ begin
   pind := Panel.Index;
 
   fldn := gcls.items[pind - 1].FieldName;
+  StatusBar.Canvas.Font.Style := [fsBold];
   StatusBar.Canvas.Font.Color := clBlue;
+
+  GetCachedGIOSums;
 
   for c := 0 to cls.Count -1 do
   begin
@@ -2563,7 +2658,11 @@ begin
       StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
 
       StatusBar.Canvas.Font.Color := clBlue;
-      txt := QueryOutItemsSum2.FieldByName(fldn).AsString;
+//      txt := QueryOutItemsSum2.FieldByName(fldn).AsString;
+
+      // test
+      txt := format('Σ rnm %.2f', [PMSumsCache.rnm_summ]);
+
       StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
     end;
   end;
@@ -2924,6 +3023,7 @@ begin
   QueryInOutSum.SQL.Text := CIOGSQLSum;
 
   QueryOutItems.SQL.Text := COITEMSSQL;
+  QueryOutItemsSum.SQL.Text := COITEMSSQLSum;
 
   warelist := TStringList.Create;
   dirtyGSM := false;

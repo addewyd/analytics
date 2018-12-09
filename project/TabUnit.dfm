@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet4
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -475,6 +475,7 @@ inherited TabForm: TTabForm
           DataSource = DSInOut
           DBGrid = GridInOutGSM
           OnCalculate = GridFooterInOutCalculate
+          ExplicitTop = 434
         end
         object GridInOutGSM: TJvDBUltimGrid
           Left = 1
@@ -14846,6 +14847,7 @@ inherited TabForm: TTabForm
     UpdateOptions.KeyFields = 'ID'
     UpdateObject = QIOIUpdateSQL
     SQL.Strings = (
+      'NOT USEd see sqls.inc'
       ''
       'select '
       '   i.id,'
@@ -15026,6 +15028,8 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
+      'NOT USEd see sqls.inc'
+      ''
       'select sum (amount) as amount, sum(summ) as summ, '
       '       sum(sumnds) as sumnds, sum(whole) as whole from'
       '(select '
@@ -15095,6 +15099,8 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
+      'NOT USED'
+      ''
       'select sum (amount) as amount, sum(summ) as summ, '
       '       sum(sumnds) as sumnds, sum(whole) as whole from'
       '(select '
