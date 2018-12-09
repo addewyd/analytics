@@ -8,7 +8,7 @@ inherited SessionListForm: TSessionListForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 612
-    ExplicitWidth = 551
+    ExplicitWidth = 612
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
@@ -54,18 +54,73 @@ inherited SessionListForm: TSessionListForm
       ParentShowHint = False
       ShowHint = True
     end
+    object ToolButton10: TToolButton
+      Left = 207
+      Top = 0
+      Caption = 'ToolButton10'
+      Enabled = False
+    end
+    object EnnableFilterCB: TJvCheckBox
+      Left = 230
+      Top = 0
+      Width = 13
+      Height = 22
+      Ctl3D = True
+      ParentCtl3D = False
+      TabOrder = 0
+      OnClick = EnnableFilterCBClick
+      LinkedControls = <>
+    end
+    object JvHTLabel1: TJvHTLabel
+      Left = 243
+      Top = 0
+      Width = 32
+      Height = 22
+      AutoSize = False
+      Caption = '  '#1040#1047#1057'  '
+      SuperSubScriptRatio = 0.666666666666666600
+    end
+    object AZSEdit: TJvEdit
+      Left = 275
+      Top = 0
+      Width = 46
+      Height = 22
+      AutoSize = False
+      TabOrder = 1
+      Text = ''
+      OnKeyPress = AZSEditKeyPress
+    end
+    object STDatePickerEdit: TJvDatePickerEdit
+      Left = 321
+      Top = 0
+      Width = 80
+      Height = 22
+      AllowNoDate = True
+      Checked = True
+      TabOrder = 2
+      OnChange = STDatePickerEditChange
+    end
+    object ENDDatePickerEdit: TJvDatePickerEdit
+      Left = 401
+      Top = 0
+      Width = 80
+      Height = 22
+      AllowNoDate = True
+      Checked = True
+      TabOrder = 3
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 404
     Width = 612
-    ExplicitTop = 345
-    ExplicitWidth = 551
+    ExplicitTop = 404
+    ExplicitWidth = 612
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 385
     Width = 612
-    ExplicitTop = 326
-    ExplicitWidth = 551
+    ExplicitTop = 385
+    ExplicitWidth = 612
   end
   inherited JvDBGrid: TJvDBUltimGrid
     Width = 612
@@ -159,7 +214,7 @@ inherited SessionListForm: TSessionListForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

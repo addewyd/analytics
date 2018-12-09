@@ -12,7 +12,9 @@ uses
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
-  JvDBUltimGrid;
+  JvDBUltimGrid, Vcl.StdCtrls, JvExStdCtrls, JvCheckBox, Vcl.Mask, JvExMask,
+  JvToolEdit, JvMaskEdit, JvCheckedMaskEdit, JvDatePickerEdit, JvEdit,
+  JvHtControls;
 {$Include 'consts.inc'}
 
 type
@@ -41,6 +43,12 @@ type
     GenUpdTransUPD: TFDTransaction;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
+    ToolButton10: TToolButton;
+    EnnableFilterCB: TJvCheckBox;
+    JvHTLabel1: TJvHTLabel;
+    AZSEdit: TJvEdit;
+    STDatePickerEdit: TJvDatePickerEdit;
+    ENDDatePickerEdit: TJvDatePickerEdit;
     procedure FormCreate(Sender: TObject);
     procedure JvDBGridDblClick(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -54,8 +62,12 @@ type
     procedure CloseSessActionExecute(Sender: TObject);
     procedure ClearCloseActionExecute(Sender: TObject);
     procedure VerifiedActionExecute(Sender: TObject);
+    procedure EnnableFilterCBClick(Sender: TObject);
+    procedure AZSEditKeyPress(Sender: TObject; var Key: Char);
+    procedure STDatePickerEditChange(Sender: TObject);
   private
     { Private declarations }
+    acode: String;
   public
     { Public declarations }
     function GetStartSession: String;
@@ -129,7 +141,7 @@ begin
     else
       MacroByName('sscl').asRaw := ' and state<2 ';
 
-    ParamByName('azs').AsString := current_azscode;
+    ParamByName('azs').AsString := acode;
     ParamByName('sst').AsString := sst;
   end;
   inherited;
@@ -225,6 +237,20 @@ end;
 
 // .............................................................................
 
+procedure TSessionListForm.AZSEditKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if ord(key) = VK_RETURN then
+  begin
+    // reload
+    acode := AZSEdit.Text;
+    PrepareAndLoad;
+    key := chr(0);
+  end;
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.ChangeStationActionExecute(Sender: TObject);
   var
     tb: TForm;
@@ -269,7 +295,7 @@ begin
         ParamType := ptInput;
       end;
     end;
-    ParamByName('azscode').AsString := current_azscode;
+    ParamByName('azscode').AsString := acode;
     ParamByName('id').AsInteger := id;
     Prepare;
     Open;
@@ -418,9 +444,29 @@ end;
 
 // .............................................................................
 
+procedure TSessionListForm.EnnableFilterCBClick(Sender: TObject);
+begin
+  inherited;
+  STDatePickerEdit.Enabled := EnnableFilterCB.Checked;
+  ENDDatePickerEdit.Enabled := EnnableFilterCB.Checked;
+  AZSEdit.Enabled := EnnableFilterCB.Checked;
+  if true {EnnableFilterCB.Checked} then
+  begin
+    PrepareAndLoad;
+  end;
+end;
+
+// .............................................................................
+
 procedure TSessionListForm.FormCreate(Sender: TObject);
 begin
   inherited;
+  acode := current_azscode;
+  AZSEdit.Text := acode;
+  STDatePickerEdit.Enabled := EnnableFilterCB.Checked;
+  ENDDatePickerEdit.Enabled := EnnableFilterCB.Checked;
+  AZSEdit.Enabled := EnnableFilterCB.Checked;
+
   PrepareAndLoad;
 
 end;
@@ -673,13 +719,9 @@ begin
                 Trans.Rollback;
                 ErrorMessageBox(self, e.Message);
               end;
-
             end;
-
           end;
-
         end;
-
       end;
      end;
      AddToLog(Format('del id %d', [id]));
@@ -712,6 +754,12 @@ end;
 function TSessionListForm.GetStartSession: String;
 begin
   result := '2000-01-01 00:00:00';
+  if EnnableFilterCB.Checked then
+  begin
+
+    result := DateTimeToStr(STDatePickerEdit.Date);
+    exit;
+  end;
   // last_sessions_count
   try
     with QuerySST do
@@ -734,7 +782,7 @@ begin
         end;
       end;
       ParamByName('cnt').AsInteger := last_sessions_count;
-      ParamByName('azs').AsString := current_azscode;
+      ParamByName('azs').AsString := acode;
       Prepare;
       Open;
       First;
@@ -795,6 +843,14 @@ end;
 procedure TSessionListForm.stationchanged(var Msg: TMessage);
 begin
   AddToLog('STATIONCANGED');
+  acode := current_azscode;
+  AZSEdit.Text := acode;
+  PrepareAndLoad;
+end;
+
+procedure TSessionListForm.STDatePickerEditChange(Sender: TObject);
+begin
+  inherited;
   PrepareAndLoad;
 end;
 
@@ -806,7 +862,6 @@ begin
   PrepareAndLoad;
 
 end;
-
 
 // .............................................................................
 
@@ -835,7 +890,7 @@ begin
       end;
     end;
     ParamByName('sid').AsInteger := sid;
-    ParamByName('azscode').AsString := current_azscode;
+    ParamByName('azscode').AsString := acode;
     i := 0;
     prevstate := 0;
     Prepare;
@@ -871,7 +926,5 @@ begin
     end;
   end;
 end;
-
-
 
 end.
