@@ -108,6 +108,7 @@ inherited SessionListForm: TSessionListForm
       AllowNoDate = True
       Checked = True
       TabOrder = 3
+      OnChange = ENDDatePickerEditChange
     end
   end
   inherited JvStatusBar1: TJvStatusBar
@@ -163,7 +164,8 @@ inherited SessionListForm: TSessionListForm
   inherited JvFS: TJvFormStorage
     StoredProps.Strings = (
       'EnnableFilterCB.Checked'
-      'STDatePickerEdit.Date')
+      'STDatePickerEdit.Date'
+      'ENDDatePickerEdit.Date')
     StoredValues = <>
   end
   inherited ActionList: TActionList
@@ -12911,6 +12913,7 @@ inherited SessionListForm: TSessionListForm
       '   from sessions'
       '   where azscode=:azs'
       '              and startdatetime >= cast(:sst as timestamp)'
+      '              and enddatetime <= cast(:est as timestamp)'
       '              !sscl'
       '   order by id, azscode, startdatetime')
     ParamData = <
@@ -12920,6 +12923,10 @@ inherited SessionListForm: TSessionListForm
       end
       item
         Name = 'SST'
+        ParamType = ptInput
+      end
+      item
+        Name = 'EST'
         ParamType = ptInput
       end>
     MacroData = <

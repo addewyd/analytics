@@ -65,6 +65,7 @@ type
     procedure EnnableFilterCBClick(Sender: TObject);
     procedure AZSEditKeyPress(Sender: TObject; var Key: Char);
     procedure STDatePickerEditChange(Sender: TObject);
+    procedure ENDDatePickerEditChange(Sender: TObject);
   private
     { Private declarations }
     acode: String;
@@ -106,9 +107,15 @@ end;
 
 procedure TSessionListForm.PrepareAndLoad;
 var
-  sst: String;
+  sst, est: String;
 begin
   sst := GetStartSession;
+  est := DateTimeToStr(Now + 1);
+  if EnnableFilterCB.Checked then
+  begin
+    est := DateTimeToStr(EndDatePickerEdit.Date + 1);
+  end;
+
   with FDQuery do
   begin
     with Macros do
@@ -135,6 +142,12 @@ begin
           DataType := ftString;
           ParamType := ptInput;
         end;
+        with Add do
+        begin
+          Name := 'est';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
     end;
     if show_closed then
       MacroByName('sscl').asRaw := ' '
@@ -143,6 +156,7 @@ begin
 
     ParamByName('azs').AsString := acode;
     ParamByName('sst').AsString := sst;
+    ParamByName('est').AsString := est;
   end;
   inherited;
   inherited LoadData;
@@ -440,6 +454,14 @@ begin
   inherited;
   key := VK_DELETE;
   JvDBGridKeyDown(Sender, Key, []);
+end;
+
+// .............................................................................
+
+procedure TSessionListForm.ENDDatePickerEditChange(Sender: TObject);
+begin
+  inherited;
+  PrepareAndLoad;
 end;
 
 // .............................................................................
