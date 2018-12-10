@@ -114,6 +114,8 @@ type
     ImageList: TImageList;
     StoragesAction: TAction;
     N10: TMenuItem;
+    DeadRestAction: TAction;
+    DeadRest1: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -145,6 +147,7 @@ type
     procedure ViewLogActionExecute(Sender: TObject);
     procedure CatTHActionExecute(Sender: TObject);
     procedure StoragesActionExecute(Sender: TObject);
+    procedure DeadRestActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -196,7 +199,8 @@ implementation
 uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
-  WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit;
+  WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit,
+  DeadRestUnit;
 
 
 // .............................................................................
@@ -643,6 +647,18 @@ begin
         end;
       end;
     end;
+end;
+
+// .............................................................................
+
+procedure TMainForm.DeadRestActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('deadrest') then
+  begin
+    TDeadRestForm.Create(self, 'deadrest');
+  end
+  else GetMDIForm('deadrest').Show;
+
 end;
 
 // .............................................................................

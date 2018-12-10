@@ -249,6 +249,9 @@ object MainForm: TMainForm
       object N10: TMenuItem
         Action = StoragesAction
       end
+      object DeadRest1: TMenuItem
+        Action = DeadRestAction
+      end
     end
     object Service1: TMenuItem
       Caption = 'Service'
@@ -440,6 +443,11 @@ object MainForm: TMainForm
       Hint = #1057#1082#1083#1072#1076#1099
       OnExecute = StoragesActionExecute
     end
+    object DeadRestAction: TAction
+      Caption = 'DeadRest'
+      ImageIndex = 264
+      OnExecute = DeadRestActionExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
@@ -500,7 +508,7 @@ object MainForm: TMainForm
     Left = 472
     Top = 72
     Bitmap = {
-      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

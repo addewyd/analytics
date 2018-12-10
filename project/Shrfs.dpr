@@ -33,7 +33,8 @@ uses
   UsersUnit in 'UsersUnit.pas' {UsersForm},
   ViewLogUnit in 'ViewLogUnit.pas' {ViewLogForm},
   TanksHosesUnit in 'TanksHosesUnit.pas' {TanksHosesForm},
-  StoragesUnit in 'StoragesUnit.pas' {StoragesForm};
+  StoragesUnit in 'StoragesUnit.pas' {StoragesForm},
+  DeadRestUnit in 'DeadRestUnit.pas' {DeadRestForm};
 
 {$R *.res}
 
