@@ -870,9 +870,12 @@ procedure TMainForm.LoadDirActionExecute(Sender: TObject);
     i, len: Integer;
     Doc: IDOMDocument;
 begin
+  JvSelectDirectory.InitialDir
+   := JvFS.ReadString('loaddir', '');
   if JvSelectDirectory.Execute then
   begin
     dir := JvSelectDirectory.Directory;
+    JvFS.WriteString('loaddir', dir);
     ordersLoaded := 0;
 
     files := TDirectory.GetFiles(dir, 'CloseS*.xml', TSearchOption.soTopDirectoryOnly);

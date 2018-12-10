@@ -160,6 +160,12 @@ inherited SessionListForm: TSessionListForm
         Visible = True
       end>
   end
+  inherited JvFS: TJvFormStorage
+    StoredProps.Strings = (
+      'EnnableFilterCB.Checked'
+      'STDatePickerEdit.Date')
+    StoredValues = <>
+  end
   inherited ActionList: TActionList
     object DeleteLastAction: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1089#1083#1077#1076#1085#1102#1102

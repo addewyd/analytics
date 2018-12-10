@@ -19,7 +19,6 @@ inherited TanksHosesForm: TTanksHosesForm
       Style = tbsSeparator
     end
     object Label1: TLabel
-      AlignWithMargins = True
       Left = 77
       Top = 0
       Width = 34
@@ -33,6 +32,7 @@ inherited TanksHosesForm: TTanksHosesForm
       Width = 76
       Height = 22
       Anchors = [akTop, akRight]
+      AutoSize = False
       TabOrder = 0
       OnKeyPress = azseditKeyPress
     end
