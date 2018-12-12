@@ -2,6 +2,48 @@ inherited DeadRestForm: TDeadRestForm
   Caption = 'Deadrest'
   PixelsPerInch = 96
   TextHeight = 13
+  inherited JvToolBar1: TJvToolBar
+    object ToolButton3: TToolButton
+      Left = 46
+      Top = 0
+      Action = CommitAction
+      ParentShowHint = False
+      ShowHint = True
+    end
+  end
+  inherited JvDBGrid: TJvDBUltimGrid
+    OnKeyDown = JvDBGridKeyDown
+    AutoAppend = True
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'AZSCODE'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NAME'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TANKNUM'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VOLUME'
+        Visible = True
+      end>
+  end
+  inherited ActionList: TActionList
+    object CommitAction: TAction
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' (F2)'
+      ImageIndex = 361
+      OnExecute = CommitActionExecute
+    end
+  end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
       Caption = 'Deadrest'
@@ -12688,9 +12730,46 @@ inherited DeadRestForm: TDeadRestForm
       801FFFFFFFFFC003FFFFFFFFFFFFE00700000000000000000000000000000000
       000000000000}
   end
+  inherited JvDS: TJvDataSource
+    OnDataChange = JvDSDataChange
+    OnUpdateData = JvDSUpdateData
+    OnActiveChanged = JvDSActiveChanged
+  end
   inherited FDQuery: TFDQuery
     CachedUpdates = True
     Connection = DM.FDConnection
-    UpdateTransaction = nil
+    UpdateTransaction = Trans
+    SQL.Strings = (
+      'select d.azscode, a.name, d.tanknum, d.volume'
+      '    from deadrest d '
+      '    join stations a on a.code=d.azscode'
+      'order by d.azscode, d.tanknum'
+      '')
+    object FDQueryAZSCODE: TWideStringField
+      FieldName = 'AZSCODE'
+      Origin = 'AZSCODE'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 10
+    end
+    object FDQueryNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object FDQueryTANKNUM: TWideStringField
+      FieldName = 'TANKNUM'
+      Origin = 'TANKNUM'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 10
+    end
+    object FDQueryVOLUME: TFloatField
+      FieldName = 'VOLUME'
+      Origin = 'VOLUME'
+    end
   end
 end

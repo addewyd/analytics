@@ -28,7 +28,7 @@
 '   round(amount - amount * ' +
 '      cast(nds as double precision) / ' +
 '     (100+cast(nds as double precision)), 2) as amount0 ' +
-
+'   , i.sent as sent ' +
 '   from inoutgsm i ' +
 '   join sessions s on s.id = i.session_id ' +
 '   join wares w on w.code=i.ware_code ' +

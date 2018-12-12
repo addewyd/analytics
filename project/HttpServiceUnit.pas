@@ -237,9 +237,11 @@ begin
       Transaction := tran;
 
       query.FetchOptions.AutoFetchAll := afAll;
-      query.SQL.Text := CIOGSQLH;
+
       Transaction.StartTransaction;
       try
+        // FUEL
+        query.SQL.Text := CIOGSQLH;
 
         Prepare;
         Open;
@@ -288,6 +290,13 @@ begin
         begin
           rsp := '[]';
         end;
+
+        // ITEMS
+        // ....
+
+        // add item docs to rsp
+        // rsp :=
+
         Response.ContentText := rsp;
 
         Transaction.Commit;
@@ -295,11 +304,11 @@ begin
         msg.WParam := S_SENT;
         msg.LParam := 0;
 
-      TThread.Queue(nil,
-        procedure
-        begin
-          SendMsgs(msg);
-        end);
+        TThread.Queue(nil,
+          procedure
+          begin
+            SendMsgs(msg);
+          end);
 
       except
         on e: Exception do

@@ -537,7 +537,7 @@ procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
     clBlue,  // CHANGED
     clGreen,  // VERIFIED
     clGray,  // CLOSED
-    clRed,     // PARTLY
+    clMaroon,     // PARTLY
     clRed     // SENT
     ];
 begin

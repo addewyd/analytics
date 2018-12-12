@@ -121,23 +121,6 @@ type
     QueryIOTHWARECODE: TWideStringField;
     QueryIOTHFACT: TFloatField;
     QueryIOTHOUTCOME: TFloatField;
-    QueryInOutID: TIntegerField;
-    QueryInOutDIR: TWideStringField;
-    QueryInOutSDATE: TDateField;
-    QueryInOutCLIENTNAME: TWideStringField;
-    QueryInOutCONTRACT: TWideStringField;
-    QueryInOutPAYMENTMODE: TWideStringField;
-    QueryInOutFUELNAME: TWideStringField;
-    QueryInOutFUELCODE: TWideStringField;
-    QueryInOutEI: TWideStringField;
-    QueryInOutVOLUME: TFloatField;
-    QueryInOutPRICE: TFloatField;
-    QueryInOutDENSITY: TFloatField;
-    QueryInOutNDS: TWideStringField;
-    QueryInOutSUMNDS: TFloatField;
-    QueryInOutWHOLE: TFloatField;
-    QueryInOutAMOUNT0: TFloatField;
-    QueryInOutMASS: TFloatField;
     GridFooterOutItems: TJvDBGridFooter;
     GridOutItems: TJvDBUltimGrid;
     DSOutItems: TJvDataSource;
@@ -239,6 +222,8 @@ type
       Column: TFooterColumn; const Value: Variant; var Text: string);
     procedure GridFooterInOutDrawPanel(StatusBar: TStatusBar;
       Panel: TStatusPanel; const Rect: TRect);
+    procedure GridInOutGSMDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -2965,7 +2950,7 @@ begin
                   S_CHANGED: Panels[0].Text := 'Смена изменена';
                   S_VERIFIED: Panels[0].Text := 'Смена проверена';
                   S_CLOSED: Panels[0].Text := 'Смена закрыта!';
-                  S_PARTLY: Panels[0].Text := 'Смена отправлена (p)';
+                  S_PARTLY: Panels[0].Text := 'Смена отправлена частично';
                   S_SENT: Panels[0].Text := 'Смена отправлена';
       else  Panels[0].Text := 'Unknown state';
       end;
@@ -3400,6 +3385,34 @@ end;
 procedure TTabForm.QueryIOTHSumCALCRESTChange(Sender: TField);
 begin
   inherited;
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridInOutGSMDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+  var
+    sent: Integer;
+    g: TDBGrid;
+  fn, fv, fp: String;
+  TextRect: TRect;
+begin
+  inherited;
+  sent := QueryInOut.FieldByName('sent').asInteger;
+  g := (sender as TDBGrid);
+  g.Canvas.Font.Color := clBlack;
+
+  fn := Column.FieldName;
+  fv := QueryInOut.FieldByName(fn).AsString;
+
+  if sent > 0 then
+  begin
+    g.Canvas.Font.Color := $0055ff;
+//    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
+  end;
+
+  g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
 
 end;
 

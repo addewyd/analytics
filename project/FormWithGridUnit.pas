@@ -79,7 +79,11 @@ begin
       FetchAll;
       Transaction.Commit;
     except
-      Transaction.Rollback;
+      on e: Exception do
+      begin
+        Transaction.Rollback;
+        ErrorMessageBox(self, 'FWGU: ' + e.Message);
+      end;
     end;
   end;
 

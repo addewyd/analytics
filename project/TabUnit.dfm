@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet4
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -496,6 +496,7 @@ inherited TabForm: TTabForm
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = [fsBold]
+          OnDrawColumnCell = GridInOutGSMDrawColumnCell
           OnKeyDown = GridInOutGSMKeyDown
           AutoAppend = False
           IniStorage = JvFS
@@ -13837,117 +13838,6 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
-    object QueryInOutID: TIntegerField
-      FieldName = 'ID'
-      Origin = 'ID'
-      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
-      Required = True
-    end
-    object QueryInOutDIR: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DIR'
-      Origin = 'DIR'
-      ProviderFlags = []
-      ReadOnly = True
-      FixedChar = True
-      Size = 6
-    end
-    object QueryInOutSDATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'SDATE'
-      Origin = 'SDATE'
-      ProviderFlags = []
-      ReadOnly = True
-    end
-    object QueryInOutCLIENTNAME: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CLIENTNAME'
-      Origin = 'NAME'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 100
-    end
-    object QueryInOutCONTRACT: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CONTRACT'
-      Origin = 'CONTRACT'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 229
-    end
-    object QueryInOutPAYMENTMODE: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'PAYMENTMODE'
-      Origin = 'NAME'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 50
-    end
-    object QueryInOutFUELNAME: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'FUELNAME'
-      Origin = 'NAME'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 100
-    end
-    object QueryInOutFUELCODE: TWideStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'FUELCODE'
-      Origin = 'CODE'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 16
-    end
-    object QueryInOutEI: TWideStringField
-      FieldName = 'EI'
-      Origin = 'EI'
-      Size = 10
-    end
-    object QueryInOutVOLUME: TFloatField
-      FieldName = 'VOLUME'
-      Origin = 'VOLUME'
-      Required = True
-    end
-    object QueryInOutPRICE: TFloatField
-      FieldName = 'PRICE'
-      Origin = 'PRICE'
-      Required = True
-    end
-    object QueryInOutDENSITY: TFloatField
-      FieldName = 'DENSITY'
-      Origin = 'DENSITY'
-      Required = True
-    end
-    object QueryInOutNDS: TWideStringField
-      FieldName = 'NDS'
-      Origin = 'NDS'
-      Required = True
-      Size = 10
-    end
-    object QueryInOutSUMNDS: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'SUMNDS'
-      Origin = 'SUMNDS'
-      ProviderFlags = []
-    end
-    object QueryInOutWHOLE: TFloatField
-      FieldName = 'WHOLE'
-      Origin = 'AMOUNT'
-      Required = True
-    end
-    object QueryInOutAMOUNT0: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'AMOUNT0'
-      Origin = 'AMOUNT0'
-      ProviderFlags = []
-    end
-    object QueryInOutMASS: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'MASS'
-      Origin = 'MASS'
-      ProviderFlags = []
-    end
   end
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH

@@ -126,6 +126,11 @@ begin
     RefreshActionExecute(Sender);
     key := 0;
   end;
+  if Key = VK_DELETE then
+  begin
+    FDQuery.Delete;
+    key := 0;
+  end;
 
 end;
 
