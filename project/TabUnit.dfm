@@ -102,6 +102,7 @@ inherited TabForm: TTabForm
           Width = 725
           Height = 224
           Align = alClient
+          BorderStyle = bsNone
           DataSource = DSRealPM
           DefaultDrawing = False
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
@@ -136,6 +137,7 @@ inherited TabForm: TTabForm
           Width = 725
           Height = 184
           Align = alTop
+          BorderStyle = bsNone
           DataSource = DSIOTH
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
@@ -483,6 +485,7 @@ inherited TabForm: TTabForm
           Width = 725
           Height = 434
           Align = alClient
+          BorderStyle = bsNone
           DataSource = DSInOut
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -13962,7 +13965,6 @@ inherited TabForm: TTabForm
     object QueryIOTHCALCIN: TFloatField
       FieldName = 'CALCIN'
       Origin = 'INVOL'
-      Required = True
     end
     object QueryIOTHCALC: TFloatField
       FieldName = 'CALC'

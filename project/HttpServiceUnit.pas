@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes,
+  System.Classes, System.Generics.Defaults, System.Generics.Collections,
   IdContext, IdCustomHTTPServer, IdBaseComponent,
   IdComponent, IdCustomTCPServer, IdHTTPServer, IdCookieManager, IdIntercept,
   IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
@@ -14,7 +14,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.UI.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
   FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
   IdLogFile,
-  XML.xmldom, XML.XMLIntf, XML.XMLDoc,
+  XML.xmldom, XML.XMLIntf, XML.XMLDoc, RegularExpressions,
   ActiveX;
 
 {$I 'consts.inc'}
@@ -181,33 +181,90 @@ end;
 
 // .............................................................................
 
+procedure SetResults(Arec: Array of RespRec);
+  var i, k: Integer;
+begin
+  k := Length(Arec);
+
+end;
+
+// .............................................................................
+
+procedure SplitD(s, sep: String; a: TStrings);
+  var
+    RegEx: TRegEx;
+    sa: TArray<string>;
+    i: Integer;
+begin
+  a.Clear;
+  RegEx := TRegEx.Create(sep);
+  sa := RegEx.Split(s);
+  for I := 0 to Length(sa) - 1 do
+  begin
+    a.Add(sa[i]);
+  end;
+end;
+
+// .............................................................................
+
 procedure HandleRsp(rsp: String);
   var
     RspList, DocList: TStringList;
     i, k: Integer;
     sep, ws: TsysCharSet;
     ARespRec: Array of RespRec;
+    cmp: IComparer<RespRec>;
 begin
+
+    cmp := TDelegatedComparer<RespRec>.Create
+       (
+         function(const Left, Right: RespRec): Integer
+          var l, r: string;
+              nl, nr: Integer;
+         begin
+            l := Format('%08d%08d', [Left.session_id, Left.id]);
+            r := Format('%08d%08d', [Right.session_id, Right.id]);
+            nl := Left.session_id * 1000000 + Left.id;
+            nr := Right.session_id * 1000000 + Right.id;
+            if nl > nr then Result := 1
+            else if nr < nl then Result := -1
+            else Result := 0;
+
+         end
+      );
   RspList := TStringList.Create;
   DocList := TStringList.Create;
   sep := [';'];
   ws := [' '];
-  k := RspList.Count;
-  SetLength(ARespRec, k);
   try
-    RspList.CommaText := rsp;
 
+    //RspList.CommaText := rsp;
+    SplitD(rsp, '@@', RspList);
+
+    k := RspList.Count;
+    SetLength(ARespRec, k);
 
     for i := 0 to k - 1 do
     begin
       DocList.Clear;
-      ExtractStrings(sep, ws, PChar(RspList[i]), DocList);
-      ARespRec[k].id := StrToIntDef(DocList[0], 0);
-      ARespRec[k].session_id := StrToIntDef(DocList[1], 0);
-      ARespRec[k].res := DocList[2];
-      ARespRec[k].descr := DocList[3];
- AddToLogT(DocList.CommaText);
+//      ExtractStrings(sep, ws, PChar(RspList[i]), DocList);
+      SplitD(RspList[i], '##', DocList);
+      ARespRec[i].id := StrToIntDef(DocList[0], 0);
+      ARespRec[i].session_id := StrToIntDef(DocList[1], 0);
+      ARespRec[i].res := DocList[2];
+      ARespRec[i].descr := DocList[3];
+
     end;
+
+    TArray.Sort<RespRec>(ArespRec, cmp);
+    k := Length(ARespRec);
+    for i := 0 to k - 1 do
+    begin
+      AddToLogT(Format(':%08d%08d',
+        [ARespRec[i].session_id, ARespRec[i].id]));
+    end;
+
+    SetResults(ArespRec);
 
   finally
     DocList.Free;
@@ -300,15 +357,15 @@ begin
         Response.ContentText := rsp;
 
         Transaction.Commit;
-        msg.Msg := WM_STATE_CHANGED_FEXT;
-        msg.WParam := S_SENT;
-        msg.LParam := 0;
+    //    msg.Msg := WM_STATE_CHANGED_FEXT;
+    //    msg.WParam := S_SENT;
+    //    msg.LParam := 0;
 
-        TThread.Queue(nil,
-          procedure
-          begin
-            SendMsgs(msg);
-          end);
+    //    TThread.Queue(nil,
+    //      procedure
+    //      begin
+    //        SendMsgs(msg);
+    //      end);
 
       except
         on e: Exception do

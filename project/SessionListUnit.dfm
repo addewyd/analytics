@@ -1,14 +1,16 @@
 inherited SessionListForm: TSessionListForm
   Caption = #1057#1084#1077#1085#1099
   ClientHeight = 423
-  ClientWidth = 612
-  ExplicitWidth = 628
+  ClientWidth = 370
+  ExplicitWidth = 386
   ExplicitHeight = 482
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    Width = 612
-    ExplicitWidth = 612
+    Width = 370
+    Height = 44
+    ExplicitWidth = 370
+    ExplicitHeight = 44
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
@@ -59,10 +61,11 @@ inherited SessionListForm: TSessionListForm
       Top = 0
       Caption = 'ToolButton10'
       Enabled = False
+      Wrap = True
     end
     object EnnableFilterCB: TJvCheckBox
-      Left = 230
-      Top = 0
+      Left = 0
+      Top = 22
       Width = 13
       Height = 22
       Ctl3D = True
@@ -72,18 +75,18 @@ inherited SessionListForm: TSessionListForm
       LinkedControls = <>
     end
     object JvHTLabel1: TJvHTLabel
-      Left = 243
-      Top = 0
-      Width = 32
+      Left = 13
+      Top = 22
+      Width = 33
       Height = 22
       AutoSize = False
       Caption = '  '#1040#1047#1057'  '
       SuperSubScriptRatio = 0.666666666666666600
     end
     object AZSEdit: TJvEdit
-      Left = 275
-      Top = 0
-      Width = 46
+      Left = 46
+      Top = 22
+      Width = 24
       Height = 22
       AutoSize = False
       TabOrder = 1
@@ -91,8 +94,8 @@ inherited SessionListForm: TSessionListForm
       OnKeyPress = AZSEditKeyPress
     end
     object STDatePickerEdit: TJvDatePickerEdit
-      Left = 321
-      Top = 0
+      Left = 70
+      Top = 22
       Width = 80
       Height = 22
       AllowNoDate = True
@@ -101,8 +104,8 @@ inherited SessionListForm: TSessionListForm
       OnChange = STDatePickerEditChange
     end
     object ENDDatePickerEdit: TJvDatePickerEdit
-      Left = 401
-      Top = 0
+      Left = 150
+      Top = 22
       Width = 80
       Height = 22
       AllowNoDate = True
@@ -113,19 +116,20 @@ inherited SessionListForm: TSessionListForm
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 404
-    Width = 612
+    Width = 370
     ExplicitTop = 404
     ExplicitWidth = 612
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 385
-    Width = 612
+    Width = 370
     ExplicitTop = 385
     ExplicitWidth = 612
   end
   inherited JvDBGrid: TJvDBUltimGrid
-    Width = 612
-    Height = 356
+    Top = 44
+    Width = 370
+    Height = 341
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
     OnDrawColumnCell = JvDBGridDrawColumnCell

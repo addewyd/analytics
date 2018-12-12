@@ -413,7 +413,7 @@ begin
   session_id := FDQuery.FieldByName('id').AsInteger;
   _state := FDQuery.FieldByName('state').AsInteger;
 
-  if _state = S_CLOSED then Exit;
+  if _state >= S_CLOSED then Exit;
 
   if not PrevClosed(session_id) then
   begin
