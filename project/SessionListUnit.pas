@@ -834,6 +834,7 @@ end;
 procedure TSessionListForm.sessionadded(var Msg: TMessage);
 begin
   AddToLog('SESSIONADDED');
+  acode := current_azscode;
   PrepareAndLoad;
 end;
 

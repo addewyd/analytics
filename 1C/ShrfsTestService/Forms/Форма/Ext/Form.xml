@@ -15,13 +15,13 @@
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Группа1" id="1">
-			<Width>52</Width>
+			<Width>65</Width>
 			<Group>Vertical</Group>
 			<BackColor>#E4FFFD</BackColor>
 			<ExtendedTooltip name="Группа1РасширеннаяПодсказка" id="2"/>
 			<ChildItems>
 				<UsualGroup name="Группа2" id="8">
-					<Width>50</Width>
+					<Width>63</Width>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа2РасширеннаяПодсказка" id="9"/>
 					<ChildItems>
@@ -63,14 +63,18 @@
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа10" id="57">
-					<Width>50</Width>
+					<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+					<Width>63</Width>
 					<Group>Vertical</Group>
+					<HorizontalSpacing>None</HorizontalSpacing>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа10РасширеннаяПодсказка" id="58"/>
 					<ChildItems>
 						<UsualGroup name="Группа11" id="62">
+							<Width>52</Width>
 							<Group>Vertical</Group>
 							<Representation>NormalSeparation</Representation>
+							<BackColor>#D7D3BD</BackColor>
 							<ExtendedTooltip name="Группа11РасширеннаяПодсказка" id="63"/>
 							<ChildItems>
 								<InputField name="Организация" id="64">
@@ -126,12 +130,16 @@
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа4" id="17">
+					<Width>63</Width>
+					<VerticalStretch>false</VerticalStretch>
 					<Group>Vertical</Group>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа4РасширеннаяПодсказка" id="18"/>
 					<ChildItems>
 						<UsualGroup name="Группа5" id="21">
-							<Width>50</Width>
+							<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+							<Width>61</Width>
+							<Height>2</Height>
 							<Group>Vertical</Group>
 							<ExtendedTooltip name="Группа5РасширеннаяПодсказка" id="22"/>
 							<ChildItems>
@@ -143,6 +151,7 @@
 											<v8:content>Список таблиц БД</v8:content>
 										</v8:item>
 									</Title>
+									<Width>54</Width>
 									<ExtendedTooltip name="Группа7РасширеннаяПодсказка" id="50"/>
 									<ChildItems>
 										<Button name="TablesBut" id="19">
@@ -165,12 +174,17 @@
 											<v8:content>Обновить</v8:content>
 										</v8:item>
 									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>Г4</v8:content>
-										</v8:item>
-									</ToolTip>
+									<Width>52</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<GroupHorizontalAlign>Left</GroupHorizontalAlign>
+									<GroupVerticalAlign>Top</GroupVerticalAlign>
+									<Group>Horizontal</Group>
+									<ChildrenAlign>ItemsLeftTitlesLeft</ChildrenAlign>
+									<VerticalSpacing>None</VerticalSpacing>
+									<HorizontalAlign>Left</HorizontalAlign>
+									<Representation>None</Representation>
+									<BackColor>#D7D3BD</BackColor>
 									<ExtendedTooltip name="Г4РасширеннаяПодсказка" id="52"/>
 									<ChildItems>
 										<Button name="ContrBut" id="45">
@@ -240,6 +254,8 @@
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Группа9" id="53">
+							<Width>52</Width>
+							<BackColor>#D7D3BD</BackColor>
 							<ExtendedTooltip name="Группа9РасширеннаяПодсказка" id="54"/>
 							<ChildItems>
 								<Button name="LoadDocsBut" id="55">
@@ -258,14 +274,11 @@
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="Группа3" id="10">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>G3</v8:content>
-						</v8:item>
-					</Title>
-					<Width>48</Width>
+					<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+					<Width>63</Width>
+					<VerticalStretch>false</VerticalStretch>
 					<Group>Vertical</Group>
+					<VerticalSpacing>None</VerticalSpacing>
 					<BackColor>#FBFFBA</BackColor>
 					<ExtendedTooltip name="Группа3РасширеннаяПодсказка" id="11"/>
 					<ChildItems>
