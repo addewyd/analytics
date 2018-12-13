@@ -919,7 +919,7 @@ procedure TTabForm.VerifiedActionExecute(Sender: TObject);
   var
     new_state: Integer;
     yn : TYNForm;
-    
+
 begin
   inherited;
   yn := TYNForm.Create(self);
@@ -3608,6 +3608,7 @@ begin
   //DM.FDConnection.Close;
   //DM.FDConnection.Open();
   RollbackActionExecute(self);
+  session_id := msg.LParam;
   UpdateAllStates(msg.WParam);
   ShowAllData;
 end;

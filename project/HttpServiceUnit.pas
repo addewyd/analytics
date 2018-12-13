@@ -181,10 +181,151 @@ end;
 
 // .............................................................................
 
+procedure markDoc(sid, id: Integer; res: String);
+begin
+//
+  if res = 'Y'  then
+  begin
+    try
+    with query do
+    begin
+      SQL.Text :=  'update inoutgsm set sent = 1 where id = :id';
+      with params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('id').AsInteger := id;
+      Transaction.StartTransaction;
+      Prepare;
+      ExecSQL;
+      Transaction.Commit;
+    end;
+
+    except
+      on e: Exception do
+      begin
+        if query.Transaction.Active then query.Transaction.Rollback;
+        AddToLogT('MD: ' +e.Message);
+      end;
+    end;
+
+  end;
+end;
+
+// .............................................................................
+
+procedure markSession(sid, ec: Integer);
+  var
+    st: Integer;
+    msg: TMessage;
+begin
+  AddToLogT(format('sid %d ecount %d', [sid, ec]));
+
+  if ec > 0  then st := S_PARTLY
+  else st := S_SENT;
+
+  try
+    with query do
+    begin
+      SQL.Text :=  'update sessions set state = :st where id = :sid';
+      with params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'st';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with Add do
+        begin
+          Name := 'sid';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+      end;
+      Transaction.StartTransaction;
+      ParamByName('st').AsInteger := st;
+      ParamByName('sid').AsInteger := sid;
+      Prepare;
+      ExecSQL;
+      Transaction.Commit;
+    end;
+
+    msg.Msg := WM_STATE_CHANGED_FEXT;
+    msg.WParam := st;
+    msg.LParam := sid;
+
+    TThread.Queue(nil,
+          procedure
+          begin
+            SendMsgs(msg);
+          end);
+
+  except
+      on e: Exception do
+      begin
+        if query.Transaction.Active then query.Transaction.Rollback;
+        AddToLogT('MS: ' +e.Message);
+      end;
+  end;
+end;
+
+// .............................................................................
+
 procedure SetResults(Arec: Array of RespRec);
   var i, k: Integer;
+      c_session_id: Integer;
+      i_session_id, i_id, e_count: Integer;
+      rec: RespRec;
 begin
   k := Length(Arec);
+  c_session_id := 0;
+  e_count := 0;
+
+  query := TFDQuery.Create(nil);
+  with query do
+  begin
+      Connection := conn;
+      Transaction := tran;
+      UpdateTransaction := tran;
+  end;
+
+  try
+
+    for rec in Arec do
+    begin
+      i_session_id := rec.session_id;
+      i_id := rec.id;
+
+      if rec.res <> 'Y' then inc(e_count);
+
+
+      if c_session_id <> i_session_id then
+      begin
+        // next session
+        if c_session_id > 0 then
+        begin
+          markSession(c_session_id, e_count);
+        end;
+
+        c_session_id := i_session_id;
+        e_count := 0;
+      end;
+
+      MarkDoc(c_session_id, i_id, rec.res);
+    end;
+
+    markSession(c_session_id, e_count);
+  finally
+    query.Free;
+  end;
 
 end;
 
@@ -194,15 +335,13 @@ procedure SplitD(s, sep: String; a: TStrings);
   var
     RegEx: TRegEx;
     sa: TArray<string>;
-    i: Integer;
+    rs: String;
 begin
   a.Clear;
   RegEx := TRegEx.Create(sep);
   sa := RegEx.Split(s);
-  for I := 0 to Length(sa) - 1 do
-  begin
-    a.Add(sa[i]);
-  end;
+  for rs in sa do a.add(rs);
+
 end;
 
 // .............................................................................
@@ -213,6 +352,7 @@ procedure HandleRsp(rsp: String);
     i, k: Integer;
     sep, ws: TsysCharSet;
     ARespRec: Array of RespRec;
+    r: RespRec;
     cmp: IComparer<RespRec>;
 begin
 
@@ -220,14 +360,11 @@ begin
        (
          function(const Left, Right: RespRec): Integer
           var l, r: string;
-              nl, nr: Integer;
          begin
             l := Format('%08d%08d', [Left.session_id, Left.id]);
             r := Format('%08d%08d', [Right.session_id, Right.id]);
-            nl := Left.session_id * 1000000 + Left.id;
-            nr := Right.session_id * 1000000 + Right.id;
-            if nl > nr then Result := 1
-            else if nr < nl then Result := -1
+            if l > r then Result := 1
+            else if r < l then Result := -1
             else Result := 0;
 
          end
@@ -238,30 +375,27 @@ begin
   ws := [' '];
   try
 
-    //RspList.CommaText := rsp;
     SplitD(rsp, '@@', RspList);
 
     k := RspList.Count;
     SetLength(ARespRec, k);
 
-    for i := 0 to k - 1 do
+    for i := 0 to k - 1  do
     begin
       DocList.Clear;
-//      ExtractStrings(sep, ws, PChar(RspList[i]), DocList);
       SplitD(RspList[i], '##', DocList);
       ARespRec[i].id := StrToIntDef(DocList[0], 0);
       ARespRec[i].session_id := StrToIntDef(DocList[1], 0);
       ARespRec[i].res := DocList[2];
       ARespRec[i].descr := DocList[3];
-
     end;
 
-    TArray.Sort<RespRec>(ArespRec, cmp);
-    k := Length(ARespRec);
-    for i := 0 to k - 1 do
+    //TArray.Sort<RespRec>(ArespRec, cmp);  // ?????
+
+    for r in ARespRec do
     begin
-      AddToLogT(Format(':%08d%08d',
-        [ARespRec[i].session_id, ARespRec[i].id]));
+      AddToLogT(Format(':%08d%08d %s',
+        [r.session_id, r.id, r.res]));
     end;
 
     SetResults(ArespRec);
@@ -357,15 +491,6 @@ begin
         Response.ContentText := rsp;
 
         Transaction.Commit;
-    //    msg.Msg := WM_STATE_CHANGED_FEXT;
-    //    msg.WParam := S_SENT;
-    //    msg.LParam := 0;
-
-    //    TThread.Queue(nil,
-    //      procedure
-    //      begin
-    //        SendMsgs(msg);
-    //      end);
 
       except
         on e: Exception do

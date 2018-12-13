@@ -431,6 +431,7 @@ begin
     UpdateState('iotankshoses', 'session_id', session_id, S_CLOSED);
     UpdateState('inoutitems', 'session_id', session_id, S_CLOSED);
     msg.WParam := S_CLOSED;
+    msg.LParam := session_id;
     msg.Msg := WM_STATE_CHANGED;
     MainForm.SendMsgs(msg);
     LoadData;

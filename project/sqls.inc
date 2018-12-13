@@ -54,7 +54,7 @@ const CIOGSQLPMODES = CIOGSQLCOMMON +
 
 const CIOGSQLH = CIOGSQLCOMMON
     + ' where i.sent < 1 and (s.state = ' + SS_CLOSED + ' or s.state = ' + SS_PARTLY + ') '
-    + 'order by s.azscode, s.startdatetime, i.direction,paymentmode,clientname';
+    + 'order by i.session_id, i.id';
 
 const CIOGSQLSum1 = 'select sum(volume) as volume,sum(amount0) as amount0, ' +
     'sum(sumnds) as sumnds, sum(whole) as whole, sum(mass) as mass, ' +

@@ -118,13 +118,13 @@ inherited SessionListForm: TSessionListForm
     Top = 404
     Width = 370
     ExplicitTop = 404
-    ExplicitWidth = 612
+    ExplicitWidth = 370
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 385
     Width = 370
     ExplicitTop = 385
-    ExplicitWidth = 612
+    ExplicitWidth = 370
   end
   inherited JvDBGrid: TJvDBUltimGrid
     Top = 44
@@ -170,7 +170,6 @@ inherited SessionListForm: TSessionListForm
       'EnnableFilterCB.Checked'
       'STDatePickerEdit.Date'
       'ENDDatePickerEdit.Date')
-    StoredValues = <>
   end
   inherited ActionList: TActionList
     object DeleteLastAction: TAction
@@ -226,7 +225,7 @@ inherited SessionListForm: TSessionListForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
