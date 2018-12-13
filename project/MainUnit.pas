@@ -881,9 +881,8 @@ end;
 
 procedure TMainForm.LoadDirActionExecute(Sender: TObject);
   var
-    dir: String;
+    dir, f: String;
     files: TStringDynArray;
-    i, len: Integer;
     Doc: IDOMDocument;
 begin
   JvSelectDirectory.InitialDir
@@ -895,27 +894,21 @@ begin
     ordersLoaded := 0;
 
     files := TDirectory.GetFiles(dir, 'CloseS*.xml', TSearchOption.soTopDirectoryOnly);
-    len := Length(files);
-    for i := 0 to len - 1 do
+    for f in files do
     begin
       try
-        CurrentFile := files[i];
-        XMLDoc.LoadFromFile(files[i]);
+        CurrentFile := f;
+        XMLDoc.LoadFromFile(f);
         doc := XmlDoc.DOMDocument;
         ParseInputFile(Doc, true);
-
       except
         on e: Exception do
         begin
           ErrorMessageBox(self, e.Message);
         end;
-
       end;
-
     end;
-
   end;
-
 end;
 
 // .............................................................................
@@ -1144,7 +1137,6 @@ begin
     TStoragesForm.Create(self, 'storages');
   end
   else GetMDIForm('storages').Show;
-
 end;
 
 // .............................................................................
@@ -1167,23 +1159,24 @@ begin
     TViewLogForm.Create(self, 'viewlog');
   end
   else GetMDIForm('viewlog').Show;
-
 end;
 
 // .............................................................................
 
 procedure TMainForm.WindowListActionExecute(Sender: TObject);
   var
-    dlg:TWinListDlg;
+    dlg: TWinListDlg;
     i, len: integer;
     c, f: String;
     sl : TstringList;
+    frm: TBaseForm;
 begin
   len := MDIChildCount;
   dlg := TWinListDlg.Create(self);
   with dlg do
   begin
     wlist.Clear;
+
     for i := 0 to len - 1 do
     begin
       c := (MainForm.mdichildren[i] as TBaseForm).Caption;

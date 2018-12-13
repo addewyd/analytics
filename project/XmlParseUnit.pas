@@ -357,7 +357,6 @@ begin
     for i := 0 to len - 1 do
     begin
       fnames.Add(ExtractFileName(files[i]));
-
     end;
 
     fnames.Sort;
@@ -576,7 +575,6 @@ begin
     td2 := VarToDateTime(d2);
     DateTimeToString(d1, 'yyyy-mm-dd hh:nn:ss', td1);
     DateTimeToString(d2, 'yyyy-mm-dd hh:nn:ss', td2);
-
 
     DM.FDQuery.SQL.Text :=
       'select * from sessions where azscode = :azs and sessionnum = :sn and startdatetime = :sdt';
@@ -860,8 +858,6 @@ begin
 
     ТабФайл.Сортировать("КонецСмены,КодАЗС,ВидДвижения,ФормаОплаты,
       ЭтоГСМ-,Клиент,Договор");
-
-
   *)
 
   with DM.FDQuery do
@@ -973,7 +969,6 @@ begin
     DM.UpdUserId('INOUTITEMS', id);
 
   end;
-
 
   // ...........................................................................
   // END
@@ -1426,7 +1421,7 @@ begin
 end;
 
 // .............................................................................
-
+// NO USE
 procedure UpdateTaho(azs, tanknum: String; hosenum: Integer);
   var
     rc: Integer;
@@ -1554,8 +1549,6 @@ begin
       ExecSql;
     end;
   end;
-
-
 end;
 
 // .............................................................................
@@ -1880,6 +1873,7 @@ begin
 
 end;
 
+// .............................................................................
 
 // OutcomesByOffice
 procedure LoadOBO(node: IDOMNode; id: integer; azs: String);
@@ -1953,7 +1947,8 @@ begin
       CheckLink('WARES', fuelcode, fuelname,[]);
       CheckLink('PAYMENTMODES', paymentcode, paymentname, []);
 
-      with attrs do begin
+      with attrs do
+      begin
         odt := getNamedItem('Date').nodeValue
           + ' ' + getNamedItem('Time').nodeValue;
         dt := VarToDateTime(odt);
@@ -2183,7 +2178,6 @@ begin
 end;
 
 // ........................................................................
-
 
 function LoadOrderFile(filename, azs: string): integer;
   var
@@ -3670,10 +3664,8 @@ begin
         ParamByName('mass').AsExtended := Mass;
         ParamByName('density').AsExtended := Density;
 
-
         Prepare;
         ExecSQL;
-
     end;
 
   end;
@@ -3711,7 +3703,6 @@ begin
       CouponFuelName := getNamedItem('CouponFuelName').nodeValue;
       sCouponVolume := getNamedItem('CouponVolume').nodeValue;
       sVolumeFact := getNamedItem('VolumeFact').nodeValue;
-
 
     end;
 
@@ -3823,10 +3814,7 @@ begin
 
       Prepare;
       ExecSQL;
-
     end;
-
-
   end;
   AddToLog(format('%d records added', [len]));
 
@@ -3839,7 +3827,6 @@ procedure LoadIR(node: IDOMNode; id: integer);
   var i, len: integer;
     NL: IDOMNodeList;
     attrs: IDOMNamedNodeMap;
-
     ItemRest: Integer;
     sItemRest,StorageExtCode, StorageName, ItemExtCode, ItemName, ItemCode: String;
 
