@@ -112,6 +112,6 @@ object CntReplaceDlg: TCntReplaceDlg
     Transaction = Tran
     UpdateTransaction = TranUpd
     Left = 104
-    Top = 112
+    Top = 120
   end
 end

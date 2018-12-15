@@ -29,10 +29,13 @@ var
 implementation
 
 {$R *.dfm}
-    procedure TMlogForm.Clear;
-    begin
-      mlog.Clear;
-    end;
+
+procedure TMlogForm.Clear;
+begin
+  mlog.Clear;
+end;
+
+// .............................................................................
 
 procedure TMlogForm.ClearActionExecute(Sender: TObject);
 begin

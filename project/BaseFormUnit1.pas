@@ -50,16 +50,21 @@ begin
 
 end;
 
+// .............................................................................
 
 procedure TBaseForm.CloseActionExecute(Sender: TObject);
 begin
   Close;
 end;
 
+// .............................................................................
+
 procedure TBaseForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
+
+// .............................................................................
 
 procedure TBaseForm.FormCreate(Sender: TObject);
 begin

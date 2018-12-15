@@ -3408,7 +3408,7 @@ begin
 
   if sent > 0 then
   begin
-    g.Canvas.Font.Color := $00f918;
+    g.Canvas.Font.Color := $307918;
 //    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
   end;
 

@@ -237,6 +237,9 @@ object MainForm: TMainForm
       object N4: TMenuItem
         Action = CatPartnersAction
       end
+      object N11: TMenuItem
+        Action = ContractsAction
+      end
       object N5: TMenuItem
         Action = CatItemsAction
       end
@@ -448,6 +451,11 @@ object MainForm: TMainForm
       ImageIndex = 264
       OnExecute = DeadRestActionExecute
     end
+    object ContractsAction: TAction
+      Caption = #1044#1086#1075#1086#1074#1086#1088#1099
+      Hint = #1044#1086#1075#1086#1074#1086#1088#1099
+      OnExecute = ContractsActionExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
@@ -508,7 +516,7 @@ object MainForm: TMainForm
     Left = 472
     Top = 72
     Bitmap = {
-      494C01017E018001480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

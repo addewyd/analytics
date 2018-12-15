@@ -12,6 +12,7 @@ const
   WM_CONN_REOPEN = WM_USER + 10;
   WM_STATE_CHANGED = WM_USER + 11;
   WM_STATE_CHANGED_FEXT = WM_USER + 12;
+  WM_CATS_UPD = WM_USER + 13;
 
 
   // session states

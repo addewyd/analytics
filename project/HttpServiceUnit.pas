@@ -137,7 +137,7 @@ end;
 
 // .............................................................................
 
-function BuildResponse(recs: Array of IOGRec): String;
+function BuildResponse(recs: TArray<IOGRec>): String;
   var rsp: String;
     k: integer;
 begin
@@ -279,7 +279,7 @@ end;
 
 // .............................................................................
 
-procedure SetResults(Arec: Array of RespRec);
+procedure SetResults(Arec: TArray<RespRec>);
   var i, k: Integer;
       c_session_id: Integer;
       i_session_id, i_id, e_count: Integer;
@@ -305,7 +305,6 @@ begin
       i_id := rec.id;
 
       if rec.res <> 'Y' then inc(e_count);
-
 
       if c_session_id <> i_session_id then
       begin
@@ -351,7 +350,7 @@ procedure HandleRsp(rsp: String);
     RspList, DocList: TStringList;
     i, k: Integer;
     sep, ws: TsysCharSet;
-    ARespRec: Array of RespRec;
+    ARespRec: TArray<RespRec>;
     r: RespRec;
     cmp: IComparer<RespRec>;
 begin
@@ -413,7 +412,7 @@ procedure LoadDocs(Response: TIdHTTPResponseInfo);
 var
   msg: TMessage;
   rc, k, c: Integer;
-  recs: Array of IOGRec;
+  recs: TArray<IOGRec>;
   rsp: String;
 begin
   AddToLogT('received LoadDocs');
@@ -632,6 +631,7 @@ end;
 
 // .............................................................................
 
+// contracts and other
 Procedure CheckContr(Response: TIdHTTPResponseInfo; xmls: String);
 var
   doc: TXMLDocument;
@@ -642,6 +642,7 @@ var
   Text, cname, res, SQL, tablename: String;
   flist, vlist: TstringList;
   ii: IXMLDocument;
+  msg: TMessage;
 begin
 
   res := '';
@@ -692,6 +693,14 @@ begin
         res := SQL;
         cnt := cnt + ExecInsSQL(query);
       end;
+
+      msg.Msg := WM_CATS_UPD;
+
+      TThread.Queue(nil,
+          procedure
+          begin
+            SendMsgs(msg);
+          end);
     except
       on e: Exception do
       begin
@@ -722,6 +731,7 @@ var
   Text, cname, res, SQL, tablename: String;
   flist, vlist: TstringList;
   ii: IXMLDocument;
+  msg: TMessage;
 begin
 
   res := '';
@@ -788,6 +798,14 @@ begin
         res := SQL;
         cnt := cnt + ExecInsSQL(query);
       end;
+      msg.Msg := WM_CATS_UPD;
+
+      TThread.Queue(nil,
+          procedure
+          begin
+            SendMsgs(msg);
+          end);
+
     except
       on e: Exception do
       begin

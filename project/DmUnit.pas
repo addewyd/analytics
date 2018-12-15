@@ -67,30 +67,30 @@ uses MainUnit;
 
 
 
-  procedure ErrorMessageBox(f: TForm; msg: String);
-  begin
-    ErrorForm := TErrorForm.Create(f);
-    ErrorForm.Memo1.Lines.Add(msg);
-    ErrorForm.ShowModal;
-  end;
+procedure ErrorMessageBox(f: TForm; msg: String);
+begin
+  ErrorForm := TErrorForm.Create(f);
+  ErrorForm.Memo1.Lines.Add(msg);
+  ErrorForm.ShowModal;
+end;
 
-  // ...........................................................................
+// ...........................................................................
 
-  procedure ErrorMessageBox2(f: TForm; msg: array of String);
+procedure ErrorMessageBox2(f: TForm; msg: array of String);
     var
       i: Integer;
-  begin
+begin
     ErrorForm := TErrorForm.Create(f);
     for i := 0 to Length(msg) - 1 do
     begin
       ErrorForm.Memo1.Lines.Add(msg[i]);
     end;
     ErrorForm.ShowModal;
-  end;
+end;
 
 // .............................................................................
 
-  function StrToextDef(s: String; d: Extended): Extended;
+function StrToextDef(s: String; d: Extended): Extended;
     var
       ds: String;
   begin
@@ -111,13 +111,15 @@ uses MainUnit;
       //
     end;
 
-  end;
+end;
 
 // .............................................................................
 
 procedure TDM.DataModuleCreate(Sender: TObject);
   var s: String;
 begin
+//  in sqls.inc
+
 {
   s :=
 'select ' +
@@ -177,6 +179,8 @@ begin
    //AddToLog(IOGSQL);
    }
 end;
+
+// .............................................................................
 
 procedure TDM.UpdUserId(tablename: String; sid: Integer);
 begin

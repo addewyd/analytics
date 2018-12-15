@@ -8,6 +8,7 @@ inherited StoragesForm: TStoragesForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 473
+    ExplicitWidth = 473
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
@@ -19,10 +20,14 @@ inherited StoragesForm: TStoragesForm
   inherited JvStatusBar1: TJvStatusBar
     Top = 329
     Width = 473
+    ExplicitTop = 329
+    ExplicitWidth = 473
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 348
     Width = 473
+    ExplicitTop = 348
+    ExplicitWidth = 473
   end
   inherited JvDBGrid: TJvDBUltimGrid
     Width = 473
@@ -64,7 +69,7 @@ inherited StoragesForm: TStoragesForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

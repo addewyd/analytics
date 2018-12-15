@@ -116,6 +116,8 @@ type
     N10: TMenuItem;
     DeadRestAction: TAction;
     DeadRest1: TMenuItem;
+    ContractsAction: TAction;
+    N11: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -148,6 +150,7 @@ type
     procedure CatTHActionExecute(Sender: TObject);
     procedure StoragesActionExecute(Sender: TObject);
     procedure DeadRestActionExecute(Sender: TObject);
+    procedure ContractsActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -200,7 +203,7 @@ uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
   WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit,
-  DeadRestUnit;
+  DeadRestUnit, ContractUnit;
 
 
 // .............................................................................
@@ -251,8 +254,7 @@ end;
 procedure TMainForm.HTTPServerCommandOther(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 begin
-//
-  //  ARequestInfo.PostStream
+//  not used
 end;
 
 /// ............................................................................
@@ -658,7 +660,6 @@ begin
     TDeadRestForm.Create(self, 'deadrest');
   end
   else GetMDIForm('deadrest').Show;
-
 end;
 
 // .............................................................................
@@ -672,6 +673,17 @@ end;
 procedure TMainForm.CloseActionExecute(Sender: TObject);
 begin
   Close;
+end;
+
+// ....................................................................
+
+procedure TMainForm.ContractsActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('contracts') then
+  begin
+    TContractsForm.Create(self, 'contracts');
+  end
+  else GetMDIForm('contracts').Show;
 end;
 
 // .............................................................................

@@ -34,7 +34,8 @@ uses
   ViewLogUnit in 'ViewLogUnit.pas' {ViewLogForm},
   TanksHosesUnit in 'TanksHosesUnit.pas' {TanksHosesForm},
   StoragesUnit in 'StoragesUnit.pas' {StoragesForm},
-  DeadRestUnit in 'DeadRestUnit.pas' {DeadRestForm};
+  DeadRestUnit in 'DeadRestUnit.pas' {DeadRestForm},
+  ContractUnit in 'ContractUnit.pas' {ContractsForm};
 
 {$R *.res}
 

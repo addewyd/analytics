@@ -14,6 +14,8 @@ uses
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid;
 
+  {$I 'consts.inc'}
+
 type
   TPartnersForm = class(TFormWithGrid)
     CommitAction: TAction;
@@ -28,8 +30,10 @@ type
     procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
+    procedure catsupd(var Msg: TMessage); message WM_CATS_UPD;
   public
     { Public declarations }
+
   end;
 
 var
@@ -65,6 +69,8 @@ begin
     end;
   end;
 end;
+
+// .............................................................................
 
 procedure TPartnersForm.FormCreate(Sender: TObject);
 begin
@@ -109,12 +115,21 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TPartnersForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 
+end;
+
+// .............................................................................
+
+procedure TPartnersForm.catsupd(var Msg: TMessage);
+begin
+  LoadData;
 end;
 
 end.

@@ -58,16 +58,8 @@ end;
 
 procedure TFormWithGrid.LoadData;
 begin
-
   with FDQuery do
   begin
-  {
-    if Connection.Connected then
-    begin
-      Connection.Close;
-    end;
-    Connection.Open;
- }
     if Active then
     begin
       Close;
@@ -89,13 +81,11 @@ begin
 
 end;
 
-
 // .............................................................................
 
 procedure TFormWithGrid.sessionadded(var Msg: TMessage);
 begin
   LoadData;
-
 end;
 
 // .............................................................................
@@ -113,5 +103,5 @@ begin
   LoadData;
 end;
 
-
 end.
+

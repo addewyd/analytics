@@ -80,17 +80,7 @@ end;
 procedure TPaymentModesForm.FormCreate(Sender: TObject);
 begin
   inherited;
-  with FDQuery do
-  begin
-    Transaction.StartTransaction;
-    try
-      Open;
-      Transaction.Commit;
-    except
-      Transaction.Rollback;
-    end;
-  end;
-
+  LoadData;
 end;
 
 // .............................................................................

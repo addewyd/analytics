@@ -201,6 +201,10 @@
             <Form>DeadRestForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ContractUnit.pas">
+            <Form>ContractsForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="sqls.inc"/>
         <None Include="consts.inc"/>
         <BuildConfiguration Include="Release">

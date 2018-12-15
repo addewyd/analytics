@@ -14,6 +14,8 @@ uses
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid;
 
+{$I 'consts.inc'}
+
 type
   TCatGSMForm = class(TFormWithGrid)
     FDQueryCODE: TWideStringField;
@@ -38,6 +40,7 @@ type
   private
     { Private declarations }
     procedure ToggleCB;
+    procedure catsupd(var Msg: TMessage); message WM_CATS_UPD;
   public
     { Public declarations }
   end;
@@ -222,5 +225,13 @@ begin
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 
 end;
+
+// .............................................................................
+
+procedure TCatGSMForm.catsupd(var Msg: TMessage);
+begin
+  LoadData;
+end;
+
 
 end.

@@ -539,7 +539,8 @@ procedure TSessionListForm.JvDBGridDrawColumnCell(Sender: TObject;
     clGreen,  // VERIFIED
     clGray,  // CLOSED
     clMaroon,     // PARTLY
-    clRed     // SENT
+    clRed,     // SENT
+    clBlack // reserved
     ];
 begin
   inherited;

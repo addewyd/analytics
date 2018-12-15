@@ -151,8 +151,8 @@ procedure TCntReplaceDlg.OKActionExecute(Sender: TObject);
 begin
   AddToLog('ReplCnt OK');
 
+  // initialized in TTabForm.SCNT1Click
   if QIOTH.Transaction.Active then QIOTH.Transaction.Commit;
-
   QIOTH.Close;
 
   FDQuery.Transaction.StartTransaction;
@@ -162,6 +162,9 @@ begin
     DoChanges;
 
     FDQuery.Close;
+
+    // The same trans in FDQueryS
+
     FDQuery.UpdateTransaction.Commit;
     FDQuery.Transaction.Commit;
     msg.Msg := WM_COUNTERS_CHANGED;
@@ -169,8 +172,8 @@ begin
   except
     on e: Exception do
     begin
-      FDQuery.UpdateTransaction.Rollback;
-      FDQuery.Transaction.Commit;
+      if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+      if FDQuery.Transaction.Active then  FDQuery.Transaction.RollBack;
       AddToLog(e.Message);
     end;
   end;

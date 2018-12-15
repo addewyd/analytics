@@ -62,6 +62,8 @@ begin
   Action := caFree;
 end;
 
+//..............................................................................
+
 procedure TSelectUser.FormCreate(Sender: TObject);
 begin
   FDQuery.Transaction.StartTransaction;

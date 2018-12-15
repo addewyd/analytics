@@ -14,6 +14,8 @@ uses
   JvDBUltimGrid, JvDBGridFooter, Vcl.ComCtrls, JvExComCtrls, JvStatusBar,
   Vcl.ToolWin, JvToolBar;
 
+  {$I 'consts.inc'}
+
 type
   TStoragesForm = class(TFormWithGrid)
     CommitAction: TAction;
@@ -29,6 +31,7 @@ type
     procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
+    procedure catsupd(var Msg: TMessage); message WM_CATS_UPD;
   public
     { Public declarations }
   end;
@@ -91,12 +94,21 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TStoragesForm.RefreshActionExecute(Sender: TObject);
 begin
   inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
 
+end;
+
+// .............................................................................
+
+procedure TStoragesForm.catsupd(var Msg: TMessage);
+begin
+  LoadData;
 end;
 
 end.
