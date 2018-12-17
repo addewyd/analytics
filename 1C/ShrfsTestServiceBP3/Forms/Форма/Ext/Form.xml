@@ -1,0 +1,590 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.6">
+	<Title>
+		<v8:item>
+			<v8:lang>ru</v8:lang>
+			<v8:content>Загрузка документов</v8:content>
+		</v8:item>
+	</Title>
+	<Width>64</Width>
+	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
+	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1"/>
+	<Events>
+		<Event name="OnOpen">ПриОткрытии</Event>
+		<Event name="BeforeClose">ПередЗакрытием</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="Группа1" id="1">
+			<Width>65</Width>
+			<Group>Vertical</Group>
+			<BackColor>#E4FFFD</BackColor>
+			<ExtendedTooltip name="Группа1РасширеннаяПодсказка" id="2"/>
+			<ChildItems>
+				<UsualGroup name="Группа2" id="8">
+					<Width>63</Width>
+					<BackColor>#FBFFBA</BackColor>
+					<ExtendedTooltip name="Группа2РасширеннаяПодсказка" id="9"/>
+					<ChildItems>
+						<InputField name="ServiceHostText" id="3">
+							<DataPath>ServiceHost</DataPath>
+							<Width>14</Width>
+							<AutoMaxWidth>false</AutoMaxWidth>
+							<MaxWidth>14</MaxWidth>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ServiceHostTextКонтекстноеМеню" id="4"/>
+							<ExtendedTooltip name="ServiceHostTextРасширеннаяПодсказка" id="5"/>
+						</InputField>
+						<InputField name="ServicePortText" id="14">
+							<DataPath>ServicePort</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Port</v8:content>
+								</v8:item>
+							</Title>
+							<Width>5</Width>
+							<AutoMaxWidth>false</AutoMaxWidth>
+							<MaxWidth>5</MaxWidth>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ServicePortTextКонтекстноеМеню" id="15"/>
+							<ExtendedTooltip name="ServicePortTextРасширеннаяПодсказка" id="16"/>
+						</InputField>
+						<Button name="GetVer" id="6">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.GetVersionCommand</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Service Version</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="GetVerРасширеннаяПодсказка" id="7"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Группа10" id="57">
+					<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+					<Width>63</Width>
+					<Group>Vertical</Group>
+					<HorizontalSpacing>None</HorizontalSpacing>
+					<BackColor>#FBFFBA</BackColor>
+					<ExtendedTooltip name="Группа10РасширеннаяПодсказка" id="58"/>
+					<ChildItems>
+						<UsualGroup name="Группа11" id="62">
+							<Width>52</Width>
+							<Group>Vertical</Group>
+							<Representation>NormalSeparation</Representation>
+							<BackColor>#D7D3BD</BackColor>
+							<ExtendedTooltip name="Группа11РасширеннаяПодсказка" id="63"/>
+							<ChildItems>
+								<InputField name="Организация" id="64">
+									<DataPath>Организация</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="ОрганизацияКонтекстноеМеню" id="65"/>
+									<ExtendedTooltip name="ОрганизацияРасширеннаяПодсказка" id="66"/>
+								</InputField>
+								<InputField name="Склад" id="73">
+									<DataPath>Склад</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="СкладКонтекстноеМеню" id="74"/>
+									<ExtendedTooltip name="СкладРасширеннаяПодсказка" id="75"/>
+								</InputField>
+								<InputField name="Контр99ПЛ" id="67">
+									<DataPath>Контр99ПЛ</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="Контр99ПЛКонтекстноеМеню" id="68"/>
+									<ExtendedTooltip name="Контр99ПЛРасширеннаяПодсказка" id="69"/>
+								</InputField>
+								<InputField name="Покупатель" id="70">
+									<DataPath>Покупатель</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="ПокупательКонтекстноеМеню" id="71"/>
+									<ExtendedTooltip name="ПокупательРасширеннаяПодсказка" id="72"/>
+								</InputField>
+								<InputField name="Договор" id="79">
+									<DataPath>Договор</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="ДоговорКонтекстноеМеню" id="80"/>
+									<ExtendedTooltip name="ДоговорРасширеннаяПодсказка" id="81"/>
+								</InputField>
+								<InputField name="Валюта" id="76">
+									<DataPath>Валюта</DataPath>
+									<Width>38</Width>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<MaxWidth>38</MaxWidth>
+									<ContextMenu name="ВалютаКонтекстноеМеню" id="77"/>
+									<ExtendedTooltip name="ВалютаРасширеннаяПодсказка" id="78"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Группа4" id="17">
+					<Width>63</Width>
+					<VerticalStretch>false</VerticalStretch>
+					<Group>Vertical</Group>
+					<BackColor>#FBFFBA</BackColor>
+					<ExtendedTooltip name="Группа4РасширеннаяПодсказка" id="18"/>
+					<ChildItems>
+						<UsualGroup name="Группа5" id="21">
+							<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+							<Width>61</Width>
+							<Height>2</Height>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="Группа5РасширеннаяПодсказка" id="22"/>
+							<ChildItems>
+								<UsualGroup name="Группа7" id="49">
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Список таблиц БД</v8:content>
+										</v8:item>
+									</Title>
+									<Width>54</Width>
+									<ExtendedTooltip name="Группа7РасширеннаяПодсказка" id="50"/>
+									<ChildItems>
+										<Button name="TablesBut" id="19">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.TablesCommand</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Tables</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="TablesButРасширеннаяПодсказка" id="20"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Г4" id="51">
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Обновить</v8:content>
+										</v8:item>
+									</Title>
+									<Width>52</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<GroupHorizontalAlign>Left</GroupHorizontalAlign>
+									<GroupVerticalAlign>Top</GroupVerticalAlign>
+									<Group>Horizontal</Group>
+									<ChildrenAlign>ItemsLeftTitlesLeft</ChildrenAlign>
+									<VerticalSpacing>None</VerticalSpacing>
+									<HorizontalAlign>Left</HorizontalAlign>
+									<Representation>None</Representation>
+									<BackColor>#D7D3BD</BackColor>
+									<ExtendedTooltip name="Г4РасширеннаяПодсказка" id="52"/>
+									<ChildItems>
+										<Button name="ContrBut" id="45">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.PostContr</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Контрагенты</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="ContrButРасширеннаяПодсказка" id="46"/>
+										</Button>
+										<Button name="DogBut" id="47">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.PostDOg</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Договоры</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="DogButРасширеннаяПодсказка" id="48"/>
+										</Button>
+										<Button name="КнСклады" id="82">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.ОтпрСклады</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Склады</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="КнСкладыРасширеннаяПодсказка" id="83"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Группа6" id="27">
+							<Visible>false</Visible>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Выполнить запрос</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="Группа6РасширеннаяПодсказка" id="28"/>
+							<ChildItems>
+								<Button name="SQLBut" id="25">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.SQL</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>SQL</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="SQLButРасширеннаяПодсказка" id="26"/>
+								</Button>
+								<InputField name="SQLText" id="29">
+									<DataPath>SQLText</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<ContextMenu name="SQLTextКонтекстноеМеню" id="30"/>
+									<ExtendedTooltip name="SQLTextРасширеннаяПодсказка" id="31"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Группа9" id="53">
+							<Width>52</Width>
+							<BackColor>#D7D3BD</BackColor>
+							<ExtendedTooltip name="Группа9РасширеннаяПодсказка" id="54"/>
+							<ChildItems>
+								<Button name="LoadDocsBut" id="55">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.LoadDocs</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Загрузить документы (ГСМ)</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="LoadDocsButРасширеннаяПодсказка" id="56"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Группа3" id="10">
+					<TitleFont ref="style:SmallTextFont" kind="StyleItem"/>
+					<Width>63</Width>
+					<VerticalStretch>false</VerticalStretch>
+					<Group>Vertical</Group>
+					<VerticalSpacing>None</VerticalSpacing>
+					<BackColor>#FBFFBA</BackColor>
+					<ExtendedTooltip name="Группа3РасширеннаяПодсказка" id="11"/>
+					<ChildItems>
+						<Button name="CloseButton" id="12">
+							<Type>UsualButton</Type>
+							<CommandName>Form.StandardCommand.Close</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Close</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="CloseButtonРасширеннаяПодсказка" id="13"/>
+						</Button>
+						<Table name="Qtable" id="32">
+							<Representation>List</Representation>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>qtable</DataPath>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="QtableКонтекстноеМеню" id="33"/>
+							<AutoCommandBar name="QtableКоманднаяПанель" id="34"/>
+							<ExtendedTooltip name="QtableРасширеннаяПодсказка" id="35"/>
+							<SearchStringAddition name="QtableСтрокаПоиска" id="36">
+								<AdditionSource>
+									<Item>Qtable</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="QtableСтрокаПоискаКонтекстноеМеню" id="37"/>
+								<ExtendedTooltip name="QtableСтрокаПоискаРасширеннаяПодсказка" id="38"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="QtableСостояниеПросмотра" id="39">
+								<AdditionSource>
+									<Item>Qtable</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="QtableСостояниеПросмотраКонтекстноеМеню" id="40"/>
+								<ExtendedTooltip name="QtableСостояниеПросмотраРасширеннаяПодсказка" id="41"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="QtableУправлениеПоиском" id="42">
+								<AdditionSource>
+									<Item>Qtable</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="QtableУправлениеПоискомКонтекстноеМеню" id="43"/>
+								<ExtendedTooltip name="QtableУправлениеПоискомРасширеннаяПодсказка" id="44"/>
+							</SearchControlAddition>
+						</Table>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Объект" id="1">
+			<Type>
+				<v8:Type>cfg:ExternalDataProcessorObject.ShrfsTestService</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="ServiceHost" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service host</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="ServicePort" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service port</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>6</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="SQLText" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>SQLText</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="qtable" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Qtable</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Организация" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Организация</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Организации</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Контр99ПЛ" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Контрагент ПЛ</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Контрагенты</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Покупатель" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Покупатель</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Контрагенты</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Склад" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Склад</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Склады</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Валюта" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Валюта</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Валюты</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Договор" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Договор</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.ДоговорыКонтрагентов</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="GetVersionCommand" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Get version command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Get version command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>GetVersionCommand</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="TablesCommand" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Tables command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Tables command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TablesCommand</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="SQL" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>SQL</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>SQL</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SQL</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="PostContr" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post contr</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post contr</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PostContr</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="PostDOg" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post d og</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Post d og</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PostDOg</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="LoadDocs" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Load docs</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Load docs</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>LoadDocs</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="ОтпрСклады" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Отпр склады</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Отпр склады</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ОтпрСклады</Action>
+			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+	</Commands>
+</Form>
