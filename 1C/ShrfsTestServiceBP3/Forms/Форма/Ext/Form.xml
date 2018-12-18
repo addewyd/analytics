@@ -220,6 +220,17 @@
 											</Title>
 											<ExtendedTooltip name="КнСкладыРасширеннаяПодсказка" id="83"/>
 										</Button>
+										<Button name="WareBut" id="84">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.GetWares</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Товары</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="WareButРасширеннаяПодсказка" id="85"/>
+										</Button>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -585,6 +596,21 @@
 			</ToolTip>
 			<Action>ОтпрСклады</Action>
 			<CurrentRowUse>DontUse</CurrentRowUse>
+		</Command>
+		<Command name="GetWares" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Get wares</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Get wares</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>GetWares</Action>
 		</Command>
 	</Commands>
 </Form>

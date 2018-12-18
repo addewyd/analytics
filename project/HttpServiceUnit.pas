@@ -767,9 +767,9 @@ begin
           cname := nL[i].ChildNodes[j].NodeName;
           Text := nL[i].ChildNodes[j].Text;
 
-          if cname = 'code' then
+          if (cname = 'code') and (Text = 'Ê000') then
           begin
-            Text := UniqStr(10);
+            Text := UniqStr(10);  // KA-2 has not Code
           end;
 
           flist.Add(cname);
