@@ -151,19 +151,22 @@ object DM: TDM
       
         '    iif(opa is not null, opa, r.partnerextcode) as partnerextcod' +
         'e,'
-      '    sum(r.volume) as volume,'
-      '--    sum(iif(ova is not null,  ova, r.volume)) as volume,'
-      '    sum(r.amount) as amount'
+      '--    sum(r.volume) as volume,'
+      '    sum(iif(ova is not null,  ova, r.volume)) as volume,'
+      '--    sum(r.amount) as amount'
+      '    sum(iif(oaa is not null,  oaa, r.amount)) as amount'
+      ''
       '    from sessions s'
       '    join'
       
-        '        (select r.*, o.partnerextcode as opa, o.volume as ova fr' +
-        'om  outcomesbyretail r'
+        '        (select r.*, o.partnerextcode as opa, o.volume as ova, o' +
+        '.amount as oaa from  outcomesbyretail r'
       '            left join '
       '            (select session_id,partnerextcode,'
+      '                paymentmodeextcode,remark,tanknum,hosename,'
       
-        '                paymentmodeextcode,remark,tanknum,hosename,sum(v' +
-        'olume) as volume'
+        '                       sum(volume) as volume, sum(amount) as amo' +
+        'unt'
       
         '                from outcomesbyoffice where session_id=:session_' +
         'id'
