@@ -635,7 +635,7 @@ begin
 
     m :=  d * v / 1000.0;
 
-    QueryInOut.FieldByName('MASS').AsExtended := m;
+    // QueryInOut.FieldByName('MASS').AsExtended := m;
 
   end;
 
@@ -646,7 +646,7 @@ begin
 
     m :=  d * v / 1000.0;
 
-    QueryInOut.FieldByName('MASS').AsExtended := m;
+    // QueryInOut.FieldByName('MASS').AsExtended := m;
 
   end;
 
@@ -3406,13 +3406,19 @@ begin
   fn := Column.FieldName;
   fv := QueryInOut.FieldByName(fn).AsString;
 
+  if not (gdFocused in State) then
+
+
   if sent > 0 then
   begin
     g.Canvas.Font.Color := $307918;
-//    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
+    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
+  end
+  else
+  begin
+    g.Canvas.Font.Color := clBlack;
+    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
   end;
-
-  g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
 
 end;
 
