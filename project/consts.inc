@@ -13,6 +13,7 @@ const
   WM_STATE_CHANGED = WM_USER + 11;
   WM_STATE_CHANGED_FEXT = WM_USER + 12;
   WM_CATS_UPD = WM_USER + 13;
+  WM_GSM_CHANGED = WM_USER + 14;
 
 
   // session states

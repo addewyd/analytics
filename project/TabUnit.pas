@@ -245,6 +245,7 @@ type
     procedure stationchanged(var Msg: TMessage); message WM_STATION_CHANGED;
     procedure statechangedfext(var Msg: TMessage); message WM_STATE_CHANGED_FEXT;
     procedure statechanged(var Msg: TMessage); message WM_STATE_CHANGED;
+    procedure gsmchanged(var Msg: TMessage); message WM_GSM_CHANGED;
     procedure SetControlsOnSessionState(st: Integer);
     function IsNextSessionOpened: boolean;
     function SetSessionState(st: Integer): boolean;
@@ -598,11 +599,11 @@ procedure TTabForm.DSInOutFieldChanged(Sender: TObject; Field: TField);
 var
   f, fname: String;
   e, v, m, d, nds: Extended;
+  lnds: extended;
 begin
   inherited;
   fname := Field.FieldName;
   f := Field.AsString;
-
 
   // ??        PRICE must be read only!
   if fname = 'PRICE' then
@@ -650,19 +651,12 @@ begin
 
   end;
 
-  {
-      round(amount * cast(nds as double precision) /
-       118.0, 2) as sumnds,
-    amount as whole,
-    round(amount - amount *
-    cast(nds as double precision) / 118.0, 2) as amount0
-}
-
   if fname = 'WHOLE' then
   begin
     v := QueryInOut.FieldByName('WHOLE').AsExtended;
     d := Field.AsExtended;
-    nds := StrToExtDef(QueryInOut.FieldByName('NDS').AsString, 18);
+    lnds := 18; // 20;
+    nds := StrToExtDef(QueryInOut.FieldByName('NDS').AsString, lnds);
     m :=  d * nds / (100 + nds);
 
 
@@ -2444,6 +2438,17 @@ begin
     begin
       if Transaction.Active then
       begin
+        Transaction.Rollback;
+        ShowPMData;
+        dirtyPM := false;
+      end;
+
+    end;
+    with QueryRealPmSum do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
         ShowPMData;
         dirtyPM := false;
       end;
@@ -3627,5 +3632,29 @@ begin
   ShowAllData;
 end;
 
+// .............................................................................
+
+procedure TTabForm.gsmchanged(var Msg: TMessage);
+begin
+  AddToLog('tabs: gsm list changed');
+  {
+  // ???
+    with QueryRealPM do
+    begin
+      if Transaction.Active then
+      begin
+        Transaction.Rollback;
+        ShowPMData;
+        dirtyPM := false;
+      end;
+
+    end;
+
+  // ?????
+  LoadWareList;
+  ShowAllData;
+  }
+  // hren' kakya-to
+end;
 
 end.

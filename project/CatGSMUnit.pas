@@ -52,9 +52,11 @@ implementation
 
 {$R *.dfm}
 
-uses DmUnit;
+uses DmUnit, MainUnit;
 
 procedure TCatGSMForm.CommitActionExecute(Sender: TObject);
+  var
+    msg: TMessage;
 begin
   inherited;
   with FDQuery do
@@ -62,13 +64,15 @@ begin
     Transaction.StartTransaction;
     try
       ApplyUpdates(0);
-      Close;
       Transaction.Commit;
+      Close;
       LoadData;
+      msg.Msg := WM_GSM_CHANGED;
+      MainForm.SendMsgs(msg);
     except
       on e: exception do
       begin
-        Transaction.Rollback;
+        if Transaction.Active then Transaction.Rollback;
         ErrorMessageBox(self, e.message);
       end;
     end;
@@ -80,6 +84,8 @@ end;
 procedure TCatGSMForm.FormCreate(Sender: TObject);
 begin
   inherited;
+//  LoadData;
+
   with FDQuery do
     begin
     Transaction.StartTransaction;
