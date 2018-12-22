@@ -61,12 +61,14 @@ begin
       on e: exception do
       begin
         Transaction.Rollback;
-        ErrorMessageBox(self, e.message);
+        ErrorMessageBox(self, 'QEK ' + e.message);
       end;
     end;
   end;
 
 end;
+
+// .............................................................................
 
 procedure TDeadRestForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -76,11 +78,15 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TDeadRestForm.FormCreate(Sender: TObject);
 begin
   inherited;
   LoadData;
 end;
+
+// .............................................................................
 
 procedure TDeadRestForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -104,11 +110,15 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TDeadRestForm.JvDSActiveChanged(Sender: TObject);
 begin
   inherited;
 //
 end;
+
+// .............................................................................
 
 procedure TDeadRestForm.JvDSDataChange(Sender: TObject; Field: TField);
 begin
@@ -118,17 +128,21 @@ begin
 //   ... :=  JvDS.GetFieldValue(Field);
 end;
 
+// .............................................................................
+
 procedure TDeadRestForm.JvDSUpdateData(Sender: TObject);
 begin
   inherited;
 //
 end;
 
+// .............................................................................
+
 procedure TDeadRestForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+  inherited;
 
 end;
 

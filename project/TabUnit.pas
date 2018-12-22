@@ -155,6 +155,7 @@ type
     QueryIOTHSumVBDIFF: TFloatField;
     QueryOutItemsSum2: TFDQuery;
     setprevvolproc: TFDStoredProc;
+    WLTrans: TFDTransaction;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -853,7 +854,7 @@ begin
 
         prepare;
         ExecSQL;
-        AddToLog('updating ' + tablename);  
+        AddToLog('updating ' + tablename);
       end;
 
       UpdateTransaction.Commit;
@@ -867,7 +868,7 @@ begin
       begin
         UpdateTransaction.Rollback;
         Transaction.Rollback;
-        AddToLog(e.Message);
+        AddToLog('QE1 ' + e.Message);
         raise;
       end;
 
@@ -921,11 +922,11 @@ begin
 
   if yn.ShowModal = mrOK then
   begin
-  
+
     new_state := S_VERIFIED;
     UpdateAllStates(new_state);
   end;
-  
+
 end;
 
 // .............................................................................
@@ -937,15 +938,23 @@ begin
   with QueryWL do
   begin
     Transaction.StartTransaction;
-    Open;
-    while not Eof do
-    begin
-      warelist.Add(FieldByName('code').AsString + '=' + FieldByName('name')
-        .AsString);
-      Next;
+    try
+      open;
+      while not Eof do
+      begin
+        warelist.add(FieldByName('code').AsString + '=' + FieldByName('name')
+          .AsString);
+        Next;
+      end;
+      Transaction.Commit;
+      Close;
+    Except
+      on e: Exception do
+      begin
+        Transaction.Rollback;
+        AddToLog('QE2 ' + e.Message);
+      end;
     end;
-    Close;
-    Transaction.Commit;
   end;
 
 end;
@@ -1188,7 +1197,7 @@ begin
       begin
         GenUpdQuery.UpdateTransaction.Rollback;
         GenUpdQuery.Transaction.Rollback;
-        AddToLog(e.Message);
+        AddToLog('QE3 ' + e.Message);
       end;
     end;
 
@@ -1318,7 +1327,7 @@ begin
     on e: Exception do
     begin
       QuerySST.Transaction.Rollback;
-      AddToLog(e.Message);
+      AddToLog('QE4 ' + e.Message);
     end;
 
   end;
@@ -1524,7 +1533,7 @@ begin
       on e: Exception do
       begin
         Transaction.Rollback;
-        AddToLog(e.Message);
+        AddToLog('QE5 ' + e.Message);
         exit;
       end;
 
@@ -1599,7 +1608,7 @@ begin
   except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QE6 ' + e.Message);
       end;
 
   end;
@@ -1671,7 +1680,7 @@ begin
     except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QE7 ' + e.Message);
         // Transaction.Rollback;
         // raise
       end;
@@ -1727,7 +1736,7 @@ begin
     except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QE8 ' + e.Message);
         // Transaction.Rollback;
         // raise
       end;
@@ -1791,7 +1800,7 @@ begin
     except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QE9 ' + e.Message);
         // Transaction.Rollback;
         // raise
       end;
@@ -1808,7 +1817,16 @@ var
   k, v, sumsql, sqlt: string;
 begin
 
+  with QueryRealPM do
+  begin
+    if Active then
+      Close;
+    if QueryRealPMSum.Active then
+      QueryRealPMSum.Close;
+  end;
+
   LoadWareList();
+
   with RealPMFooter.Columns do
   begin
     Clear;
@@ -1879,7 +1897,6 @@ begin
   end;
 
   sqlt := GenPMSql(sumsql);
-  QueryRealPmSum.SQL.Text := sumsql;
 
   with QueryRealPM do
   begin
@@ -1889,6 +1906,7 @@ begin
       QueryRealPMSum.Close;
 
     Sql.Text := sqlt;
+    QueryRealPmSum.SQL.Text := sumsql;
 
     with Params do
     begin
@@ -1915,7 +1933,6 @@ begin
     QueryRealPmSum.ParamByName('session_id').AsInteger := session_id;
     QueryRealPmSum.ParamByName('azscode').AsString := current_azscode;
 
-
     Transaction.StartTransaction;
     try
       Prepare;
@@ -1927,7 +1944,7 @@ begin
     except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QEA ' + e.Message);
         // Transaction.Rollback;
         // raise
       end;
@@ -1974,7 +1991,7 @@ begin
     if Active then
       Close;
     if QueryIOTHSum.Active then QueryIOTHSum.Close;
-    
+
     with Params do
     begin
       Clear;
@@ -2006,7 +2023,7 @@ begin
     except
       on e: Exception do
       begin
-        AddToLog(e.Message);
+        AddToLog('QEB ' + e.Message);
         // Transaction.Rollback;
         // raise
       end;
@@ -2225,7 +2242,7 @@ begin
       begin
         UpdateTransaction.Rollback;
         Transaction.Rollback;
-        ErrorMessageBox(self, e.Message);
+        ErrorMessageBox(self, 'QEC ' + e.Message);
       end;
 
     end;
@@ -2380,7 +2397,7 @@ begin
   except
     on e: Exception do
     begin
-      AddToLog(e.Message);
+      AddToLog('QED ' + e.Message);
     end;
   end;
 
@@ -2458,7 +2475,7 @@ begin
   except
     on e: Exception do
     begin
-      AddToLog(e.Message);
+      AddToLog('QEE ' + e.Message);
     end;
   end;
   // ShowAllData;
@@ -2746,7 +2763,7 @@ begin
 
   Gr := Sender.DBGrid;
   Found := False;
-  
+
   cls := gr.Columns;
   hw := 0;
   for C := 0 to cls.Count - 1 do
@@ -2761,21 +2778,21 @@ begin
           cnv.Brush.Color := clWhite;
           Text := 'text';
           cnv.TextOut(hw, 17, Text);
-          
+
           crect.Left := 0;
           crect.Top := 0;
           crect.Width := 100;
           crect.Height := 34;
-          
+
           cnv.TextOut(0, 0, Text);
 
           text := '';
-          
+
         end;
      end;
      hw := hw + w;
 
-  end;     
+  end;
 
 end;
 
@@ -2940,7 +2957,7 @@ begin
     GridInOutGSM.ReadOnly := b;
     GridInOutItems.ReadOnly := b;
 //    RealPMGrid
-    
+
 //    JvStatusBar1.Visible := b;
 
     CloseSessAction.Enabled := st < S_CLOSED;
@@ -3049,7 +3066,7 @@ begin
     begin
       CalcValue := FieldByName(f).AsExtended;
       if f = 'OUTCOME' then volumesum_ioth := CalcValue;
-      
+
     end;
   end;
 end;
@@ -3356,7 +3373,7 @@ end
       begin
         UpdateTransaction.Rollback;
         Transaction.Rollback;
-        AddToLog(e.Message);
+        AddToLog('QEF ' + e.Message);
       end;
 
     end;
@@ -3524,7 +3541,7 @@ begin
     OffsetRect(TextRect, 0, RealPMGrid.TitleRowHeight DIV 2);
     price := QueryRealPM.FieldByName('price_' + copy(fn, 8, 1)).asExtended;
 
-    ACanvas.TextRect(TextRect, Textrect.Left + 2, Textrect.Top + 2, 
+    ACanvas.TextRect(TextRect, Textrect.Left + 2, Textrect.Top + 2,
       Format('₽ %10.2f', [price]));
 
     DefaultDrawText := false;
@@ -3655,6 +3672,13 @@ begin
   ShowAllData;
   }
   // hren' kakya-to
+  if TransPM.Active then
+  begin
+    TransPM.Commit;
+    TransPM.StartTransaction;
+    ShowPMData;
+    dirtyPM := false;
+  end;
 end;
 
 end.

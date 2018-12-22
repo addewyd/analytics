@@ -769,7 +769,7 @@ end;
 
 procedure TSessionListForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
+//  inherited;
   PrepareAndLoad;
 end;
 

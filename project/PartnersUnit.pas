@@ -119,9 +119,9 @@ end;
 
 procedure TPartnersForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+  inherited;
 
 end;
 

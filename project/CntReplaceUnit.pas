@@ -174,7 +174,7 @@ begin
     begin
       if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
       if FDQuery.Transaction.Active then  FDQuery.Transaction.RollBack;
-      AddToLog(e.Message);
+      AddToLog('QEG ' + e.Message);
     end;
   end;
 

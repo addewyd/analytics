@@ -91,7 +91,7 @@ inherited CatGSMForm: TCatGSMForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12772,34 +12772,10 @@ inherited CatGSMForm: TCatGSMForm
   end
   inherited FDQuery: TFDQuery
     CachedUpdates = True
+    OnReconcileError = FDQueryReconcileError
     Connection = DM.FDConnection
     UpdateTransaction = Trans
     SQL.Strings = (
       'select code, name, price_r, price_o, incl from wares')
-    object FDQueryCODE: TWideStringField
-      FieldName = 'CODE'
-      Origin = 'CODE'
-      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
-      Required = True
-      Size = 16
-    end
-    object FDQueryNAME: TWideStringField
-      FieldName = 'NAME'
-      Origin = 'NAME'
-      Size = 100
-    end
-    object FDQueryPRICE_R: TFloatField
-      FieldName = 'PRICE_R'
-      Origin = 'PRICE_R'
-    end
-    object FDQueryPRICE_O: TFloatField
-      FieldName = 'PRICE_O'
-      Origin = 'PRICE_O'
-    end
-    object FDQueryINCL: TSmallintField
-      FieldName = 'INCL'
-      Origin = 'INCL'
-      Required = True
-    end
   end
 end

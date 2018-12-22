@@ -59,7 +59,7 @@ begin
       on e: exception do
       begin
         UpdateTransaction.Rollback;
-        ErrorMessageBox(self, e.message);
+        ErrorMessageBox(self, 'QEH ' + e.message);
       end;
     end;
   end;
@@ -83,11 +83,9 @@ end;
 
 procedure TUsersForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
   if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.RollBack;
   if FDQuery.Transaction.Active then FDQuery.Transaction.RollBack;
-
-
+  inherited;
 end;
 
 end.

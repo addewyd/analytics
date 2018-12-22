@@ -6,23 +6,20 @@ inherited UsersForm: TUsersForm
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
     Width = 523
-    object ToolButton3: TToolButton [0]
-      Left = 0
+    ExplicitWidth = 523
+    object ToolButton3: TToolButton
+      Left = 46
       Top = 0
       Action = CommitAction
-    end
-    inherited ToolButton2: TToolButton [1]
-    end
-    inherited ToolButton1: TToolButton [2]
-      Left = 46
-      ExplicitLeft = 46
     end
   end
   inherited JvStatusBar1: TJvStatusBar
     Width = 523
+    ExplicitWidth = 523
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Width = 523
+    ExplicitWidth = 523
   end
   inherited JvDBGrid: TJvDBUltimGrid
     Width = 523
@@ -46,13 +43,11 @@ inherited UsersForm: TUsersForm
       item
         Expanded = False
         FieldName = 'FIO'
-        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'EMAIL'
-        Width = 64
         Visible = True
       end
       item
@@ -71,7 +66,7 @@ inherited UsersForm: TUsersForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

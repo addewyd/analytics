@@ -18,11 +18,6 @@ uses
 
 type
   TCatGSMForm = class(TFormWithGrid)
-    FDQueryCODE: TWideStringField;
-    FDQueryNAME: TWideStringField;
-    FDQueryPRICE_R: TFloatField;
-    FDQueryPRICE_O: TFloatField;
-    FDQueryINCL: TSmallintField;
     CommitAction: TAction;
     ToolButton3: TToolButton;
     N2: TMenuItem;
@@ -37,6 +32,8 @@ type
     procedure JvDBGridKeyPress(Sender: TObject; var Key: Char);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FDQueryReconcileError(DataSet: TFDDataSet; E: EFDException;
+      UpdateKind: TFDDatSRowState; var Action: TFDDAptReconcileAction);
   private
     { Private declarations }
     procedure ToggleCB;
@@ -57,18 +54,34 @@ uses DmUnit, MainUnit;
 procedure TCatGSMForm.CommitActionExecute(Sender: TObject);
   var
     msg: TMessage;
+    ie: Integer;
+    code: String;
+
 begin
   inherited;
+
   with FDQuery do
   begin
+    code := FieldByName('code').AsString;
+
     Transaction.StartTransaction;
     try
-      ApplyUpdates(0);
-      Transaction.Commit;
-      Close;
-      LoadData;
-      msg.Msg := WM_GSM_CHANGED;
-      MainForm.SendMsgs(msg);
+      ie := ApplyUpdates(0);
+      if ie = 0 then
+      begin
+        CommitUpdates;
+        Close;
+        Transaction.Commit;
+        LoadData;
+        Locate('CODE', code);
+
+        msg.Msg := WM_GSM_CHANGED;
+        MainForm.SendMsgs(msg);
+      end
+      else
+      begin
+        Reconcile;
+      end;
     except
       on e: exception do
       begin
@@ -81,6 +94,14 @@ end;
 
 // .............................................................................
 
+procedure TCatGSMForm.FDQueryReconcileError(DataSet: TFDDataSet;
+  E: EFDException; UpdateKind: TFDDatSRowState;
+  var Action: TFDDAptReconcileAction);
+begin
+  inherited;
+  AddToLog(e.Message);
+end;
+
 procedure TCatGSMForm.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -91,6 +112,7 @@ begin
     Transaction.StartTransaction;
     try
       Open;
+      Transaction.Commit;
     except
       on e: exception do
       begin
@@ -118,7 +140,11 @@ begin
       v := 1;
     end;
     JvDBGrid.SelectedField.AsInteger := v;
-    JvDBGrid.SelectedField.Dataset.Post;
+//    JvDBGrid.SelectedField.Dataset.Post;
+    FDQuery.Edit;
+    FDQuery.FieldByName(JvDBGrid.SelectedField.FieldName).AsInteger := v;
+    FDQuery.Post;
+    //FDQuery.ApplyUpdates;
 
 end;
 
@@ -226,9 +252,9 @@ end;
 
 procedure TCatGSMForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
-  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
+ // if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
   if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
+  inherited;
 
 end;
 

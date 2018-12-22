@@ -114,7 +114,7 @@ begin
       on e: exception do
       begin
         Transaction.Rollback;
-        ErrorMessageBox(self, e.message);
+        ErrorMessageBox(self, 'QEI ' + e.message);
       end;
     end;
   end;
@@ -160,7 +160,7 @@ end;
 
 procedure TTanksHosesForm.RefreshActionExecute(Sender: TObject);
 begin
-  inherited;
+//  inherited;
 //  if FDQuery.UpdateTransaction.Active then FDQuery.UpdateTransaction.Rollback;
 //  if FDQuery.Transaction.Active then FDQuery.Transaction.Rollback;
   PrepareAndLoad;

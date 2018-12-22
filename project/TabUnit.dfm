@@ -14132,8 +14132,8 @@ inherited TabForm: TTabForm
   end
   object QueryWL: TFDQuery
     Connection = DM.FDConnection
-    Transaction = GenUpdTrans
-    UpdateTransaction = GenUpdTrans
+    Transaction = WLTrans
+    UpdateTransaction = WLTrans
     ResourceOptions.AssignedValues = [rvMacroExpand]
     SQL.Strings = (
       'select * from wares where incl > 0 order by code ')
@@ -15056,5 +15056,13 @@ inherited TabForm: TTabForm
     StoredProcName = 'SETPREVVOLUME'
     Left = 188
     Top = 373
+  end
+  object WLTrans: TFDTransaction
+    Options.AutoStart = False
+    Options.AutoStop = False
+    Options.StopOptions = []
+    Connection = DM.FDConnection
+    Left = 180
+    Top = 453
   end
 end
