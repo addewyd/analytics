@@ -33,7 +33,7 @@
 '   join sessions s on s.id = i.session_id ' +
 '   join wares w on w.code=i.ware_code ' +
 '   join contragents c on c.code=i.client_code ' +
-'   join contracts cn on cn.partner_code=c.code ' +
+'   join (select max(id) as id, max(nomer) as nomer, max(name) as name, partner_code from contracts group by partner_code) cn on cn.partner_code=c.code ' +
 '   join paymentmodes p on p.code=i.payment_code ' +
 '   join stations a on a.code=s.azscode ' +
 '   left join storages st on st.azscode=s.azscode ';

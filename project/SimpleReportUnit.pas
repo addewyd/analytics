@@ -13,7 +13,8 @@ uses
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid,
-    zexmlss, zeodfs, zexmlssutils, zsspxml, zexlsx, zeZippy, zeZippyJCL7z
+    zexmlss, zeodfs, zexmlssutils, zsspxml, zexlsx, zeZippy, zeZippyJCL7z,
+  XLSSheetData5, XLSReadWriteII5, XLSWriteXLSX5
 ;
 
 type
@@ -21,6 +22,7 @@ type
     ToXlsAction: TAction;
     XLS1: TMenuItem;
     ToolButton3: TToolButton;
+    XLSRWII: TXLSReadWriteII5;
     procedure ToXlsActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -80,6 +82,8 @@ begin
   end;
 end;
 
+// .............................................................................
+
 procedure TSimpleReportForm.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -126,45 +130,26 @@ procedure TSimpleReportForm.ToXlsActionExecute(Sender: TObject);
   var
     tz: TZEXMLSS;
     i, j: Integer;
-    rname, ssdt: String;
+    rname, ssdt, tmplname: String;
     dt: TDate;
+    xw: TXLSWriteXLSX;
+    s: TFileStream;
 begin
   inherited;
-  tz := TZEXMLSS.Create(nil);
-  FillStyles(tz.Styles);
-  ssdt := DateToStr(sdt)+'-'+DateToStr(edt);
+  rname := Exepath + 'reports\repSmAzsII.xlsx';
+  xw := TXLSWriteXLSX.Create(nil, nil);
 
-  rname := Exepath + 'reports\rep' + ssdt + '.xlsx';
+  with XLSRWII do
+  begin
+    Filename := Exepath + 'reports\repSmAzsTmpl.xls';
+    Read;
+    s := TFileStream.Create(rname,fmCreate);
+    xw.SaveToStream(s);
 
-  dt := sdt;
-
-  try
-    tz.Sheets.Count := 1;
-    tz.Sheets[0].Title := 'report';
-    with tz.Sheets[0] do
-    begin
-      j := 3;
-      RowCount := 40;
-      ColCount := 30;
-      while dt < edt  do
-      begin
-        Cell[2, j].CellType := ZEDateTime;
-        Cell[2, j].CellStyle := 0;
-        Cell[2, j].Data := DateToStr(dt);
-
-        dt := dt + 1;
-        j := j + 1;
-        if j > 30 then break;
-
-      end;
-
-
-    end;
-
-    ExportXmlssToXLSX(tz, rname, [], [], nil, 'UTF-8');
-  finally
-    tz.free();
+//    SaveToFile(rname);
   end;
+
+
 end;
 
 end.

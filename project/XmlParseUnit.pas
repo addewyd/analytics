@@ -239,7 +239,7 @@ end;
 
 procedure ParseInputFile(Doc: IDOMDocument; quiet: boolean);
 var
-  nL, nL1: IDOMNodeList;
+  nL: IDOMNodeList;
   msg: TMessage;
   sid: Integer;
 begin
@@ -2202,6 +2202,7 @@ begin
     except
       on e:Exception do
       begin
+//      addtolog(e.Message + ' ' + FileName);
 {$ifdef console}
         //addtolog(e.Message);
 {$endif}

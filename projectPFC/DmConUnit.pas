@@ -71,7 +71,6 @@ implementation
 // .............................................................................
 
 procedure TDM.DataModuleCreate(Sender: TObject);
-  var s: String;
 begin
 {
   s :=

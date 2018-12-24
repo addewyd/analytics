@@ -80,7 +80,7 @@ inherited SimpleReportForm: TSimpleReportForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12883,5 +12883,13 @@ inherited SimpleReportForm: TSimpleReportForm
         DataType = ftTimeStamp
         ParamType = ptInput
       end>
+  end
+  object XLSRWII: TXLSReadWriteII5
+    ComponentVersion = '5.20.62'
+    Version = xvExcel2007
+    DirectRead = False
+    DirectWrite = False
+    Left = 216
+    Top = 88
   end
 end

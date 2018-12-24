@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics,  System.UITypes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Actions, Vcl.ActnList, Vcl.Menus,
-  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.Stan.Param, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, FireDAC.Comp.Client, Data.DB, Vcl.ComCtrls,
   Vcl.ToolWin, Vcl.AppEvnts, System.ImageList, Vcl.ImgList,
@@ -750,7 +750,7 @@ begin
       self.Close;
       Exit;
     end;
-
+    uid := 0;
     if DM.FDConnection.connected then
     begin
 
@@ -1181,7 +1181,6 @@ procedure TMainForm.WindowListActionExecute(Sender: TObject);
     i, len: integer;
     c, f: String;
     sl : TstringList;
-    frm: TBaseForm;
 begin
   len := MDIChildCount;
   dlg := TWinListDlg.Create(self);

@@ -44,6 +44,7 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -114,14 +115,14 @@ object DM: TDM
       '    tbl,'
       '    dir as direction,'
       '    partnerextcode,'
-      '    c.id as contract_id,'
+      '    min(c.id) as contract_id,'
       '    pmec,'
       '    a.fuelextcode,'
       '   a.tanknum,'
-      '    sum(amount) as amount,'
+      '    amount as amount,'
       '    '#39't'#39' as ei,'
-      '    sum(volume) as volume,'
-      '    density as density,  /*  !!! */'
+      '    volume as volume,'
+      '    density as density,'
       '    price,'
       '    sum(amount) as summ,'
       '    nds as nds,'
@@ -295,6 +296,7 @@ object DM: TDM
       '    paymentmodename,'
       '    partnerextcode'
       ''
+      ''
       ' ) as a'
       '    join  wares as w'
       '        on a.fuelextcode=w.code'
@@ -308,9 +310,11 @@ object DM: TDM
       '        azscode,'
       '        tbl,'
       '        direction,'
-      '        contract_id,'
+      '        -- contract_id,'
       '        fuelextcode,'
       '        tanknum,'
+      '        volume,'
+      'amount,'
       '        pmec,'
       '        price,'
       '        density,'

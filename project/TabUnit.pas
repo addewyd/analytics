@@ -156,6 +156,7 @@ type
     QueryOutItemsSum2: TFDQuery;
     setprevvolproc: TFDStoredProc;
     WLTrans: TFDTransaction;
+    IOTHUpdateSQL: TFDUpdateSQL;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -734,6 +735,11 @@ begin
 
   AddToLog(fname + ' DSCh ' + f);
   dirtyIOTH := true;
+
+  if (fname = 'CALCIN')then
+  begin
+    v := QueryIOTH.FieldByName('CALCIN').AsExtended;
+  end;
 end;
 
 procedure TTabForm.DSOutItemsActiveChanged(Sender: TObject);
@@ -763,7 +769,6 @@ end;
 procedure TTabForm.UpdateState(q: TFDQuery; _state: Integer);
 var
   tablename: String;
-  msg: TMessage;
 begin
   // HZ!!!
   // q.UpdateTransaction.Commit;
@@ -1900,11 +1905,6 @@ begin
 
   with QueryRealPM do
   begin
-    if Active then
-      Close;
-    if QueryRealPMSum.Active then
-      QueryRealPMSum.Close;
-
     Sql.Text := sqlt;
     QueryRealPmSum.SQL.Text := sumsql;
 
@@ -2540,22 +2540,22 @@ begin
       if fldn = 'CLIENTNAME' then
       begin
         StatusBar.Canvas.Font.Color := clPurple;
-        txt := format('Σ rnt_v %.2f', [PMSumsCache.rnt_volume]);
+        txt := format('Σ rnt_V %.2f', [PMSumsCache.rnt_volume]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
         StatusBar.Canvas.Font.Color := clNavy;
-        txt := format('Σ rbt_v %.2f', [PMSumsCache.rbt_volume]);
+        txt := format('Σ rbt_V %.2f', [PMSumsCache.rbt_volume]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
       else if fldn = 'FUELNAME' then
       begin
         StatusBar.Canvas.Font.Color := clOlive;
-        txt := format('Σ caot_v %.2f', [PMSumsCache.caot_volume]);
+        txt := format('Σ caot_V %.2f', [PMSumsCache.caot_volume]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
         StatusBar.Canvas.Font.Color := clDkGray;
-        txt := 'Σ ?';
+        txt := format('Σ caot_A0 %.2f', [PMSumsCache.caot_amount0]);;
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
@@ -2563,11 +2563,11 @@ begin
       begin
         StatusBar.Canvas.Font.Color := clGreen;
         txt := QueryInOutSum.FieldByName(fldn).AsString;
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'M: '+txt);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'Σ ' + fldn + ' ' + txt);
 
         StatusBar.Canvas.Font.Color := clBlue;
-        txt := 'Σ ?';
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, 'Б: '+txt);
+        txt := format('Σ caot_W %.2f', [PMSumsCache.caot_whole]);;
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
 
@@ -2637,7 +2637,7 @@ procedure TTabForm.GridFooterOutItemsDrawPanel(StatusBar: TStatusBar;
     gcls : TDBGridColumns;
     pind: Integer;
     fldn, txt: String;
-    c, k: integer;
+    c: integer;
 begin
   // inherited;
 
@@ -2750,7 +2750,6 @@ procedure TTabForm.RealPMFooterDisplayText(Sender: TJvDBGridFooter;
 var
   gr: TJvDBGrid;
   c,w, hw : Integer;
-  Found: Boolean;
   cls : TDBGridColumns;
   cnv : TCanvas;
   crect: TRect;
@@ -2762,8 +2761,6 @@ begin
   cnv := Sender.Canvas;
 
   Gr := Sender.DBGrid;
-  Found := False;
-
   cls := gr.Columns;
   hw := 0;
   for C := 0 to cls.Count - 1 do
@@ -2771,7 +2768,6 @@ begin
     w := cls[c].width;
     if AnsiSameText(Column.FieldName, cls[C].FieldName) then
     begin
-       Found := True;
        if trim(Text) <> '' then
        begin
           cnv.Font.Color := 0;
@@ -2783,11 +2779,8 @@ begin
           crect.Top := 0;
           crect.Width := 100;
           crect.Height := 34;
-
           cnv.TextOut(0, 0, Text);
-
           text := '';
-
         end;
      end;
      hw := hw + w;
@@ -3090,7 +3083,7 @@ procedure TTabForm.IOTHGridDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
   var
     TextRect:TRect;
-    var stcnt, prevcnt: Extended;
+    var stcnt, prevcnt, ci: Extended;
 begin
   inherited;
   if (Column.FieldName = 'R') then
@@ -3130,7 +3123,15 @@ begin
     end;
 
   end;
-
+  if (Column.FieldName = 'CALCIN') and (not (gdFocused in State))then
+  begin
+    ci := QueryIOTH.FieldByName(Column.fieldname).AsExtended;
+    IOTHGrid.Canvas.Font.Color := $30304f;
+    TextRect := Rect;
+    TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
+    IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2,
+        TextRect.Top + 2, Format('%.3f', [ci]));
+  end;
 end;
 
 // .............................................................................
@@ -3417,8 +3418,7 @@ procedure TTabForm.GridInOutGSMDrawColumnCell(Sender: TObject;
   var
     sent: Integer;
     g: TDBGrid;
-  fn, fv, fp: String;
-  TextRect: TRect;
+  fn, fv: String;
 begin
   inherited;
   sent := QueryInOut.FieldByName('sent').asInteger;
@@ -3429,7 +3429,6 @@ begin
   fv := QueryInOut.FieldByName(fn).AsString;
 
   if not (gdFocused in State) then
-
 
   if sent > 0 then
   begin

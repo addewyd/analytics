@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -13866,8 +13866,8 @@ inherited TabForm: TTabForm
       '    w.name as fuelname,'
       '    i.tanknum,'
       '    i.startfuelvolume,'
-      '--    round(i.invol, 3) as calcin,'
-      'i.invol as calcin,'
+      '    -- round(i.invol, 3) as calcin,'
+      '    i.invol as calcin,'
       
         '--   (select volume from calcoutcomes(s.id, i.tanknum,i.hosenum)' +
         ') as calc,'
@@ -14274,7 +14274,7 @@ inherited TabForm: TTabForm
       '   s.id = :session_id'
       '   and i.azscode=:azscode'
       ')')
-    Left = 420
+    Left = 436
     Top = 93
     ParamData = <
       item
@@ -15064,5 +15064,38 @@ inherited TabForm: TTabForm
     Connection = DM.FDConnection
     Left = 180
     Top = 453
+  end
+  object IOTHUpdateSQL: TFDUpdateSQL
+    Connection = DM.FDConnection
+    ModifySQL.Strings = (
+      'UPDATE IOTANKSHOSES'
+      
+        'SET ID = :NEW_ID, SESSION_ID = :NEW_SESSION_ID, TANKNUM = :NEW_T' +
+        'ANKNUM, '
+      
+        '  STARTFUELVOLUME = :NEW_STARTFUELVOLUME, ENDFACTVOLUME = :NEW_E' +
+        'NDFACTVOLUME, '
+      '  DENSITY = :NEW_DENSITY, TEMPERATURE = :NEW_TEMPERATURE, '
+      '  HEIGHT = :NEW_HEIGHT, MASS = :NEW_MASS, WATER = :NEW_WATER, '
+      
+        '  WARECODE = :NEW_WARECODE, HOSENUM = :NEW_HOSENUM, STARTCOUNTER' +
+        ' = :NEW_STARTCOUNTER, '
+      '  ENDCOUNTER = :NEW_ENDCOUNTER, INVOL = :NEW_INVOL'
+      'WHERE ID = :OLD_ID'
+      'RETURNING VOLUME')
+    FetchRowSQL.Strings = (
+      
+        'SELECT ID, SESSION_ID, TANKNUM, STARTFUELVOLUME, ENDFACTVOLUME, ' +
+        'DENSITY, '
+      '  TEMPERATURE, HEIGHT, MASS, WATER, DEADREST, DEADRESTLITER, '
+      
+        '  WARECODE, HOSENUM, STARTCOUNTER, ENDCOUNTER, PUMPNUM, NUMINPUM' +
+        'P, '
+      '  HOSETYPE, LASTUSER_ID, UPDATED_AT, STATE, AZSCODE, VOLUME, '
+      '  INVOL'
+      'FROM IOTANKSHOSES'
+      'WHERE ID = :ID')
+    Left = 548
+    Top = 101
   end
 end

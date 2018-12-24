@@ -280,12 +280,11 @@ end;
 // .............................................................................
 
 procedure SetResults(Arec: TArray<RespRec>);
-  var i, k: Integer;
+  var
       c_session_id: Integer;
       i_session_id, i_id, e_count: Integer;
       rec: RespRec;
 begin
-  k := Length(Arec);
   c_session_id := 0;
   e_count := 0;
 
@@ -410,8 +409,7 @@ end;
 
 procedure LoadDocs(Response: TIdHTTPResponseInfo);
 var
-  msg: TMessage;
-  rc, k, c: Integer;
+  rc, k: Integer;
   recs: TArray<IOGRec>;
   rsp: String;
 begin
@@ -510,8 +508,6 @@ end;
 // .............................................................................
 
 Procedure PostLDResults(Response: TIdHTTPResponseInfo; postdata: String);
-  var
-    list: TStringList;
 begin
   AddToLogT(postdata);
   Response.ContentText := 'OK';
@@ -634,9 +630,7 @@ end;
 // contracts and other
 Procedure CheckContr(Response: TIdHTTPResponseInfo; xmls: String);
 var
-  doc: TXMLDocument;
-  idoc: IDOMDocument;
-  el, el2: IXMLNode;
+  el: IXMLNode;
   nL: IXMLNodeList;
   len, i, j, cnt: Integer;
   Text, cname, res, SQL, tablename: String;
@@ -723,9 +717,7 @@ end;
 
 Procedure CheckStorages(Response: TIdHTTPResponseInfo; xmls: String);
 var
-  doc: TXMLDocument;
-  idoc: IDOMDocument;
-  el, el2: IXMLNode;
+  el: IXMLNode;
   nL: IXMLNodeList;
   len, i, j, cnt: Integer;
   Text, cname, res, SQL, tablename: String;

@@ -168,8 +168,6 @@ end;
 
 procedure TSessionListForm.UpdateState(tablename, idname: String;
   id, _state: Integer);
-var
-  Msg: TMessage;
 begin
   with GenUpdQuery do
   begin
@@ -266,8 +264,6 @@ end;
 // .............................................................................
 
 procedure TSessionListForm.ChangeStationActionExecute(Sender: TObject);
-  var
-    tb: TForm;
 begin
   inherited;
   if not MainForm.isWinOpen('stations')
