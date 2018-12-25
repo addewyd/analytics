@@ -78,7 +78,8 @@
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UnitSearchPath>C:\Users\user\Documents\topaz\analytics\XLSRWII\Win32\Release;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>C:\Users\user\Documents\topaz\analytics\XLSRWII\Win32\Debug;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <Debugger_DebugSourcePath>C:\Users\user\Documents\topaz\analytics\XLSRWII\SrcXLS\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>

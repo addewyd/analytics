@@ -134,19 +134,22 @@ procedure TSimpleReportForm.ToXlsActionExecute(Sender: TObject);
     dt: TDate;
     xw: TXLSWriteXLSX;
     s: TFileStream;
+    X: TXLSReadWriteII5;
 begin
   inherited;
-  rname := Exepath + 'reports\repSmAzsII.xlsx';
-  xw := TXLSWriteXLSX.Create(nil, nil);
+  rname := Exepath + '\reports\repSmAzsII.xlsx';
+//  xw := TXLSWriteXLSX.Create(nil, nil);
 
-  with XLSRWII do
+  X := TXLSReadWriteII5.Create(nil);
+
+  with X do
   begin
-    Filename := Exepath + 'reports\repSmAzsTmpl.xls';
-    Read;
-    s := TFileStream.Create(rname,fmCreate);
-    xw.SaveToStream(s);
+    tmplname := Exepath + '\reports\Rep.xlsx';
+    LoadFromFile(tmplname);
+  //  s := TFileStream.Create(rname,fmCreate);
+    //xw.SaveToStream(s);
 
-//    SaveToFile(rname);
+    SaveToFile(rname);
   end;
 
 
