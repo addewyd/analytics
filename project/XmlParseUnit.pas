@@ -53,7 +53,7 @@ begin
 
   if Trim(ecode) = '' then
   begin
-    if tablename='PAYMENTMODES' then
+    if (tablename='PAYMENTMODES') or (tablename='FIRMS') then
     begin
       if AnsiLowerCase(ename)  = 'безналичный расчет' then
       begin
@@ -1421,7 +1421,7 @@ begin
 end;
 
 // .............................................................................
-// NO USE
+
 procedure UpdateTaho(azs, tanknum: String; hosenum: Integer);
   var
     rc: Integer;
@@ -1484,7 +1484,7 @@ begin
 
   with DM.FDQuery do
   begin
-    SQL.Text := 'select * from choses where azscode=:azscode and tanknum=:tanknum and hosenum=:hosenum';
+    SQL.Text := 'select * from choses where azscode=:azscode and hosenum=:hosenum';
     with Params do
     begin
       Clear;
@@ -1494,12 +1494,12 @@ begin
         DataType := ftString;
         ParamType := ptInput;
       end;
-      with Add do
-      begin
-        Name := 'tanknum';
-        DataType := ftString;
-        ParamType := ptInput;
-      end;
+//      with Add do
+  //    begin
+    //    Name := 'tanknum';
+      //  DataType := ftString;
+        //ParamType := ptInput;
+      //end;
       with Add do
       begin
         Name := 'hosenum';
@@ -1508,7 +1508,7 @@ begin
       end;
     end;
     ParamByName('azscode').AsString := azs;
-    ParamByName('tanknum').AsString := tanknum;
+    //ParamByName('tanknum').AsString := tanknum;
     ParamByName('hosenum').AsInteger := hosenum;
     Prepare;
     Open;
@@ -2035,7 +2035,12 @@ begin
       elc := el.ChildNodes.FindNode('PartnerExtCode');
       if elc <> nil then
       begin
-        PartnerExtCode := elc.Text;
+        try
+          PartnerExtCode := elc.Text;
+          AddToLog('Bad OBOffice pattnerextcode');
+        Except
+          PartnerExtCode := 'EMPTY';
+        end;
         CheckLink('CONTRAGENTS', partnerextcode, 'NO NAME', []);
         CheckContracts(partnerextcode);
 

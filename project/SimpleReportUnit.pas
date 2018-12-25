@@ -14,7 +14,7 @@ uses
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid,
     zexmlss, zeodfs, zexmlssutils, zsspxml, zexlsx, zeZippy, zeZippyJCL7z,
-  XLSSheetData5, XLSReadWriteII5, XLSWriteXLSX5
+  XLSSheetData5, XLSReadWriteII5, XLSWriteXLSX5, Xc12Utils5
 ;
 
 type
@@ -135,21 +135,36 @@ procedure TSimpleReportForm.ToXlsActionExecute(Sender: TObject);
     xw: TXLSWriteXLSX;
     s: TFileStream;
     X: TXLSReadWriteII5;
+    WS0, WS1: TXLSWorksheet;
+    WB: TXLSWorkbook;
 begin
   inherited;
   rname := Exepath + '\reports\repSmAzsII.xlsx';
 //  xw := TXLSWriteXLSX.Create(nil, nil);
 
-  X := TXLSReadWriteII5.Create(nil);
+//  X := TXLSReadWriteII5.Create(nil);
 
-  with X do
+  with XLSRWII do
   begin
-    tmplname := Exepath + '\reports\Rep.xlsx';
-    LoadFromFile(tmplname);
-  //  s := TFileStream.Create(rname,fmCreate);
-    //xw.SaveToStream(s);
+    Filename := Exepath + '\reports\Repii.xlsx';
+    WS1 := Add;
+    WS0 := Items[0];
+    WS0.Name := 'list 1';
+    WS1.Name := 'list 2';
 
-    SaveToFile(rname);
+
+    WS0.AsString[1,1] := '1@A? ';
+    WS0.AsString[1,2] := '1@A? 11';
+    WS0.Columns[1].Width := 130 * 256;
+    WS0.Columns[0].Width := 120 * 256;
+    WS0.Cell[1,1].CellColorRGB := $a0a0f0;
+    WS0.Cell[1,2].CellColorRGB := $a0a0f0;
+
+    //WS0.Columns[1].Style :=
+
+    AddToLog(Format('x: %d',[count]));
+
+    Write;
   end;
 
 

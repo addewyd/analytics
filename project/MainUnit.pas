@@ -489,7 +489,8 @@ end;
 
 procedure TMainForm.ApplicationEventsException(Sender: TObject; E: Exception);
 begin
-  MessageDlg('AE: ' + E.Message, mtError, [mbOk], 0);
+  MessageDlg('AE: ' + E.Message + ' ' + e.StackTrace,
+    mtError, [mbOk], 0);
 //  Application.Terminate;
 end;
 
@@ -897,8 +898,11 @@ procedure TMainForm.LoadDirActionExecute(Sender: TObject);
     files: TStringDynArray;
     Doc: IDOMDocument;
 begin
-  JvSelectDirectory.InitialDir
-   := JvFS.ReadString('loaddir', '');
+  JvSelectDirectory.InitialDir := JvFS.ReadString('loaddir', '');
+  if not DirectoryExists(JvSelectDirectory.InitialDir) then
+  begin
+    JvSelectDirectory.InitialDir := Exepath;
+  end;
   if JvSelectDirectory.Execute then
   begin
     dir := JvSelectDirectory.Directory;
