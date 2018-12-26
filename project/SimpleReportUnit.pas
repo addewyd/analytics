@@ -13,8 +13,10 @@ uses
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
   JvDBUltimGrid,
-    zexmlss, zeodfs, zexmlssutils, zsspxml, zexlsx, zeZippy, zeZippyJCL7z,
-  XLSSheetData5, XLSReadWriteII5, XLSWriteXLSX5, Xc12Utils5
+{    zexmlss, zeodfs, zexmlssutils, zsspxml, zexlsx, zeZippy, zeZippyJCL7z,}
+  XLSSheetData5, XLSReadWriteII5, XLSWriteXLSX5, Xc12Utils5,
+XLSComment5, XLSDrawing5, Xc12DataStyleSheet5,
+  XLSCmdFormat5, XPMan
 ;
 
 type
@@ -27,7 +29,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-    procedure FillSTyles(tzs: TZStyles);
+//    procedure FillSTyles(tzs: TZStyles);
   public
     { Public declarations }
     azscode: String;
@@ -56,6 +58,7 @@ begin
 end;
 
 // .............................................................................
+{
 procedure TSimpleReportForm.FillSTyles(tzs: TZStyles);
   var
     i: Integer;
@@ -81,7 +84,7 @@ begin
 
   end;
 end;
-
+}
 // .............................................................................
 
 procedure TSimpleReportForm.FormCreate(Sender: TObject);
@@ -128,7 +131,6 @@ end;
 
 procedure TSimpleReportForm.ToXlsActionExecute(Sender: TObject);
   var
-    tz: TZEXMLSS;
     i, j: Integer;
     rname, ssdt, tmplname: String;
     dt: TDate;
@@ -137,30 +139,65 @@ procedure TSimpleReportForm.ToXlsActionExecute(Sender: TObject);
     X: TXLSReadWriteII5;
     WS0, WS1: TXLSWorksheet;
     WB: TXLSWorkbook;
+
 begin
   inherited;
   rname := Exepath + '\reports\repSmAzsII.xlsx';
 //  xw := TXLSWriteXLSX.Create(nil, nil);
 
-//  X := TXLSReadWriteII5.Create(nil);
+  //X := TXLSReadWriteII5.Create(nil);
 
   with XLSRWII do
   begin
     Filename := Exepath + '\reports\Repii.xlsx';
-    WS1 := Add;
+//    WS1 := Add;
     WS0 := Items[0];
-    WS0.Name := 'list 1';
-    WS1.Name := 'list 2';
+//    WS0.Name := 'list 1';
+//    WS1.Name := 'list 2';
 
 
-    WS0.AsString[1,1] := '1@A? ';
-    WS0.AsString[1,2] := '1@A? 11';
-    WS0.Columns[1].Width := 130 * 256;
-    WS0.Columns[0].Width := 120 * 256;
+  CmdFormat.BeginEdit(Nil);
+  CmdFormat.Fill.BackgroundColor.RGB := $7F7F10;
+  CmdFormat.Font.Name := 'Courier new';
+  CmdFormat.AddAsDefault('F1');
+
+  // Create second default format.
+  CmdFormat.BeginEdit(Nil);
+  CmdFormat.Fill.BackgroundColor.RGB := $FF1010;
+  CmdFormat.Font.Name := 'Ariel Black';
+  CmdFormat.Border.Color.IndexColor := xcBlack;
+  CmdFormat.Border.Style := cbsThick;
+  CmdFormat.Border.Preset(cbspOutline);
+  CmdFormat.AddAsDefault('F2');
+
+
+DefaultFormat := CmdFormat.Defaults.Find('F1');
+    WS0.AsString[0,0] := 'some text 1';
+    WS0.AsString[1,1] := 'some text 2';
+DefaultFormat := CmdFormat.Defaults.Find('F2');
+
+    WS0.AsString[2,1] := 'anothertext';
+    WS0.AsString[2,2] := 'ya str';
+
+    WS0.Columns[1].Width := 23 * 256;
+    WS0.Columns[0].Width := 32 * 256;
+
     WS0.Cell[1,1].CellColorRGB := $a0a0f0;
-    WS0.Cell[1,2].CellColorRGB := $a0a0f0;
+    WS0.Cell[2,1].CellColorRGB := $a0f101;
 
-    //WS0.Columns[1].Style :=
+    WS0.Cell[0,0].CellColorRGB := $a0f101;
+    WS0.Cell[0,0].FontColor := $a0f101;
+
+  // Create third default format.
+  CmdFormat.BeginEdit(Nil);
+  CmdFormat.Fill.BackgroundColor.RGB := $10F040;
+  CmdFormat.Font.Name := 'Times New Roman';
+  CmdFormat.Font.Style := [xfsBold,xfsItalic];
+  CmdFormat.AddAsDefault('F3');
+
+DefaultFormat := CmdFormat.Defaults.Find('F3');
+    WS0.AsiNTEGER[3,3] := 125;
+    WS0.AsiNTEGER[3,4] := 1125;
 
     AddToLog(Format('x: %d',[count]));
 
