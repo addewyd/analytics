@@ -118,6 +118,9 @@ type
     DeadRest1: TMenuItem;
     ContractsAction: TAction;
     N11: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    ReportN1Action: TAction;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -151,6 +154,7 @@ type
     procedure StoragesActionExecute(Sender: TObject);
     procedure DeadRestActionExecute(Sender: TObject);
     procedure ContractsActionExecute(Sender: TObject);
+    procedure ReportN1ActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -203,7 +207,7 @@ uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
   WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit,
-  DeadRestUnit, ContractUnit;
+  DeadRestUnit, ContractUnit, Rep01Unit;
 
 
 // .............................................................................
@@ -1092,15 +1096,24 @@ end;
 
 // .............................................................................
 
+procedure TMainForm.ReportN1ActionExecute(Sender: TObject);
+begin
+  if not isWinOpen('rep01form') then
+  begin
+    TRep01Form.Create(self, 'rep01form');
+  end
+  else GetMDIForm('rep01form').Show;
+end;
+
+// .............................................................................
+
 procedure TMainForm.SessDataActionExecute(Sender: TObject);
 begin
-
   if not isWinOpen('tabform') then
   begin
     TTabForm.Create(self, 'tabform');
   end
   else GetMDIForm('tabform').Show;
-
 end;
 
 // .............................................................................

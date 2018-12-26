@@ -256,6 +256,13 @@ object MainForm: TMainForm
         Action = DeadRestAction
       end
     end
+    object N12: TMenuItem
+      Caption = #1054#1090#1095#1105#1090#1099
+      GroupIndex = 50
+      object N13: TMenuItem
+        Action = ReportN1Action
+      end
+    end
     object Service1: TMenuItem
       Caption = 'Service'
       GroupIndex = 50
@@ -456,6 +463,12 @@ object MainForm: TMainForm
       Hint = #1044#1086#1075#1086#1074#1086#1088#1099
       OnExecute = ContractsActionExecute
     end
+    object ReportN1Action: TAction
+      Caption = #1054#1090#1095#1105#1090' '#8470'1'
+      Hint = #1054#1090#1095#1105#1090' '#8470'1'
+      ImageIndex = 55
+      OnExecute = ReportN1ActionExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
@@ -516,7 +529,7 @@ object MainForm: TMainForm
     Left = 472
     Top = 72
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -35,7 +35,8 @@ uses
   TanksHosesUnit in 'TanksHosesUnit.pas' {TanksHosesForm},
   StoragesUnit in 'StoragesUnit.pas' {StoragesForm},
   DeadRestUnit in 'DeadRestUnit.pas' {DeadRestForm},
-  ContractUnit in 'ContractUnit.pas' {ContractsForm};
+  ContractUnit in 'ContractUnit.pas' {ContractsForm},
+  Rep01Unit in 'Rep01Unit.pas' {Rep01Form};
 
 {$R *.res}
 

@@ -155,9 +155,15 @@ begin
 //    WS0.Name := 'list 1';
 //    WS1.Name := 'list 2';
 
-
   CmdFormat.BeginEdit(Nil);
   CmdFormat.Fill.BackgroundColor.RGB := $7F7F10;
+  CmdFormat.Font.Name := 'Courier new';
+  CmdFormat.Font.Size := 5;
+  CmdFormat.AddAsDefault('F0');
+
+
+  CmdFormat.BeginEdit(Nil);
+  CmdFormat.Fill.BackgroundColor.RGB := $7F7F80;
   CmdFormat.Font.Name := 'Courier new';
   CmdFormat.AddAsDefault('F1');
 
@@ -170,24 +176,6 @@ begin
   CmdFormat.Border.Preset(cbspOutline);
   CmdFormat.AddAsDefault('F2');
 
-
-DefaultFormat := CmdFormat.Defaults.Find('F1');
-    WS0.AsString[0,0] := 'some text 1';
-    WS0.AsString[1,1] := 'some text 2';
-DefaultFormat := CmdFormat.Defaults.Find('F2');
-
-    WS0.AsString[2,1] := 'anothertext';
-    WS0.AsString[2,2] := 'ya str';
-
-    WS0.Columns[1].Width := 23 * 256;
-    WS0.Columns[0].Width := 32 * 256;
-
-    WS0.Cell[1,1].CellColorRGB := $a0a0f0;
-    WS0.Cell[2,1].CellColorRGB := $a0f101;
-
-    WS0.Cell[0,0].CellColorRGB := $a0f101;
-    WS0.Cell[0,0].FontColor := $a0f101;
-
   // Create third default format.
   CmdFormat.BeginEdit(Nil);
   CmdFormat.Fill.BackgroundColor.RGB := $10F040;
@@ -195,11 +183,45 @@ DefaultFormat := CmdFormat.Defaults.Find('F2');
   CmdFormat.Font.Style := [xfsBold,xfsItalic];
   CmdFormat.AddAsDefault('F3');
 
-DefaultFormat := CmdFormat.Defaults.Find('F3');
-    WS0.AsiNTEGER[3,3] := 125;
-    WS0.AsiNTEGER[3,4] := 1125;
+  DefaultFormat := CmdFormat.Defaults.Find('F1');
+    WS0.AsString[1,1] := 'ÀÇÑ ' + current_azscode;
 
-    AddToLog(Format('x: %d',[count]));
+  DefaultFormat := CmdFormat.Defaults.Find('F2');
+
+  DefaultFormat := CmdFormat.Defaults.Find('F0');
+    WS0.AsString[0,0] := 'some text 1';
+
+    WS0.Cell[0,0].CellColorRGB := $a0f101;
+    WS0.Cell[0,0].FontColor := $a0f101;
+
+    WS0.Columns[0].Width := 4 * 256;
+    WS0.Columns[1].Width := 20 * 256;
+    WS0.Columns[2].Width := 10 * 256;
+    WS0.Columns[3].Width := 15 * 256;
+
+      DefaultFormat := CmdFormat.Defaults.Find('F3');
+    i := 0;
+    with FDQuery do
+    begin
+      First;
+      while not eof do
+      begin
+        DefaultFormat := CmdFormat.Defaults.Find('F1');
+        WS0.AsString[1, i + 3] :=
+        DateTimeToStr(
+          FieldByName('startdatetime').AsDateTime);
+
+        DefaultFormat := CmdFormat.Defaults.Find('F2');
+        WS0.AsString[2, i + 3] := FieldByName('fuelname').AsString;
+
+        DefaultFormat := CmdFormat.Defaults.Find('F3');
+        WS0.AsFloat[3, i + 3] := FieldByName('volume').AsExtended;
+        Next;
+        inc(i);
+      end;
+
+    end;
+
 
     Write;
   end;

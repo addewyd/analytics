@@ -79,7 +79,6 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Debugger_DebugSourcePath>C:\Users\user\Documents\topaz\analytics\XLSRWII\SrcXLS\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
-        <BRCC_IncludePath>C:\Program Files (x86)\XLSSuit6\Package\DDX102;$(BRCC_IncludePath)</BRCC_IncludePath>
         <DCC_UnitSearchPath>C:\Program Files (x86)\XLSSuit6\Package\DDX102;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -206,6 +205,10 @@
         </DCCReference>
         <DCCReference Include="ContractUnit.pas">
             <Form>ContractsForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Rep01Unit.pas">
+            <Form>Rep01Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <None Include="sqls.inc"/>

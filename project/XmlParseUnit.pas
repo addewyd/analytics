@@ -2031,7 +2031,8 @@ begin
       PartnerExtCode := '';
       OwnerDocument := TXMLDocument.Create(nil);
 //      cni := nL.item[i].childNodes;
-      el := TXMLNode.Create(nL.item[i],nil, (OwnerDocument as IXMLDocumentAccess).DocumentObject);
+      el := TXMLNode.Create(nL.item[i],nil,
+        (OwnerDocument as IXMLDocumentAccess).DocumentObject);
       elc := el.ChildNodes.FindNode('PartnerExtCode');
       if elc <> nil then
       begin

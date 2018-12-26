@@ -4,7 +4,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="Shrfs.dproj">
-            <Dependencies/>
+            <Dependencies>..\projectPFC\ShrfsPFC.dproj</Dependencies>
         </Projects>
         <Projects Include="..\projectPFC\ShrfsPFC.dproj">
             <Dependencies/>
@@ -17,13 +17,13 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="Shrfs">
+    <Target Name="Shrfs" DependsOnTargets="ShrfsPFC">
         <MSBuild Projects="Shrfs.dproj"/>
     </Target>
-    <Target Name="Shrfs:Clean">
+    <Target Name="Shrfs:Clean" DependsOnTargets="ShrfsPFC:Clean">
         <MSBuild Projects="Shrfs.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Shrfs:Make">
+    <Target Name="Shrfs:Make" DependsOnTargets="ShrfsPFC:Make">
         <MSBuild Projects="Shrfs.dproj" Targets="Make"/>
     </Target>
     <Target Name="ShrfsPFC">
