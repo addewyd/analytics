@@ -9,6 +9,13 @@ inherited Rep01Form: TRep01Form
   inherited JvToolBar1: TJvToolBar
     Width = 642
     ExplicitWidth = 642
+    object ToolButton3: TToolButton
+      Left = 46
+      Top = 0
+      Action = SaveAction
+      ParentShowHint = False
+      ShowHint = True
+    end
   end
   inherited JvStatusBar1: TJvStatusBar
     Top = 395
@@ -47,6 +54,14 @@ inherited Rep01Form: TRep01Form
     ExplicitLeft = 0
     ExplicitTop = 29
     ExplicitWidth = 642
+  end
+  inherited ActionList: TActionList
+    object SaveAction: TAction
+      Caption = 'Save'
+      Hint = 'Save'
+      ImageIndex = 146
+      OnExecute = SaveActionExecute
+    end
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
