@@ -20,7 +20,19 @@ inherited Rep01Form: TRep01Form
   inherited JvStatusBar1: TJvStatusBar
     Top = 395
     Width = 642
-    ExplicitTop = 395
+    Panels = <
+      item
+        Width = 70
+      end
+      item
+        Width = 120
+      end
+      item
+        Width = 250
+      end>
+    Visible = True
+    ExplicitLeft = 3
+    ExplicitTop = 398
     ExplicitWidth = 642
   end
   inherited JvDBGridFooter: TJvDBGridFooter
@@ -12752,5 +12764,29 @@ inherited Rep01Form: TRep01Form
   inherited FDQuery: TFDQuery
     Connection = DM.FDConnection
     UpdateTransaction = Trans
+  end
+  inherited Trans: TFDTransaction
+    Options.AutoStart = True
+    Options.AutoStop = True
+  end
+  inherited TransUPD: TFDTransaction
+    Left = 424
+    Top = 144
+  end
+  object FDQueryG: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = Trans
+    UpdateTransaction = Trans
+    FetchOptions.AssignedValues = [evUnidirectional]
+    Left = 160
+    Top = 216
+  end
+  object FDQueryC: TFDQuery
+    Connection = DM.FDConnection
+    Transaction = Trans
+    UpdateTransaction = Trans
+    FetchOptions.AssignedValues = [evUnidirectional]
+    Left = 160
+    Top = 280
   end
 end

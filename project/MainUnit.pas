@@ -1097,12 +1097,21 @@ end;
 // .............................................................................
 
 procedure TMainForm.ReportN1ActionExecute(Sender: TObject);
+  var
+    srd: TSimpleReportDialog;
 begin
   if not isWinOpen('rep01form') then
   begin
-    TRep01Form.Create(self, 'rep01form');
+    srd := TSimpleReportDialog.Create(self);
+    if srd.ShowModal = mrOk then
+    begin
+      TRep01Form.Create(
+        self, 'rep01form', 'rep.xml', srd.LookupAzs.LookupValue,
+          srd.DateStartEdit.Date, srd.DateEndEdit.Date);
+    end
   end
   else GetMDIForm('rep01form').Show;
+
 end;
 
 // .............................................................................
