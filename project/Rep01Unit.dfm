@@ -49,11 +49,10 @@ inherited Rep01Form: TRep01Form
     Visible = False
   end
   object XLSSS: TXLSSpreadSheet [4]
-    AlignWithMargins = True
-    Left = 3
-    Top = 32
-    Width = 636
-    Height = 360
+    Left = 0
+    Top = 29
+    Width = 642
+    Height = 366
     Cursor = crCross
     ComponentVersion = '3.00.09'
     Filename = 'Reports\Repii.xlsx'
@@ -63,9 +62,7 @@ inherited Rep01Form: TRep01Form
     UseDockManager = False
     TabOrder = 4
     TabStop = True
-    ExplicitLeft = 0
-    ExplicitTop = 29
-    ExplicitWidth = 642
+    ExplicitHeight = 360
   end
   inherited ActionList: TActionList
     object SaveAction: TAction

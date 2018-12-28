@@ -13,7 +13,7 @@ uses
   JvAppRegistryStorage, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
   JvDBUltimGrid, JvDBGridFooter, Vcl.ComCtrls, JvExComCtrls, JvStatusBar,
   Vcl.ToolWin, JvToolBar, XBookComponent2, XLSBook2, XLSSheetData5,
-  XLSReadWriteII5,
+  XLSReadWriteII5, Xc12DataStyleSheet5,
   XML.xmldom, XML.XMLIntf,
   XML.XMLDoc, JvExControls, JvLabel, Vcl.StdCtrls, JvExStdCtrls, JvEdit
 
@@ -30,6 +30,7 @@ type
     FDQueryC: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
+    procedure RefreshActionExecute(Sender: TObject);
   private
     { Private declarations }
     doc: TXMLDocument;
@@ -43,11 +44,14 @@ type
 //    procedure doColumn(XS:TXLSSpreadSheet; columnparam: String);
     procedure doGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
     procedure doColumns(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
+    procedure ReLoad(Sender: TObject);
   public
     { Public declarations }
     constructor Create(pr: TComponent; fname, _rtemplate, _AzsCode: String;
       _sdt, _edt: TDate); reintroduce; overload;
   end;
+
+const rowshift = 2;
 
 var
   Rep01Form: TRep01Form;
@@ -59,6 +63,25 @@ implementation
 uses DmUnit, MainUnit;
 
 // .............................................................................
+
+function AttrToIntDef(n: IXMLNode; attr: String; def: Integer): Integer;
+begin
+  if n = nil then result := 1
+  else if n.HasAttribute(attr) then
+    result := StrToIntDef(n.Attributes[attr], def)
+  else
+    result := def;
+end;
+
+function AttrToStrDef(n: IXMLNode; attr: String; def: String): String;
+begin
+  if n = nil then result := ''
+  else if n.HasAttribute(attr) then
+    result := n.Attributes[attr]
+  else
+    result := def;
+end;
+
 
 constructor TRep01Form.Create(pr: TComponent; fname, _rtemplate, _AzsCode: String;
       _sdt, _edt: TDate);
@@ -112,17 +135,39 @@ end;
 
 procedure TRep01Form.doGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
   var
-    s, gparams: String;
+    s, gparams, groupparam: String;
 begin
   s := n.Attributes['sql'];
 
   gparams := '';
   if n.HasAttribute('params') then
     gparams := n.Attributes['params'];
-
+  // for now it is only azscode
   with FDQueryG do
   begin
     SQL.Text := s;
+    with Params do
+    begin
+      Clear;
+      with Add do
+      begin
+          Name := gparams;
+          DataType := ftString;
+          ParamType := ptInput;
+      end;
+    end;
+    ParamByName(gparams).AsString := azscode;
+    prepare;
+    open;
+    while not Eof do
+    begin
+      groupparam := FieldByName('groupparam').AsString;
+      AddToLog('GP ' + groupparam);
+      Next;
+    end;
+
+
+
   end;
 
 
@@ -135,7 +180,11 @@ procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkShee
     s: String;
     i, r: integer;
     sp: Qparam;
-    f: String;
+    f, ft: String;
+    ha: TXc12HorizAlignment;
+    fs: Integer;
+    clr: longword;
+    props: IXMLNode;
 begin
   s := n.Attributes['sql'];
 
@@ -152,7 +201,6 @@ begin
           ParamType := ptInput;
         end;
       end;
-
 
     for sp in cparams do
     begin
@@ -176,14 +224,64 @@ begin
 
     prepare;
     open;
+
     r := 0;
+    i := 0;
+
+    // prevents add empty group, e.g counters
+    if RecordCount < 1 then
+    begin
+      close;
+      exit;
+    end;
+
+
+    // Titles Header
+
+    for f in FieldList do
+    begin
+      if i >= n.ChildNodes.Count then props := nil
+      else
+        props := n.ChildNodes[i];
+      ft := AttrToStrDef(props, 'title', f);
+      WS.asString[colOrder + i, r + rowshift] := ft;
+
+      WS.Cell[colOrder + i, r + rowshift].BorderBottomStyle := cbsMedium;
+      WS.Columns[colOrder + i].Width
+        := AttrToIntDef(props, 'width', 10) * 256;
+
+      WS.Columns[colOrder + i].HorizAlignment :=
+        TXc12HorizAlignment(
+        AttrToIntDef(props, 'align', 1));
+
+      inc(i);
+    end;
+
+    // Data
+
     while not Eof do
     begin
       i := 0;
       for f in FieldList do
       begin
+        if i >= n.ChildNodes.Count then props := nil
+        else
+          props := n.ChildNodes[i];
+        ha := TXc12HorizAlignment(
+          AttrToIntDef(props, 'align', 1));
+        clr :=
+          AttrToIntDef(props, 'bgcolor', $FFFFFF);
 
-        WS.asString[colOrder + i, r + 3] := FieldByName(f).AsString;
+        WS.asString[colOrder + i, r + rowshift + 1] := FieldByName(f).AsString;
+
+        WS.Cell[colOrder + i, r + rowshift + 1].HorizAlignment := ha;
+        WS.Cell[colOrder + i, r + rowshift + 1].CellColorRGB := clr;
+
+        WS.Cell[colOrder + i, r + rowshift + 1].FontSize :=
+          AttrToIntDef(props, 'fontsize', 8);
+        WS.Cell[colOrder + i, r + rowshift + 1].FontName :=
+          AttrToStrDef(props, 'fontname', 'Courier New');
+
         inc(i);
       end;
       Next;
@@ -193,8 +291,6 @@ begin
     Close;
 
   end;
-
-
 end;
 
 // .............................................................................
@@ -210,7 +306,7 @@ begin
 
   addToLog('cp ' + columnparam);
   WS := XS.XLS.Add;
-  WS.Name := sheetname + ' (' +inttostr(XS.XLS.Count) + ')';
+  WS.Name := sheetname + ' (' + inttostr(XS.XLS.Count) + ')';
   nL := n.ChildNodes;
 
   // columns or columngroup
@@ -270,140 +366,123 @@ end;
 // .............................................................................
 
 procedure TRep01Form.FormCreate(Sender: TObject);
-var
-    WS0: TXLSWorksheet;
-    OwnerDocument: IXMlDocument;
-    inode: IXMLNode;
-    nL, nL2, aN: IXMLNodeList;
-    n, n2 :IXMLNode;
-    c, k: Integer;
-
-    function GetpType(p: String) : Data.DB.TFieldType;
-    begin
-        if p = 'integer' then result := ftInteger
-        else if p = 'date' then result := ftDate
-        else if p = 'datetime' then result := ftDateTime
-        else if p = 'string' then result := ftString
-        else
-        begin
-          raise Exception.Create('unknown param typr in report');
-        end;
-    end;
-
 begin
   inherited;
+  XLSSS.XLS.Clear(0);
+  Reload(self);
+end;
 
-  // ...........................................
+// .............................................................................
+
+procedure TRep01Form.RefreshActionExecute(Sender: TObject);
+  var
+    WS: TXLSWorksheet;
+begin
+//  XLSSS.XLS.Clear(0);
+//  Reload(sender);
+end;
+
+// .............................................................................
+
+procedure TRep01Form.Reload(Sender: TObject);
+var
+  OwnerDocument: IXMlDocument;
+  inode: IXMLNode;
+  nL, nL2, aN: IXMLNodeList;
+  n, n2: IXMLNode;
+  c, k: Integer;
+
+  function GetpType(p: String): Data.DB.TFieldType;
+  begin
+    if p = 'integer' then
+      result := ftInteger
+    else if p = 'date' then
+      result := ftDate
+    else if p = 'datetime' then
+      result := ftDateTime
+    else if p = 'string' then
+      result := ftString
+    else
+    begin
+      raise Exception.Create('unknown param typr in report');
+    end;
+  end;
+
+begin
+
   with XLSSS.XLS do begin
-    Clear(0);
-    FileName := Exepath + '\reports\Repii.xlsx';
-
-    WS0 := Add; // Items[0];
-    WS0.Name := 'TEST';
 
     CmdFormat.BeginEdit(Nil);
     CmdFormat.Fill.BackgroundColor.RGB := $FF0000;
-    CmdFormat.Font.Name := 'Courier new';
+    CmdFormat.Font.Name := 'Arial Cyr';
     CmdFormat.Font.Size := 5;
     CmdFormat.AddAsDefault('F0');
 
     CmdFormat.BeginEdit(Nil);
     CmdFormat.Fill.BackgroundColor.RGB := $00FF00;
-    CmdFormat.Font.Name := 'Tahoma';
+    CmdFormat.Font.Name := 'Arial Cyr';
+    CmdFormat.Font.Size := 12;
     CmdFormat.AddAsDefault('F1');
 
-    CmdFormat.BeginEdit(Nil);
-    CmdFormat.Fill.BackgroundColor.RGB := $FFFF00;
-    CmdFormat.Font.Name := 'Arial';
-    CmdFormat.AddAsDefault('F2');
-
-    DefaultFormat := CmdFormat.Defaults.Find('F0');
-
-
     DefaultFormat := CmdFormat.Defaults.Find('F1');
-
-    WS0.AsString[1,1] := 'ƒата';
-
-    WS0.AsString[1,3] := '01 ќкт€брь 18';
-    WS0.AsString[1,4] := '02 ќкт€брь 18';
-    WS0.AsString[1,5] := '03 ќкт€брь 18';
-
-    WS0.AsString[2,1] := 'ќбъЄм';
-
-    WS0.AsString[2,3] := '123.11';
-    WS0.AsString[2,4] := '556.34';
-    WS0.AsString[2,5] := '3488.01';
-
-    WS0.Columns[1].Width := 20 * 256;
-
-    DefaultFormat := CmdFormat.Defaults.Find('F0');
-    WS0.AsString[0,0] := ' ';
-    WS0.Cell[0,0].CellColorRGB := $FF;
-    WS0.Cell[0,0].FontColor := $FF;
-    WS0.Cell[0,0].FontSize := 5;
-
-    WS0.AsString[1,0] := ' ';
-    WS0.Cell[1,0].CellColorRGB := $FFFF;
-    WS0.Cell[1,0].FontColor := $FFFF;
-    WS0.Cell[1,0].FontSize := 5;
-
-    DefaultFormat := CmdFormat.Defaults.Find('F2');
   end;
 
-  XLSSS.XLS.CmdFormat.BeginEdit(XLSSS.XLS[0]);
-  XLSSS.XLS.CmdFormat.Apply;
-  // .......................................................
 
   doc := TXMLDocument.Create(self);
-  doc.LoadFromFile(Exepath + 'reports\' + rtemplate);
-  inode := doc.DocumentElement;
-  nL := Doc.ChildNodes;
-  n := nL.FindNode('report');
-  if n = nil then
-  begin
-    AddToLog('R00 "report" node not found');
-    // error
-    Exit;
-  end;
-
-  nL := n.ChildNodes;
-
-  if nL.Count < 1 then
-  begin
-    AddToLog(IntToStr(nL.Count));
-    // error
-    Exit;
-  end;
-
-//  nL := nL.Get(0).ChildNodes;
-
-  for c := 0 to nL.Count - 1 do
-  begin
-    n := nL.Get(c);
-    an := n.AttributeNodes;
-    AddToLog(format('%s anc %d', [n.NodeName, an.Count] ));
-
-    if n.NodeName = 'params' then // parameter list for queries
+  try
+    doc.LoadFromFile(Exepath + 'reports\' + rtemplate);
+    inode := doc.DocumentElement;
+    nL := doc.ChildNodes;
+    n := nL.FindNode('report');
+    if n = nil then
     begin
-      nL2 := n.ChildNodes;
-      SetLength(cparams, nL2.Count);
-      for k := 0 to nL2.Count - 1 do
+      addToLog('R00 "report" node not found');
+      // error
+      Exit;
+    end;
+
+    nL := n.ChildNodes;
+
+    if nL.Count < 1 then
+    begin
+      addToLog(inttostr(nL.Count));
+      // error
+      Exit;
+    end;
+
+    // nL := nL.Get(0).ChildNodes;
+
+    for c := 0 to nL.Count - 1 do
+    begin
+      n := nL.Get(c);
+      aN := n.AttributeNodes;
+      addToLog(format('%s anc %d', [n.NodeName, aN.Count]));
+
+      if n.NodeName = 'params' then // parameter list for queries
       begin
-        n2 := nL2.Get(k);
-        cparams[k].Name := n2.Attributes['name'];
-        cparams[k].DataType := GetpType(n2.Attributes['type']);
-        cparams[k].ParamType := ptInput;
+        nL2 := n.ChildNodes;
+        SetLength(cparams, nL2.Count);
+        for k := 0 to nL2.Count - 1 do
+        begin
+          n2 := nL2.Get(k);
+          cparams[k].Name := n2.Attributes['name'];
+          cparams[k].DataType := GetpType(n2.Attributes['type']);
+          cparams[k].ParamType := ptInput;
+        end;
+      end;
+
+      if n.NodeName = 'sheets' then // set of sheets
+      begin
+        doSheets(n, XLSSS)
+      end;
+      if n.NodeName = 'sheet' then //
+      begin
+        doOneSheet(n, XLSSS);
       end;
     end;
 
-    if n.NodeName = 'sheets' then // set of sheets
-    begin
-      doSheets(n, XLSSS)
-    end;
-    if n.NodeName = 'sheet' then  //
-    begin
-      doOneSheet(n, XLSSS);
-    end;
+  finally
+    doc.Free;
   end;
 
 end;

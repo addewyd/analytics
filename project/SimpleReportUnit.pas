@@ -188,7 +188,7 @@ begin
 
   DefaultFormat := CmdFormat.Defaults.Find('F2');
 
-  DefaultFormat := CmdFormat.Defaults.Find('F0');
+    DefaultFormat := CmdFormat.Defaults.Find('F0');
     WS0.AsString[0,0] := 'some text 1';
 
     WS0.Cell[0,0].CellColorRGB := $a0f101;
