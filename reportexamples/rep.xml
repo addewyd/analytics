@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+
+    <!-- params for all column queries 
+        FIXED LIST!
+    -->
+    
+    <params>        
+        <param name="azscode" type="string"/>
+        <param name="startdatetime" type="datetime"/>
+        <param name="enddatetime" type="datetime"/>
+    </params>
+
+    <colstyles>
+        <col num="1" bgcolor="$F0F0EE"/>
+        <col num="2" bgcolor="$FFFFFF"/>
+    </colstyles>
+
+    <!-- columnparam type always is string -->
+
+    <sheets sql="select name as sheetname, code as columnparam from  wares where incl &gt; 0">
+        <column name="№">
+        </column>
+        <columns sql="select s1.d, volume, density, mass from
+(select s.id as session_id,
+    cast(s.startdatetime as date) as d, azscode
+    from sessions s
+    ) s1
+ left join
+(select
+        session_id,
+        sum(volume) as volume, max(density) as density,
+    round(sum(volume*density/1000),3) as mass
+    from sessions s
+    join inoutgsm i
+        on s.id = i.session_id
+        where s.azscode=:azscode
+        and s.startdatetime >= :startdatetime
+        and s.startdatetime &lt;= :enddatetime + 1
+        and ware_code = :columnparam
+        group by session_id) s2
+     on s1.session_id = s2.session_id
+        where s1.azscode=:azscode
+        and s1.d >= cast(:startdatetime as date)
+        and s1.d &lt;= cast(:enddatetime as date)">
+            <prop title="Date" width="15" align="1" bgcolor="$0c0c01f" fontsize="10"/>
+            <prop title="Volume" width="12" align="3" bgcolor="$0f0c0ff"/>
+            <prop title="Density" width="10" align="3" bgcolor="$0a070ff"/>
+            <prop title="Масса" width="10" align="3" bgcolor="$060c0cf"/>
+        </columns>
+
+<!-- header || groupname as group header 
+     groupparam type is  sring
+-->
+        <columngroup header="" sql="select hosenum as groupname, hosenum as groupparam 
+            from choses where azscode=:azscode" params="azscode">
+            <columns sql="select sc, ec from
+(select s.id as session_id,
+    cast(s.startdatetime as date) as d, azscode
+    from sessions s
+    ) s1
+ left join
+(select
+    session_id,
+    min(startcounter) as sc, max(endcounter) as ec
+    from sessions s
+    join iotankshoses i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime >= :startdatetime
+            and s.startdatetime &lt;= :enddatetime  + 1
+            and hosenum=:groupparam
+            and warecode = :columnparam
+            group by session_id
+            ) as s2
+     on s1.session_id = s2.session_id
+        where s1.azscode=:azscode
+        and s1.d >= cast(:startdatetime as date)
+        and s1.d &lt;= cast(:enddatetime as date)">
+            </columns>
+        </columngroup>
+
+<!-- Все остальные столбцы -->
+        <columns sql="select round(s2.amount,2) as amount, round(s2.amount0,2) as summ, s2.nds as nds
+    from
+(select s.id as session_id,
+    cast(s.startdatetime as date) as d, azscode
+    from sessions s
+    ) s1
+ left join
+(select
+    session_id,
+    sum(amount) as amount, max(nds) as nds,
+    sum(amount - amount * cast(nds as double precision) / (100+cast(nds as double precision))) as amount0
+            from sessions s
+    join inoutgsm i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime >= :startdatetime
+            and s.startdatetime &lt;= :enddatetime + 1
+            and ware_code=:columnparam
+    group by session_id) s2
+    on s1.session_id = s2.session_id
+        where s1.azscode=:azscode
+        and s1.d >= cast(:startdatetime as date)
+        and s1.d &lt;= cast(:enddatetime as date)">
+            <prop title="Bablo" width="11" align="3" bgcolor="$0c0c0af" fontsize="11" fontname="Tahoma"/>
+            <prop title="Без НДС" width="11" align="3" bgcolor="$c0a0cf" fontsize="11" fontname="Times New Roman"/>
+            <prop title="nds" width="5"  bgcolor="$ffa090"  fontname="Arial"/>
+        </columns>
+<!--
+        <columns sql=" select yetanothercolumns ...">
+        </columns>
+-->
+    </sheets>
+<!--
+    <sheet name="Сводная ведомость">
+        <columns sql=" select summarycolumns ...">
+        </columns>
+    </sheet>
+-->
+</report>
