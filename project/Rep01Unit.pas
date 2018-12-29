@@ -13,7 +13,7 @@ uses
   JvAppRegistryStorage, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
   JvDBUltimGrid, JvDBGridFooter, Vcl.ComCtrls, JvExComCtrls, JvStatusBar,
   Vcl.ToolWin, JvToolBar, XBookComponent2, XLSBook2, XLSSheetData5,
-  XLSReadWriteII5, Xc12DataStyleSheet5,
+  XLSReadWriteII5, Xc12DataStyleSheet5, XLSCellAreas5, XLSMergedCells5,
   XML.xmldom, XML.XMLIntf,
   XML.XMLDoc, JvExControls, JvLabel, Vcl.StdCtrls, JvExStdCtrls, JvEdit
 
@@ -43,7 +43,9 @@ type
     procedure doSheetData(n:IXMLNode; XS:TXLSSpreadSheet; sheetname, columnparam: String);
 //    procedure doColumn(XS:TXLSSpreadSheet; columnparam: String);
     procedure doGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
-    procedure doColumns(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
+    procedure doHGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
+    procedure doColumns(n: IXMLNode; XS:TXLSSpreadSheet;
+      WS: TXLSWorkSheet; columnparam, title: String; groupparam: String = ''; shownulls:boolean = true);
     procedure ReLoad(Sender: TObject);
   public
     { Public declarations }
@@ -82,6 +84,7 @@ begin
     result := def;
 end;
 
+// .............................................................................
 
 constructor TRep01Form.Create(pr: TComponent; fname, _rtemplate, _AzsCode: String;
       _sdt, _edt: TDate);
@@ -135,13 +138,16 @@ end;
 
 procedure TRep01Form.doGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
   var
-    s, gparams, groupparam: String;
+    s, gparams, groupparam, title: String;
+    c: Integer;
+    nn: IXMLNode;
 begin
   s := n.Attributes['sql'];
 
   gparams := '';
   if n.HasAttribute('params') then
     gparams := n.Attributes['params'];
+  title := AttrToStrDef(n, 'title', 'GrTtl');
   // for now it is only azscode
   with FDQueryG do
   begin
@@ -162,22 +168,51 @@ begin
     while not Eof do
     begin
       groupparam := FieldByName('groupparam').AsString;
-      AddToLog('GP ' + groupparam);
+      for c := 0 to n.ChildNodes.Count - 1 do
+      begin
+        nn := n.ChildNodes.Get(c);
+        if nn.NodeName = 'columns' then
+        begin
+          doColumns(nn, XS, WS, columnparam, title, groupparam, false);
+         end;
+      end;
       Next;
     end;
 
 
-
   end;
-
-
 end;
 
 // .............................................................................
 
-procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
+procedure TRep01Form.doHGroup(n: IXMLNode; XS:TXLSSpreadSheet;
+  WS: TXLSWorkSheet; columnparam: String);
   var
     s: String;
+    c: Integer;
+    nn : IXMLNode;
+begin
+  s := AttrToStrDef(n, 'title', 'title');
+  for c := 0 to n.ChildNodes.Count - 1 do
+  begin
+    nn := n.ChildNodes.Get(c);
+    if nn.NodeName = 'columns' then
+    begin
+      doColumns(nn, XS, WS, columnparam, s);
+    end;
+  end;
+end;
+
+// .............................................................................
+
+procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet;
+  WS: TXLSWorkSheet; columnparam, title: String; groupparam: String = ''; shownulls: boolean=true);
+  type sums = record
+    bs: boolean;
+    sum: Extended;
+  end;
+  var
+    s, fval: String;
     i, r: integer;
     sp: Qparam;
     f, ft: String;
@@ -185,6 +220,17 @@ procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkShee
     fs: Integer;
     clr: longword;
     props: IXMLNode;
+    asums: TArray<sums>;
+    showit: boolean;
+    ca: TCellArea;
+    mc: TXLSMergedCells;
+
+    function max(a,b:Integer): Integer;
+    begin
+      result := a;
+      if a<b then result := b;
+    end;
+
 begin
   s := n.Attributes['sql'];
 
@@ -213,14 +259,30 @@ begin
           ParamType := sp.ParamType;
         end;
       end;
-
     end;
+    if groupparam <> '' then
+    begin
+      with Params do
+      begin
+        with Add do
+        begin
+          Name := 'groupparam';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+    end;
+
       // Fixed List!!!
       // azscode, startdatetime, enddatetime
     ParamByName('azscode').AsString := azscode;
     ParamByName('startdatetime').AsDate := sdt;
     ParamByName('enddatetime').AsDateTime  := edt;
     ParamByName('columnparam').AsString  := columnparam;
+    if groupparam <> '' then
+    begin
+      ParamByName('groupparam').AsString  := groupparam;
+    end;
 
     prepare;
     open;
@@ -229,24 +291,70 @@ begin
     i := 0;
 
     // prevents add empty group, e.g counters
+    // not OK
     if RecordCount < 1 then
     begin
       close;
       exit;
     end;
+    // prevents add empty group, e.g counters
+    // OK
+    if not shownulls then
+    begin
+      showit := false;
+      while not Eof do
+      begin
+        for f in fieldlist do
+        begin
+          if not FieldByName(f).IsNull then showit := true;
+        end;
+        Next;
+      end;
+      if  not showit then
+      begin
+        close;
+        exit;
+      end;
+    end;
 
+    // group header
+    WS.asString[colOrder, r + rowshift] := title + groupparam;
 
+    WS.MergeCells(colorder,r + rowshift,
+      colorder + FieldList.Count - 1, r + rowshift);
+    WS.Cell[colOrder, r + rowshift].HorizAlignment
+       := TXc12HorizAlignment.chaCenter;
+    WS.Cell[colOrder, r + rowshift].CellColorRGB := $CCCCCC;
+
+    WS.Cell[colOrder, r + rowshift].BorderBottomStyle := cbsThin;
+    WS.Cell[colOrder, r + rowshift].BorderRightStyle := cbsThin;
+
+    inc(r);
+
+    First;
     // Titles Header
+    SetLength(asums, max(n.ChildNodes.Count, FieldList.Count));
 
     for f in FieldList do
     begin
-      if i >= n.ChildNodes.Count then props := nil
+      if i >= n.ChildNodes.Count then
+      begin
+        props := nil
+      end
       else
+      begin
         props := n.ChildNodes[i];
+      end;
+
+      asums[i].bs := AttrToIntDef(props, 'sum', 0) > 0;
+      asums[i].sum := 0;
+
       ft := AttrToStrDef(props, 'title', f);
       WS.asString[colOrder + i, r + rowshift] := ft;
 
-      WS.Cell[colOrder + i, r + rowshift].BorderBottomStyle := cbsMedium;
+      WS.Cell[colOrder + i, r + rowshift].BorderBottomStyle := cbsThin;
+      WS.Cell[colOrder + i, r + rowshift].BorderRightStyle := cbsThin;
+
       WS.Columns[colOrder + i].Width
         := AttrToIntDef(props, 'width', 10) * 256;
 
@@ -271,8 +379,12 @@ begin
           AttrToIntDef(props, 'align', 1));
         clr :=
           AttrToIntDef(props, 'bgcolor', $FFFFFF);
-
-        WS.asString[colOrder + i, r + rowshift + 1] := FieldByName(f).AsString;
+        fval := FieldByName(f).AsString;
+        WS.asString[colOrder + i, r + rowshift + 1] := fval;
+        if asums[i].bs then
+        begin
+          asums[i].sum := asums[i].sum + StrToextDef(fval, 0);
+        end;
 
         WS.Cell[colOrder + i, r + rowshift + 1].HorizAlignment := ha;
         WS.Cell[colOrder + i, r + rowshift + 1].CellColorRGB := clr;
@@ -287,6 +399,18 @@ begin
       Next;
       inc(r)
     end;
+    inc(r);
+    i := 0;
+    for f in FieldList do
+    begin
+      if asums[i].bs then
+      begin
+        WS.AsFloat [colOrder + i, r + rowshift + 1] :=
+            asums[i].sum;
+      end;
+      inc(i);
+    end;
+
     colOrder := colOrder + FieldCount;
     Close;
 
@@ -318,7 +442,7 @@ begin
     begin
       if cn.HasAttribute('sql') then
       begin
-        doColumns(cn, XS, WS, columnparam);
+        doColumns(cn, XS, WS, columnparam, '');
       end;
     end
     else if cn.NodeName = 'columngroup' then
@@ -326,8 +450,11 @@ begin
       if cn.HasAttribute('sql') then
       begin
         doGroup(cn, XS, WS, columnparam);
+      end
+      else
+      begin
+        doHGroup(cn, XS, WS, columnparam);
       end;
-
     end
     {
     else if cn.NodeName = 'column' then
