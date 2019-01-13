@@ -31,8 +31,7 @@ inherited Rep01Form: TRep01Form
         Width = 250
       end>
     Visible = True
-    ExplicitLeft = 3
-    ExplicitTop = 398
+    ExplicitTop = 395
     ExplicitWidth = 642
   end
   inherited JvDBGridFooter: TJvDBGridFooter
@@ -62,7 +61,6 @@ inherited Rep01Form: TRep01Form
     UseDockManager = False
     TabOrder = 4
     TabStop = True
-    ExplicitHeight = 360
   end
   inherited ActionList: TActionList
     object SaveAction: TAction
@@ -79,7 +77,7 @@ inherited Rep01Form: TRep01Form
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180015C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12785,5 +12783,13 @@ inherited Rep01Form: TRep01Form
     FetchOptions.AssignedValues = [evUnidirectional]
     Left = 160
     Top = 280
+  end
+  object SaveDialog: TJvSaveDialog
+    DefaultExt = 'xlsx'
+    Filter = 'XLSX|*.xlsx'
+    Height = 0
+    Width = 0
+    Left = 304
+    Top = 200
   end
 end

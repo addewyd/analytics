@@ -30,6 +30,7 @@ type
   private
     { Private declarations }
 //    procedure FillSTyles(tzs: TZStyles);
+    repname: String;
   public
     { Public declarations }
     azscode: String;
@@ -55,6 +56,7 @@ begin
   azscode := _azscode;
   sdt := _sdt;
   edt := _edt;
+  repname := fname;
 end;
 
 // .............................................................................

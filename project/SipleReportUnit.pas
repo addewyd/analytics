@@ -10,7 +10,7 @@ uses
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, JvDBLookup, Data.DB,
   JvDataSource, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvAppStorage,
-  JvAppRegistryStorage, JvComponentBase, JvFormPlacement;
+  JvAppRegistryStorage, JvComponentBase, JvFormPlacement, JvDialogs;
 
 type
   TSimpleReportDialog = class(TForm)
@@ -26,13 +26,18 @@ type
     LookupAzs: TJvDBLookupEdit;
     FormStorage: TJvFormStorage;
     AppStorage: TJvAppRegistryStorage;
+    OpenDialog: TJvOpenDialog;
+    RepFileButton: TButton;
+    repfiletext: TJvStaticText;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure OkButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure RepFileButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    repfile: String;
   end;
 
 var
@@ -55,6 +60,9 @@ end;
 
 procedure TSimpleReportDialog.FormCreate(Sender: TObject);
 begin
+// restore opendialog.filename
+  repfile := FormStorage.ReadString('repfile', '');
+  repfiletext.Caption := repfile;
   FDQueryAZS.Transaction.StartTransaction;
   FDQueryAZS.Open;
   FDQueryAZS.Transaction. Commit;
@@ -63,6 +71,17 @@ end;
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
   //
+end;
+
+procedure TSimpleReportDialog.RepFileButtonClick(Sender: TObject);
+begin
+  if OpenDialog.Execute() then
+  begin
+    repfile := OpenDialog.FileName;
+    FormStorage.WriteString('repfile', repfile);
+    repfiletext.Caption := repfile;
+
+  end;
 end;
 
 end.

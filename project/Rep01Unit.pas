@@ -15,7 +15,8 @@ uses
   Vcl.ToolWin, JvToolBar, XBookComponent2, XLSBook2, XLSSheetData5,
   XLSReadWriteII5, Xc12DataStyleSheet5, XLSCellAreas5, XLSMergedCells5,
   XML.xmldom, XML.XMLIntf,
-  XML.XMLDoc, JvExControls, JvLabel, Vcl.StdCtrls, JvExStdCtrls, JvEdit
+  XML.XMLDoc, JvExControls, JvLabel, Vcl.StdCtrls, JvExStdCtrls, JvEdit,
+  JvDialogs
 
   ;
 
@@ -28,6 +29,7 @@ type
     ToolButton3: TToolButton;
     FDQueryG: TFDQuery;
     FDQueryC: TFDQuery;
+    SaveDialog: TJvSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure RefreshActionExecute(Sender: TObject);
@@ -557,7 +559,7 @@ begin
 
   doc := TXMLDocument.Create(self);
   try
-    doc.LoadFromFile(Exepath + 'reports\' + rtemplate);
+    doc.LoadFromFile({Exepath + 'reports\' + }rtemplate);
     inode := doc.DocumentElement;
     nL := doc.ChildNodes;
     n := nL.FindNode('report');
@@ -619,8 +621,12 @@ end;
 procedure TRep01Form.SaveActionExecute(Sender: TObject);
 begin
   inherited;
-
-  XLSSS.XLS.SaveToFile(Exepath + 'reports\tst.xlsx');
+  Savedialog.FileName := JvFs.ReadString('savereportfile', '');
+  if SaveDialog.Execute then
+  begin
+    JvFS.WriteString('savereportfile', Savedialog.FileName);
+    XLSSS.XLS.SaveToFile(Savedialog.FileName);
+  end;
 end;
 
 end.
