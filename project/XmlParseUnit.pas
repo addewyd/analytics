@@ -572,7 +572,10 @@ begin
     un := attrs.getNamedItem('UserName').nodeValue;
 
     td1 := VarToDateTime(d1);
+    if d2 = '' then d2 := d1;
+
     td2 := VarToDateTime(d2);
+    td2 := td2 + 0.5;
     DateTimeToString(d1, 'yyyy-mm-dd hh:nn:ss', td1);
     DateTimeToString(d2, 'yyyy-mm-dd hh:nn:ss', td2);
 

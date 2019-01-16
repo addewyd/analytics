@@ -657,7 +657,7 @@ begin
   begin
     v := QueryInOut.FieldByName('WHOLE').AsExtended;
     d := Field.AsExtended;
-    lnds := 18; // 20;
+    lnds := 20; // 20;
     nds := StrToExtDef(QueryInOut.FieldByName('NDS').AsString, lnds);
     m :=  d * nds / (100 + nds);
 
