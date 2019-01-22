@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+
+    <!-- params for all column queries 
+        FIXED LIST!
+    -->
+    
+    <params>        
+        <param name="azscode" type="string"/>
+        <param name="startdatetime" type="datetime"/>
+        <param name="enddatetime" type="datetime"/>
+    </params>
+
+    <sheet name="Test">
+        <columns sql="select code, name, price_r, price_o, incl from wares">
+            <prop title="Код" width="15"  bgcolor="$ffa090"  fontname="Courier new"/>
+            <prop title="Наме" width="15"  bgcolor="$a0ff90"  fontname="Arial" align="1"/>
+            <prop title="Цена r" width="15"  bgcolor="$9fa0ff"  fontname="Arial" align="3"/>
+            <prop title="Цена o" width="15"  bgcolor="$ffc0f0"  fontname="Arial" align="3"/>
+            <prop title="Вкл." width="15"  bgcolor="$ffff90"  fontname="Tahoma"/>
+
+        </columns>
+    </sheet>
+
+</report>

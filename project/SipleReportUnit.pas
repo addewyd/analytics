@@ -50,6 +50,16 @@ implementation
 
 {$R *.dfm}
 
+function splt(s: String) : String;
+begin
+  result := s;
+  if Length(s) > 40 then
+  begin
+    Result := Copy(s, 1, 40) + #13#10 + Copy(s, 41);
+  end;
+
+end;
+
 procedure TSimpleReportDialog.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -62,16 +72,20 @@ procedure TSimpleReportDialog.FormCreate(Sender: TObject);
 begin
 // restore opendialog.filename
   repfile := FormStorage.ReadString('repfile', '');
-  repfiletext.Caption := repfile;
+  repfiletext.Caption := splt(repfile);
   FDQueryAZS.Transaction.StartTransaction;
   FDQueryAZS.Open;
   FDQueryAZS.Transaction. Commit;
 end;
 
+// .............................................................................
+
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
   //
 end;
+
+// .............................................................................
 
 procedure TSimpleReportDialog.RepFileButtonClick(Sender: TObject);
 begin
@@ -79,7 +93,8 @@ begin
   begin
     repfile := OpenDialog.FileName;
     FormStorage.WriteString('repfile', repfile);
-    repfiletext.Caption := repfile;
+
+    repfiletext.Caption := splt(repfile);
 
   end;
 end;

@@ -51,7 +51,7 @@
 <!-- header || groupname as group header 
      groupparam type is  sring
 -->
-        <columngroup title="counters" sql="select hosenum as groupname, hosenum as groupparam 
+        <columngroup title="Счётчики" sql="select hosenum as groupname, hosenum as groupparam 
             from choses where azscode=:azscode" params="azscode">
             <columns sql="select sc, ec from
                 (select s.id as session_id,
@@ -75,8 +75,8 @@
         where s1.azscode=:azscode
         and s1.d >= cast(:startdatetime as date)
         and s1.d &lt;= cast(:enddatetime as date)">
-                <prop/>
-                <prop/>
+                <prop title="Start"/>
+                <prop title="End"/>
             </columns>
         </columngroup>
 

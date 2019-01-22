@@ -575,7 +575,7 @@ begin
     if d2 = '' then d2 := d1;
 
     td2 := VarToDateTime(d2);
-    td2 := td2 + 0.5;
+    if d2 = '' then td2 := td2 + 0.5;
     DateTimeToString(d1, 'yyyy-mm-dd hh:nn:ss', td1);
     DateTimeToString(d2, 'yyyy-mm-dd hh:nn:ss', td2);
 

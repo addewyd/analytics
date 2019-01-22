@@ -133,9 +133,9 @@ object SimpleReportDialog: TSimpleReportDialog
   end
   object repfiletext: TJvStaticText
     Left = 16
-    Top = 43
+    Top = 40
     Width = 252
-    Height = 17
+    Height = 32
     AutoSize = False
     Caption = 'F'
     Layout = tlTop

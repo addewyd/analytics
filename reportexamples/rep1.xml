@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+
+    <!-- params for all column queries 
+        FIXED LIST!
+    -->
+    
+    <params>        
+        <param name="azscode" type="string"/>
+        <param name="startdatetime" type="datetime"/>
+        <param name="enddatetime" type="datetime"/>
+    </params>
+
+    <sheet name="Test">
+        <columns sql="select code, name, extcode from stations">
+            <prop title="code" width="15"  bgcolor="$ffa090"  fontname="Arial"/>
+            <prop title="name" width="15"  bgcolor="$ffa090"  fontname="Arial"/>
+            <prop title="extcode" width="15"  bgcolor="$ffa090"  fontname="Arial"/>
+
+        </columns>
+    </sheet>
+
+</report>
