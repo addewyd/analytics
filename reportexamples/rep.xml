@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+
+    <!-- params for all column queries 
+        FIXED LIST!
+    -->
+    
+    <params>        
+        <param name="azscode" type="string"/>
+        <param name="startdatetime" type="datetime"/>
+        <param name="enddatetime" type="datetime"/>
+    </params>
+
+    <colstyles>
+        <col num="1" bgcolor="$F0F0EE"/>
+        <col num="2" bgcolor="$FFFFFF"/>
+    </colstyles>
+
+    <!-- columnparam type always is string -->
+
+    <sheets sql="select name as sheetname, code as columnparam from  wares where incl &gt; 0">
+        <column name="№">
+        </column>
+        <columns sql="select cast(s.startdatetime as date) as d, sum(volume), max(density) /* ? */,
+    sum(volume*density/1000) as mass 
+    from sessions s
+    join inoutgsm i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime &gt;= :startdatetime
+            and s.enddatetime &lt;= :enddatetime  + 2
+            and ware_code = :columnparam
+            group by d">
+        </columns>
+
+<!-- header || groupname as group header 
+     groupparam type is  sring
+-->
+        <columngroup header="" sql="select hosenum as groupname, hosenum as groupparam 
+            from choses where azscode=:azscode" params="azscode">
+            <columns sql="min(startcounter) as sc, max(endcounter) as ec from sessions s
+    join iotankshoses i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime &gt;= :startdatetime
+            and s.enddatetime &lt;= :enddatetime  + 2
+            and hosenum=:groupparam
+            -- and warecode=:columnparam /* optionally */
+            group by cast(s.startdatetime as date)
+            order by cast(s.startdatetime as date)">
+            </columns>
+        </columngroup>
+
+<!-- Все остальные столбцы -->
+        <columns sql=" select sum(amount) as amount, sum(whole) as whole
+            from sessions s
+    join inoutgsm i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime &gt;= :startdatetime
+            and s.enddatetime &lt;= :enddatetime  + 2
+            and ware_code=:columnparam
+            group by cast(s.startdatetime as date)
+            order by cast(s.startdatetime as date)">
+        </columns>
+<!--
+        <columns sql=" select yetanothercolumns ...">
+        </columns>
+-->
+    </sheets>
+<!--
+    <sheet name="Сводная ведомость">
+        <columns sql=" select summarycolumns ...">
+        </columns>
+    </sheet>
+-->
+</report>

@@ -21,7 +21,7 @@
     <sheets sql="select name as sheetname, code as columnparam from  wares where incl &gt; 0">
         <column name="№">
         </column>
-<columngroup title="common">
+    <columngroup title="common">
         <columns sql="select s1.d, volume, density, mass from
             (select s.id as session_id,
                 cast(s.startdatetime as date) as d, azscode
