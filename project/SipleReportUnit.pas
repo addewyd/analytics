@@ -69,12 +69,17 @@ end;
 // .............................................................................
 
 procedure TSimpleReportDialog.FormCreate(Sender: TObject);
+  var
+    a: String;
 begin
 // restore opendialog.filename
+  a := FormStorage.ReadString('azscode', '');
   repfile := FormStorage.ReadString('repfile', '');
   repfiletext.Caption := splt(repfile);
   FDQueryAZS.Transaction.StartTransaction;
   FDQueryAZS.Open;
+  FDQueryAZS.Locate('azscode', a);
+  LookUpAZS.Text := FDQueryAZS.FieldByName('cn').AsString;
   FDQueryAZS.Transaction. Commit;
 end;
 
@@ -82,7 +87,7 @@ end;
 
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
-  //
+  FormStorage.WriteString('azscode', LookupAzs.LookupValue);
 end;
 
 // .............................................................................

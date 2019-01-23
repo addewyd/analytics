@@ -25,20 +25,20 @@ inherited Rep01Form: TRep01Form
         Width = 70
       end
       item
-        Width = 120
+        Width = 500
       end
       item
         Width = 250
       end>
     Visible = True
-    ExplicitTop = 395
+    ExplicitTop = 401
     ExplicitWidth = 642
   end
   inherited JvDBGridFooter: TJvDBGridFooter
     Top = 414
     Width = 642
     DataSource = nil
-    ExplicitTop = 414
+    ExplicitTop = 420
     ExplicitWidth = 642
   end
   inherited JvDBGrid: TJvDBUltimGrid

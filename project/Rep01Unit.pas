@@ -138,10 +138,11 @@ end;
 
 // .............................................................................
 
-procedure TRep01Form.doGroup(n: IXMLNode; XS:TXLSSpreadSheet; WS: TXLSWorkSheet; columnparam: String);
+procedure TRep01Form.doGroup(n: IXMLNode; XS:TXLSSpreadSheet;
+  WS: TXLSWorkSheet; columnparam: String);
   var
     s, gparams, groupparam, title: String;
-    c: Integer;
+    c, k: Integer;
     nn: IXMLNode;
 begin
   s := n.Attributes['sql'];
@@ -164,17 +165,26 @@ begin
           ParamType := ptInput;
       end;
     end;
-    ParamByName(gparams).AsString := azscode;
+
+    if pos(':azscode', s) > 0 then
+    begin
+
+
+      ParamByName(gparams).AsString := azscode;
+    end;
     prepare;
     open;
     while not Eof do
     begin
       groupparam := FieldByName('groupparam').AsString;
+      title := FieldByName('groupname').AsString;
       for c := 0 to n.ChildNodes.Count - 1 do
       begin
         nn := n.ChildNodes.Get(c);
         if nn.NodeName = 'columns' then
         begin
+          //if c > 0  then title := '';
+
           doColumns(nn, XS, WS, columnparam, title, groupparam, false);
          end;
       end;
@@ -208,7 +218,8 @@ end;
 // .............................................................................
 
 procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet;
-  WS: TXLSWorkSheet; columnparam, title: String; groupparam: String = ''; shownulls: boolean=true);
+  WS: TXLSWorkSheet; columnparam, title: String; groupparam: String = '';
+    shownulls: boolean=true);
   type sums = record
     bs: boolean;
     sum: Extended;
@@ -277,7 +288,11 @@ begin
 
       // Fixed List!!!
       // azscode, startdatetime, enddatetime
-    ParamByName('azscode').AsString := azscode;
+    if Pos(':azscode', s) > 0 then
+    begin
+
+      ParamByName('azscode').AsString := azscode;
+    end;
     ParamByName('startdatetime').AsDate := sdt;
     ParamByName('enddatetime').AsDateTime  := edt;
     ParamByName('columnparam').AsString  := columnparam;
@@ -320,7 +335,10 @@ begin
     end;
 
     // group header
-    WS.asString[colOrder, r + rowshift] := title + groupparam;
+//    if title = '' then
+  //    WS.asString[colOrder, r + rowshift] := ' '
+    //else
+      WS.asString[colOrder, r + rowshift] := title; // + groupparam;
 
     WS.MergeCells(colorder,r + rowshift,
       colorder + FieldList.Count - 1, r + rowshift);
