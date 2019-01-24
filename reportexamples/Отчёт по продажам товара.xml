@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+
+    <!-- params for all column queries 
+        FIXED LIST!
+    -->
+    
+    <params>        
+        <param name="azscode" type="string"/>
+        <param name="startdatetime" type="datetime"/>
+        <param name="enddatetime" type="datetime"/>
+    </params>
+
+    <sheet name="Продажи">
+        <columngroup title="common">
+            <columns sql="select s1.d, sessionnum from
+            (select s.id as session_id,
+                cast(s.startdatetime as date) as d, azscode
+                from sessions s order by d) s1
+             left join (select
+                session_id, sessionnum
+                from sessions s
+                    join inoutgsm i
+                     on s.id = i.session_id
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime + 1
+                group by session_id, sessionnum) s2
+            on s1.session_id = s2.session_id            
+            where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
+            and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Date" width="15" align="1" bgcolor="$0c0c01f" fontsize="8"/>
+                <prop title="Смена" width="15" align="1" bgcolor="$0c0c01f" fontsize="8"/>
+
+            </columns>
+        </columngroup>
+        <columngroup title="Розница">
+            <columns sql="select whole, summ from
+            (select s.id as session_id,
+                cast(s.startdatetime as date) as d, azscode
+                from sessions s order by d) s1
+             left join (select
+                i.session_id, sum(whole) as whole, sum(summ) as summ
+                from sessions s
+                    join inoutitems i  on s.id = i.session_id                    
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime + 1
+                and i.payment_code in (select code from paymentmodes where (rbm > 0 or caom > 0 or rnm > 0))
+                group by session_id, sessionnum) s2
+            on s1.session_id = s2.session_id            
+            where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
+            and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
+
+            </columns>
+        </columngroup>
+        <columngroup title="Наличные">
+            <columns sql="select whole, summ from
+            (select s.id as session_id,
+                cast(s.startdatetime as date) as d, azscode
+                from sessions s order by d) s1
+             left join (select
+                i.session_id, sum(whole) as whole, sum(summ) as summ
+                from sessions s
+                    join inoutgsm i  on s.id = i.session_id                    
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime + 1
+                and i.payment_code in (select code from paymentmodes where (rnt > 0))
+                group by session_id, sessionnum) s2
+            on s1.session_id = s2.session_id            
+            where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
+            and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
+
+            </columns>
+        </columngroup>
+        <columngroup title="Банк">
+            <columns sql="select whole, summ from
+            (select s.id as session_id,
+                cast(s.startdatetime as date) as d, azscode
+                from sessions s order by d) s1
+             left join (select
+                i.session_id, sum(whole) as whole, sum(summ) as summ
+                from sessions s
+                    join inoutgsm i  on s.id = i.session_id                    
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime + 1
+                and i.payment_code in (select code from paymentmodes where (rbt > 0))
+                group by session_id, sessionnum) s2
+            on s1.session_id = s2.session_id            
+            where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
+            and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
+
+            </columns>
+        </columngroup>
+    </sheet>
+</report>
