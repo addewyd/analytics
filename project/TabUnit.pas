@@ -226,6 +226,8 @@ type
       Panel: TStatusPanel; const Rect: TRect);
     procedure GridInOutGSMDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure GridFooterInOutItemsDrawPanel(StatusBar: TStatusBar;
+      Panel: TStatusPanel; const Rect: TRect);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -270,6 +272,7 @@ type
     procedure ShowAllData();
     procedure ClearAllCaches;
     procedure GetCachedGIOSums;
+    procedure GetCachedGIOSumsI;
     procedure ShowGSMData();
     procedure ShowItemsData();
     procedure ShowOItemsData();
@@ -332,6 +335,9 @@ begin
   PMSumsCache.rbm_whole := 0;
   PMSumsCache.caot_whole := 0;
   PMSumsCache.caom_whole := 0;
+
+  PMSumsCache.rnmi_whole := 0;
+  PMSumsCache.rbmi_whole := 0;
 
 end;
 
@@ -481,7 +487,7 @@ begin
         PMSumsCache.caot_whole := 0;
       end;
 
-      // ....   other from outitems
+      // ....   other from outitems     OUTCOMES!!!
       SQL.Text := COITEMSSQLSumPMODES;
       // 4. rnm
 
@@ -594,6 +600,125 @@ begin
     // nothing
   end;
 end;
+
+// .............................................................................
+
+procedure TTabForm.GetCachedGIOSumsI;
+  var
+    i, len: Integer;
+    pmodelist: TStringList;
+    f0: boolean;
+begin
+  if PMSumsCache.dirty then
+  begin
+    pmodelist := TStringList.Create;
+    try
+
+    len := Length(APmodes);
+    WIth GenQuery do
+    begin
+      SQL.Text := COITEMSSQLSumPMODESI;
+      with Params do
+      begin
+        Clear;
+        with add do
+        begin
+          name := 'session_id';
+          DataType := ftInteger;
+          ParamType := ptInput;
+        end;
+        with add do
+        begin
+          name := 'session_id';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+
+
+      with Macros do
+      begin
+        Clear;
+        with add do
+        begin
+            Name := 'pmodelist';
+            DataType := mdRaw;
+        end;
+      end;
+
+      ParamByName('session_id').AsInteger := session_id;
+      ParamByName('azscode').AsString := current_azscode;
+
+      // 2 pmodelists with codes in quotes
+      SQL.Text := COITEMSSQLSumPMODESI;
+      // 4. rnm
+
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RNM  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rnmi_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rnmi_whole := 0;
+      end;
+
+      // 5. rbm
+
+      pmodelist.Clear;
+      f0 := false;
+      for I := 0 to len - 1 do
+      begin
+        if APmodes[i].RBM  then
+          pmodelist.Add(#$27 + APModes[i].code + #$27);
+      end;
+      if pmodelist.Count > 0 then
+      begin
+        MacroByName('pmodelist').AsRaw := pmodelist.CommaText;
+        Prepare;
+        open;
+        if RecordCount > 0 then
+        begin
+          PMSumsCache.rbmi_whole := FieldByName('whole').AsExtended;
+        end
+        else f0 := true;
+      end
+      else f0 := true;
+
+      if f0 then
+      begin
+        PMSumsCache.rbmi_whole := 0;
+      end;
+
+
+    end;
+
+///      PMSumsCache.dirty := false;
+    finally
+      pmodelist.Free;
+    end;
+  end
+  else
+  begin
+    // nothing
+  end;
+end;
+
 
 // .............................................................................
 
@@ -2539,34 +2664,33 @@ begin
       // some additoanl sums
       if fldn = 'CLIENTNAME' then
       begin
-        StatusBar.Canvas.Font.Color := clPurple;
-        txt := format('Σ rnt_V %.2f', [PMSumsCache.rnt_volume]);
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
         StatusBar.Canvas.Font.Color := clNavy;
-        txt := format('Σ rbt_V %.2f', [PMSumsCache.rbt_volume]);
+        txt := format('Σ Объём %.2f', [PMSumsCache.rnt_amount0]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+        StatusBar.Canvas.Font.Color := clPurple;
+        txt := format('Σ Наличные %.2f', [PMSumsCache.rnt_volume]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
       else if fldn = 'FUELNAME' then
       begin
-        StatusBar.Canvas.Font.Color := clOlive;
-        txt := format('Σ caot_V %.2f', [PMSumsCache.caot_volume]);
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
-
         StatusBar.Canvas.Font.Color := clDkGray;
-        txt := format('Σ caot_A0 %.2f', [PMSumsCache.caot_amount0]);;
+        txt := format('Σ Наличные %.2f', [PMSumsCache.rbt_amount0]);;
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+        StatusBar.Canvas.Font.Color := clOlive;
+        txt := format('Σ Объём %.2f', [PMSumsCache.rbt_volume]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
       end
       else
       begin
         StatusBar.Canvas.Font.Color := clGreen;
         txt := QueryInOutSum.FieldByName(fldn).AsString;
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'Σ ' + fldn + ' ' + txt);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, 'Σ ' + {fldn +} ' ' + txt);
 
         StatusBar.Canvas.Font.Color := clBlue;
-        txt := format('Σ caot_W %.2f', [PMSumsCache.caot_whole]);;
+        txt := ''; // format('Σ caot_W %.2f', [PMSumsCache.caot_whole]);;
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
@@ -2594,6 +2718,60 @@ begin
     end;
   end;
 
+end;
+
+// .............................................................................
+
+procedure TTabForm.GridFooterInOutItemsDrawPanel(StatusBar: TStatusBar;
+  Panel: TStatusPanel; const Rect: TRect);
+  Var
+    gr: TJvDBGrid;
+    f : TJvDBGridFooter;
+    cls : TFooterColumns;
+    gcls : TDBGridColumns;
+    pind: Integer;
+    fldn, txt: String;
+    c: integer;
+begin
+  // inherited;
+
+  f := StatusBar as  TJvDBGridFooter;
+
+  gr := f.DBGrid;
+
+  cls := f.Columns;
+  gcls := gr.Columns;
+
+  pind := Panel.Index;
+
+  fldn := gcls.items[pind - 1].FieldName;
+  StatusBar.Canvas.Font.Style := [fsBold];
+  StatusBar.Canvas.Font.Color := clBlue;
+
+  GetCachedGIOSumsI;        // no use / no paymentmode
+  GetCachedGIOSums;
+
+  for c := 0 to cls.Count -1 do
+  begin
+    if AnsiSameText(cls.Items[c].FieldName, fldn) then
+    begin
+      if fldn = 'CLIENTNAME' then
+      begin
+      txt := '';
+        txt := format('Σ Наличные %.2f', [PMSumsCache.rnmi_whole]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+      end else if fldn = 'CONTRACT' then
+      begin
+        txt := format('Σ Банк %.2f', [PMSumsCache.rbmi_whole]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+      end
+      else
+      begin
+      end;
+    end;
+  end;
 end;
 
 // .............................................................................
@@ -2660,24 +2838,40 @@ begin
   begin
     if AnsiSameText(cls.Items[c].FieldName, fldn) then
     begin
-      StatusBar.Canvas.Font.Color := clGreen;
-      txt := QueryOutItemsSum.FieldByName(fldn).AsString;
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+      if fldn = 'CLIENTNAME' then
+      begin
+      txt := '';
+        txt := format('Σ Наличные %.2f', [PMSumsCache.rnm_whole]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
-      StatusBar.Canvas.Font.Color := clBlue;
+      end else if fldn = 'CONTRACT' then
+      begin
+        txt := format('Σ Банк %.2f', [PMSumsCache.rbm_whole]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+      end
+      else
+      begin
+
+        StatusBar.Canvas.Font.Color := clGreen;
+        txt := QueryOutItemsSum.FieldByName(fldn).AsString;
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+        StatusBar.Canvas.Font.Color := clBlue;
 //      txt := QueryOutItemsSum2.FieldByName(fldn).AsString;
 
       // test
-      txt := '';
-      if fldn = 'SUMM' then
-        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_summ])
-      else if fldn = 'SUMNDS' then
-        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_sumnds])
-      else if fldn = 'WHOLE' then
-        txt := format('Σ rnm %.2f', [PMSumsCache.rnm_whole]);
+        txt := '';
+   //   if fldn = 'SUMM' then
+     //   txt := format('Σ rnm %.2f', [PMSumsCache.rnm_summ])
+      //else if fldn = 'SUMNDS' then
+        //txt := format('Σ rnm %.2f', [PMSumsCache.rnm_sumnds])
+      //else if fldn = 'WHOLE' then
+        //txt := format('Σ rnm %.2f', [PMSumsCache.rnm_whole]);
 
 
-      StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+      end;
     end;
   end;
 end;
@@ -2693,6 +2887,23 @@ begin
     CommitActionExecute(Sender);
     key := 0;
   end;
+
+  if key = VK_F6 then
+  begin
+    VerifiedActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F7 then
+  begin
+    ClearCloseActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F8 then
+  begin
+    CloseSessActionExecute(Sender);
+    key := 0;
+  end;
+
   if (Key = VK_F10) or (Key = VK_ESCAPE) then
   begin
     RollbackActionExecute(Sender);
@@ -2710,6 +2921,21 @@ begin
   if key = VK_F2 then
   begin
     CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F6 then
+  begin
+    VerifiedActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F7 then
+  begin
+    ClearCloseActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F8 then
+  begin
+    CloseSessActionExecute(Sender);
     key := 0;
   end;
   if (Key = VK_F10) or (Key = VK_ESCAPE) then
@@ -3031,6 +3257,8 @@ begin
 
   QueryOutItems.SQL.Text := COITEMSSQL;
   QueryOutItemsSum.SQL.Text := COITEMSSQLSum;
+  QueryInOutItems.SQL.Text := COITEMSSQLI;
+  QueryInOutItemsSum.SQL.Text := COITEMSSQLSumI;
 
   warelist := TStringList.Create;
   dirtyGSM := false;
@@ -3172,6 +3400,21 @@ begin
   if key = VK_F2 then
   begin
     CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F6 then
+  begin
+    VerifiedActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F7 then
+  begin
+    ClearCloseActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F8 then
+  begin
+    CloseSessActionExecute(Sender);
     key := 0;
   end;
   if (Key = VK_F10) or (Key = VK_ESCAPE) then
@@ -3573,6 +3816,21 @@ begin
   if key = VK_F2 then
   begin
     CommitActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F6 then
+  begin
+    VerifiedActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F7 then
+  begin
+    ClearCloseActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F8 then
+  begin
+    CloseSessActionExecute(Sender);
     key := 0;
   end;
   if (Key = VK_F10) or (Key = VK_ESCAPE) then

@@ -590,6 +590,21 @@ procedure TSessionListForm.JvDBGridKeyDown(Sender: TObject; var Key: Word;
 begin
   inherited;
   id := 0;
+  if key = VK_F6 then
+  begin
+    VerifiedActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F7 then
+  begin
+    ClearCloseActionExecute(Sender);
+    key := 0;
+  end;
+  if key = VK_F8 then
+  begin
+    CloseSessActionExecute(Sender);
+    key := 0;
+  end;
 
   if Key = VK_DELETE then
   begin

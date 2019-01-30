@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -95,6 +95,7 @@ inherited TabForm: TTabForm
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
           OnDisplayText = RealPMFooterDisplayText
+          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -566,7 +567,6 @@ inherited TabForm: TTabForm
             item
               Expanded = False
               FieldName = 'PRICE'
-              ReadOnly = True
               Title.Caption = #1062#1077#1085#1072
               Visible = True
             end
@@ -802,6 +802,7 @@ inherited TabForm: TTabForm
         Width = 727
         Height = 19
         SizeGrip = True
+        OnDrawPanel = GridFooterInOutItemsDrawPanel
         Columns = <
           item
             FieldName = 'AMOUNT'
@@ -814,10 +815,19 @@ inherited TabForm: TTabForm
           end
           item
             FieldName = 'SUMNDS'
+          end
+          item
+            FieldName = 'CLIENTNAME'
+            Style = psOwnerDraw
+          end
+          item
+            FieldName = 'CONTRACT'
+            Style = psOwnerDraw
           end>
         DataSource = DSInOutItems
         DBGrid = GridInOutItems
         OnCalculate = GridFooterInOutItemsCalculate
+        ExplicitTop = 436
       end
     end
     object TabSheet4: TTabSheet
@@ -831,6 +841,14 @@ inherited TabForm: TTabForm
         SizeGrip = True
         OnDrawPanel = GridFooterOutItemsDrawPanel
         Columns = <
+          item
+            FieldName = 'CLIENTNAME'
+            Style = psOwnerDraw
+          end
+          item
+            FieldName = 'CONTRACT'
+            Style = psOwnerDraw
+          end
           item
             FieldName = 'SUMM'
             Style = psOwnerDraw
@@ -1053,20 +1071,20 @@ inherited TabForm: TTabForm
     end
     object CloseSessAction: TAction
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
-      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091' F8'
       ImageIndex = 8
       OnExecute = CloseSessActionExecute
     end
     object ClearCloseAction: TAction
       Caption = #1054#1090#1082#1088#1099#1090#1100
       Enabled = False
-      Hint = #1054#1090#1082#1088#1099#1090#1100
+      Hint = #1054#1090#1082#1088#1099#1090#1100' F7'
       ImageIndex = 3
       OnExecute = ClearCloseActionExecute
     end
     object VerifiedAction: TAction
       Caption = #1055#1088#1086#1074#1077#1088#1077#1085#1086
-      Hint = #1055#1088#1086#1074#1077#1088#1077#1085#1086
+      Hint = #1055#1088#1086#1074#1077#1088#1077#1085#1086' F6'
       ImageIndex = 322
       OnExecute = VerifiedActionExecute
     end
@@ -1091,7 +1109,7 @@ inherited TabForm: TTabForm
     Left = 256
     Top = 0
     Bitmap = {
-      494C01017E018001A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14075,7 +14093,7 @@ inherited TabForm: TTabForm
   object DSRealPM: TJvDataSource
     DataSet = QueryRealPM
     OnFieldChanged = DSRealPMFieldChanged
-    Left = 124
+    Left = 132
     Top = 149
   end
   object QueryRealPM: TFDQuery
@@ -14422,7 +14440,7 @@ inherited TabForm: TTabForm
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      ''
+      'NOT USED'
       'select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
@@ -14608,9 +14626,12 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTITEMS'
     SQL.Strings = (
-      
-        'select sum (amount) as amount, sum(summ) as summ, sum(sumnds) as' +
-        ' sumnds, sum(whole) as whole from'
+      'NOT USED'
+      'select sum (amount) as amount, sum(summ) as summ, '
+      '    sum(sumnds) as sumnds, sum(whole) as whole,'
+      '0 as clientname,'
+      '0 as contract'
+      '    from'
       '(select '
       '   i.id,'
       '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
@@ -14684,7 +14705,7 @@ inherited TabForm: TTabForm
       'FROM INOUTITEMS'
       'WHERE ID = :ID')
     Left = 660
-    Top = 277
+    Top = 261
   end
   object InOutUPDSql: TFDUpdateSQL
     Connection = DM.FDConnection

@@ -76,7 +76,7 @@ const COITEMSSQLCOMMON =
 'select ' +
 '   i.id,   ' +
 '    iif( i.direction = 0,'+#$27'Расход'#$27+','+#$27'Приход'#$27+') as dir, ' +
-'   cast(s.startdatetime as date) as sdate, ' +
+'    cast(s.startdatetime as date) as sdate, ' +
 '    c.name as clientname, ' +
 '    cn.nomer || '+#$27' '#$27+' || cn.name as contract, ' +
 '    p.name as paymentmode, ' +
@@ -111,7 +111,10 @@ const COITEMSSQL = COITEMSSQLCOMMON +
 
 const COITEMSSQLSum1 =
 'select sum (amount) as amount, sum(summ) as summ, ' +
-'       sum(sumnds) as sumnds, sum(whole) as whole from ' +
+'       sum(sumnds) as sumnds, sum(whole) as whole, ' +
+    '0 as clientname, ' +
+    '0 as contract ' +
+ ' from ' +
 '(';
 
 const COITEMSSQLSum = COITEMSSQLSum1 + COITEMSSQL + ')';
@@ -119,11 +122,62 @@ const COITEMSSQLSum = COITEMSSQLSum1 + COITEMSSQL + ')';
 const COITEMSSQLPMODES = COITEMSSQLCOMMON +
 '      where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/ ' +
 '      s.id = :session_id ' +
-'      and i.azscode=:azscode ' +
+'      and i.azscode=:azscode and i.direction=0' +
 '      and i.payment_code in (!pmodelist) ';
 
 
 const COITEMSSQLSumPMODES = COITEMSSQLSum1 + COITEMSSQLPMODES + ')';
 
+// .............................................................................
+
+// .............................................................................
+
+const COITEMSSQLCOMMONI =
+'select ' +
+'   i.id,   ' +
+'    iif( i.direction = 0,'+#$27'Расход'#$27+','+#$27'Приход'#$27+') as dir, ' +
+'    cast(s.startdatetime as date) as sdate, ' +
+'    c.name as clientname, ' +
+'    cn.nomer || '+#$27' '#$27+' || cn.name as contract, ' +
+'    p.name as paymentmode, ' +
+'    w.name as itemname, ' +
+'    w.code as itemcode, ' +
+'    i.amount, ' +
+'    i.ei, ' +
+'    i.quantity, ' +
+'    i.price, ' +
+'    i.nds, ' +
+'    round(quantity * price * ' +
+'        cast(nds as double precision) / (100+cast(nds as double precision) ), 2) as sumnds, ' +
+'    round(quantity * price,2) as whole, ' +
+'    round(quantity * price ' +
+'          - quantity * price ' +
+'          * cast(nds as double precision) / (100+cast(nds as double precision) ), 2) as summ ' +
+' ' +
+'   from inoutitems i ' +
+'   join sessions s on s.id = i.session_id ' +
+'   join items w on w.code=i.item_code ' +
+'   join contragents c on c.code=i.client_code ' +
+'   join contracts cn on cn.partner_code=c.code ' +
+'   join paymentmodes p on p.code=i.payment_code ';
+
+
+const COITEMSSQLI = COITEMSSQLCOMMONI +
+'      where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/ ' +
+'      s.id = :session_id ' +
+'      and i.azscode=:azscode ' +
+'      and i.direction=1 ' +
+
+'   order by s.startdatetime, i.direction,paymentmode,clientname ';
+
+const COITEMSSQLPMODESI = COITEMSSQLCOMMONI +
+'      where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/ ' +
+'      s.id = :session_id ' +
+'      and i.azscode=:azscode  and i.direction=1 ' +
+'      and i.payment_code in (!pmodelist) ';
+
+const COITEMSSQLSumPMODESI = COITEMSSQLSum1 + COITEMSSQLPMODESI + ')';
+
+const COITEMSSQLSumI = COITEMSSQLSum1 + COITEMSSQLI + ')';
 
 

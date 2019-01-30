@@ -121,6 +121,12 @@ type
     N12: TMenuItem;
     N13: TMenuItem;
     ReportN1Action: TAction;
+    RepTLAction: TAction;
+    RepWAction: TAction;
+    RepCnAction: TAction;
+    N14: TMenuItem;
+    N15: TMenuItem;
+    N16: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -155,6 +161,9 @@ type
     procedure DeadRestActionExecute(Sender: TObject);
     procedure ContractsActionExecute(Sender: TObject);
     procedure ReportN1ActionExecute(Sender: TObject);
+    procedure RepTLActionExecute(Sender: TObject);
+    procedure RepWActionExecute(Sender: TObject);
+    procedure RepCnActionExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -164,6 +173,7 @@ type
     function GetMdiForm(formname: string): TForm;
     function isWinOpen(formname: String): boolean;
     procedure SendMsgs(Msg: TMessage);
+    procedure ReportNAActionExecute(Sender: TObject; fname: String);
 
   end;
 
@@ -1103,6 +1113,9 @@ begin
   if not isWinOpen('rep01form') then
   begin
     srd := TSimpleReportDialog.Create(self);
+    srd.RepFileButton.Visible := true;
+    srd.repfiletext.Visible := true;
+
     if srd.ShowModal = mrOk then
     begin
       TRep01Form.Create(
@@ -1112,6 +1125,56 @@ begin
   end
   else GetMDIForm('rep01form').Show;
 
+end;
+
+// .............................................................................
+
+procedure TMainForm.ReportNAActionExecute(Sender: TObject; fname: String);
+  var
+    srd: TSimpleReportDialog;
+begin
+  if not isWinOpen('rep01form') then
+  begin
+    srd := TSimpleReportDialog.Create(self);
+    srd.RepFileButton.Visible := false;
+    srd.repfiletext.Visible := false;
+    if srd.ShowModal = mrOk then
+    begin
+      if FileExists(exepath + 'reports\'  + fname) then
+      begin
+
+        TRep01Form.Create(
+          self, 'rep01form', exepath + 'reports\'  + fname, srd.LookupAzs.LookupValue,
+            srd.DateStartEdit.Date, srd.DateEndEdit.Date);
+      end
+      else
+      begin
+        ErrorMessageBox2(self, ['Отсутствует файл', exepath + 'reports\'  + fname]);
+      end;
+    end
+  end
+  else GetMDIForm('rep01form').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.RepCnActionExecute(Sender: TObject);
+begin
+  ReportNAActionExecute(Sender, 'Отчёт по контрагентам.xml');
+end;
+
+// .............................................................................
+
+procedure TMainForm.RepTLActionExecute(Sender: TObject);
+begin
+  ReportNAActionExecute(Sender, 'Отчёт по талонам.xml');
+end;
+
+// .............................................................................
+
+procedure TMainForm.RepWActionExecute(Sender: TObject);
+begin
+  ReportNAActionExecute(Sender, 'Отчёт по продажам товара.xml');
 end;
 
 // .............................................................................

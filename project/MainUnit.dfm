@@ -262,6 +262,15 @@ object MainForm: TMainForm
       object N13: TMenuItem
         Action = ReportN1Action
       end
+      object N14: TMenuItem
+        Action = RepTLAction
+      end
+      object N15: TMenuItem
+        Action = RepWAction
+      end
+      object N16: TMenuItem
+        Action = RepCnAction
+      end
     end
     object Service1: TMenuItem
       Caption = 'Service'
@@ -464,10 +473,22 @@ object MainForm: TMainForm
       OnExecute = ContractsActionExecute
     end
     object ReportN1Action: TAction
-      Caption = #1054#1090#1095#1105#1090' '#8470'1'
+      Caption = #1042#1099#1073#1086#1088
       Hint = #1054#1090#1095#1105#1090' '#8470'1'
       ImageIndex = 55
       OnExecute = ReportN1ActionExecute
+    end
+    object RepTLAction: TAction
+      Caption = #1054#1090#1095#1105#1090' '#1087#1086' '#1090#1072#1083#1086#1085#1072#1084
+      OnExecute = RepTLActionExecute
+    end
+    object RepWAction: TAction
+      Caption = #1054#1090#1095#1105#1090' '#1087#1086' '#1090#1086#1074#1072#1088#1091
+      OnExecute = RepWActionExecute
+    end
+    object RepCnAction: TAction
+      Caption = #1054#1090#1095#1105#1090' '#1087#1086' '#1082#1086#1090#1088#1072#1075#1077#1085#1090#1072#1084
+      OnExecute = RepCnActionExecute
     end
   end
   object ApplicationEvents: TApplicationEvents
@@ -529,7 +550,7 @@ object MainForm: TMainForm
     Left = 472
     Top = 72
     Bitmap = {
-      494C01017E018001580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

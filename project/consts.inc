@@ -76,5 +76,7 @@ type PMSums =
     rnt_amount0, rbt_amount0, rnm_summ, rbm_summ, caot_amount0, caom_summ: Extended;
     rnt_sumnds, rbt_sumnds, rnm_sumnds, rbm_sumnds, caot_sumnds, caom_sumnds: Extended;
     rnt_whole, rbt_whole, rnm_whole, rbm_whole, caot_whole, caom_whole: Extended;
+    rnmi_whole, rbmi_whole: Extended;
+
     dirty: Boolean;
   end;
