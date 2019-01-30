@@ -11,7 +11,7 @@
         <param name="enddatetime" type="datetime"/>
     </params>
 
-    <sheet name="Контрагенты">
+    <sheet name="Контрагентцы">
         <columngroup title="common">
             <columns sql="select s1.d, sessionnum, client_code from
             (select s.id as session_id,
@@ -23,13 +23,11 @@
                 from sessions s
                     join inoutgsm i
                      on s.id = i.session_id
-                where  s.azscode = :azscode
-                and s.startdatetime >= :startdatetime
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
                 and s.startdatetime &lt;= :enddatetime + 1
                 group by session_id, sessionnum, client_code) s2
             on s1.session_id = s2.session_id            
-            where s1.azscode = :azscode
-            and s1.d >= cast(:startdatetime as date)
+            where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
                 <prop title="Date" width="15" align="1" bgcolor="$0c0c01f" fontsize="8"/>
                 <prop title="Смена" width="15" align="1" bgcolor="$0c0c01f" fontsize="8"/>
@@ -38,26 +36,30 @@
             </columns>
         </columngroup>
         <columngroup title="" sql="select name as groupname, code as groupparam from wares where incl > 0">
-            <columns sql="select volume, price, round(whole, 2) from
+            <columns sql="select volume, price, whole from
             (select s.id as session_id,
                 cast(s.startdatetime as date) as d, azscode
                 from sessions s order by d) s1
              left join (select
-                i.session_id, 
-                    sum(iif(ware_code=:groupparam, volume, null)) as volume,
-                    sum(iif(ware_code=:groupparam, whole, null)) as whole,
-                    max(iif(ware_code=:groupparam, price, null)) as price
+                i.session_id, sum(volume) as volume, sum(whole) as whole
                 from sessions s
-                    join inoutgsm i  on s.id = i.session_id
-                where  s.azscode = :azscode -- and ware_code = :groupparam
-                and s.startdatetime >= :startdatetime
+                    join inoutgsm i  on s.id = i.session_id                    
+                where  s.azscode = :azscode and s.startdatetime >= :startdatetime
                 and s.startdatetime &lt;= :enddatetime + 1
                 group by session_id, sessionnum, client_code) s2
             on s1.session_id = s2.session_id            
+             left join (select
+                s.id as session_id,  w.price_r as price
+                from sessions s
+                    join wareprices w  on s.id = w.session_id                    
+                where  w.ware_code=:groupparam and s.azscode = :azscode and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime + 1
+                group by session_id, price) s3
+            on s1.session_id = s3.session_id            
             where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
                 <prop title="Объём" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
-                <prop title="Цена" width="15" align="3" bgcolor="$c0f07f" fontsize="8" sum="0"/>
+                <prop title="Цена" width="15" align="3" bgcolor="$c0f07f" fontsize="8" sum="1"/>
                 <prop title="Сумма" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
 
             </columns>
