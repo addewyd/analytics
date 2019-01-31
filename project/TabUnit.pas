@@ -2748,7 +2748,7 @@ begin
   StatusBar.Canvas.Font.Style := [fsBold];
   StatusBar.Canvas.Font.Color := clBlue;
 
-  GetCachedGIOSumsI;        // no use / no paymentmode
+  // GetCachedGIOSumsI;        // no use / no paymentmode
   GetCachedGIOSums;
 
   for c := 0 to cls.Count -1 do
@@ -2758,13 +2758,13 @@ begin
       if fldn = 'CLIENTNAME' then
       begin
       txt := '';
-        txt := format('Σ Наличные %.2f', [PMSumsCache.rnmi_whole]);
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+      //  txt := format('Σ Наличные %.2f', [PMSumsCache.rnmi_whole]);
+      //  StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
       end else if fldn = 'CONTRACT' then
       begin
-        txt := format('Σ Банк %.2f', [PMSumsCache.rbmi_whole]);
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+      //  txt := format('Σ Банк %.2f', [PMSumsCache.rbmi_whole]);
+      //  StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
 
       end
       else
