@@ -225,7 +225,7 @@ procedure TRep01Form.doColumns(n: IXMLNode; XS:TXLSSpreadSheet;
     sum: Extended;
   end;
   var
-    s, fval: String;
+    s, fval, fife: String;
     i, r: integer;
     sp: Qparam;
     f, ft: String;
@@ -340,7 +340,7 @@ begin
     //else
       WS.asString[colOrder, r + rowshift] := title; // + groupparam;
 
-    WS.MergeCells(colorder,r + rowshift,
+    WS.MergeCells(colorder, r + rowshift,
       colorder + FieldList.Count - 1, r + rowshift);
     WS.Cell[colOrder, r + rowshift].HorizAlignment
        := TXc12HorizAlignment.chaCenter;
@@ -399,8 +399,31 @@ begin
           AttrToIntDef(props, 'align', 1));
         clr :=
           AttrToIntDef(props, 'bgcolor', $FFFFFF);
+        fife :=
+          AttrToStrDef(props, 'FifE', '');
+
         fval := FieldByName(f).AsString;
         WS.asString[colOrder + i, r + rowshift + 1] := fval;
+        if (Trim(fval) = '') and (fife <> '') then
+        begin
+//          WS.asString[colOrder + i, r + rowshift + 1] := fife;
+          if (fife = 'PRC') and (r > 1) then
+          begin
+            clr := $AAAAAA;
+            WS.asString[colOrder + i, r + rowshift + 1] :=
+               WS.asString[colOrder + i - 1, r + rowshift + 1]
+          end
+          else if  (fife = 'PRR') and (r > 1)  then
+          begin
+            clr := $999999;
+            WS.asString[colOrder + i, r + rowshift + 1] :=
+               WS.asString[colOrder + i - 0, r + rowshift + 1 - 1]
+          end
+          else
+          begin
+          end;
+
+        end;
         if asums[i].bs then
         begin
           asums[i].sum := asums[i].sum + StrToextDef(fval, 0);
