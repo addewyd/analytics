@@ -30,7 +30,6 @@ object SimpleReportDialog: TSimpleReportDialog
     Anchors = [akLeft, akBottom]
     Checked = True
     TabOrder = 0
-    ExplicitTop = 48
   end
   object DateEndEdit: TJvDatePickerEdit
     Left = 72
@@ -41,7 +40,6 @@ object SimpleReportDialog: TSimpleReportDialog
     Anchors = [akLeft, akBottom]
     Checked = True
     TabOrder = 1
-    ExplicitTop = 80
   end
   object JvStaticText1: TJvStaticText
     Left = 16
@@ -55,7 +53,6 @@ object SimpleReportDialog: TSimpleReportDialog
     TextMargins.X = 0
     TextMargins.Y = 0
     WordWrap = True
-    ExplicitTop = 76
   end
   object JvStaticText2: TJvStaticText
     Left = 16
@@ -69,7 +66,6 @@ object SimpleReportDialog: TSimpleReportDialog
     TextMargins.X = 0
     TextMargins.Y = 0
     WordWrap = False
-    ExplicitTop = 50
   end
   object JvStaticText3: TJvStaticText
     Left = 16
@@ -83,7 +79,6 @@ object SimpleReportDialog: TSimpleReportDialog
     TextMargins.X = 0
     TextMargins.Y = 0
     WordWrap = False
-    ExplicitTop = 82
   end
   object OkButton: TButton
     Left = 16
@@ -95,7 +90,6 @@ object SimpleReportDialog: TSimpleReportDialog
     ModalResult = 1
     TabOrder = 5
     OnClick = OkButtonClick
-    ExplicitTop = 121
   end
   object CancelButton: TButton
     Left = 118
@@ -107,7 +101,6 @@ object SimpleReportDialog: TSimpleReportDialog
     Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 6
-    ExplicitTop = 121
   end
   object LookupAzs: TJvDBLookupEdit
     Left = 72
@@ -120,7 +113,6 @@ object SimpleReportDialog: TSimpleReportDialog
     Anchors = [akLeft, akBottom]
     TabOrder = 7
     Text = ''
-    ExplicitTop = 17
   end
   object RepFileButton: TButton
     Left = 16

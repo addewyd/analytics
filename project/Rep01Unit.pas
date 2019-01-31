@@ -409,13 +409,13 @@ begin
 //          WS.asString[colOrder + i, r + rowshift + 1] := fife;
           if (fife = 'PRC') and (r > 1) then
           begin
-            clr := $AAAAAA;
+            clr := $CCCCCC;
             WS.asString[colOrder + i, r + rowshift + 1] :=
                WS.asString[colOrder + i - 1, r + rowshift + 1]
           end
           else if  (fife = 'PRR') and (r > 1)  then
           begin
-            clr := $999999;
+            clr := $EEEEEE;
             WS.asString[colOrder + i, r + rowshift + 1] :=
                WS.asString[colOrder + i - 0, r + rowshift + 1 - 1]
           end
@@ -450,6 +450,13 @@ begin
       begin
         WS.AsFloat [colOrder + i, r + rowshift + 1] :=
             asums[i].sum;
+        WS.Cell[colOrder + i, r + rowshift + 1].CellColorRGB := $FFFFCC;
+        WS.Cell[colOrder + i, r + rowshift + 1].FontStyle := [xfsBold];
+      end
+      else
+      begin
+        WS.AsString [colOrder + i, r + rowshift + 1] := ' ';
+        WS.Cell[colOrder + i, r + rowshift + 1].CellColorRGB := $FFFFCC;
       end;
       inc(i);
     end;

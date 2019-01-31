@@ -38,6 +38,7 @@ type
   public
     { Public declarations }
     repfile: String;
+    az : String;
   end;
 
 var
@@ -60,26 +61,28 @@ begin
 
 end;
 
+// .............................................................................
+
 procedure TSimpleReportDialog.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
+  //FormStorage.WriteString('azscode', az);
   Action := caFree;
 end;
 
 // .............................................................................
 
 procedure TSimpleReportDialog.FormCreate(Sender: TObject);
-  var
-    a: String;
 begin
 // restore opendialog.filename
-  a := FormStorage.ReadString('azscode', '');
+  az := FormStorage.ReadString('azscode', '');
   repfile := FormStorage.ReadString('repfile', '');
   repfiletext.Caption := splt(repfile);
   FDQueryAZS.Transaction.StartTransaction;
   FDQueryAZS.Open;
-  FDQueryAZS.Locate('azscode', a);
+  FDQueryAZS.Locate('azscode', az);
   LookUpAZS.Text := FDQueryAZS.FieldByName('cn').AsString;
+  az := FDQueryAZS.FieldByName('azscode'). asString;
   FDQueryAZS.Transaction. Commit;
 end;
 
@@ -87,7 +90,7 @@ end;
 
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
-  FormStorage.WriteString('azscode', LookupAzs.LookupValue);
+  FormStorage.WriteString('azscode', az);
 end;
 
 // .............................................................................

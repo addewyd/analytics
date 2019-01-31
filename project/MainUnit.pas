@@ -1119,7 +1119,9 @@ begin
     if srd.ShowModal = mrOk then
     begin
       TRep01Form.Create(
-        self, 'rep01form', srd.repfile, srd.LookupAzs.LookupValue,
+        self, 'rep01form', srd.repfile,
+          //srd.LookupAzs.LookupValue,
+          srd.az,
           srd.DateStartEdit.Date, srd.DateEndEdit.Date);
     end
   end
@@ -1144,7 +1146,9 @@ begin
       begin
 
         TRep01Form.Create(
-          self, 'rep01form', exepath + 'reports\'  + fname, srd.LookupAzs.LookupValue,
+          self, 'rep01form', exepath + 'reports\'  + fname,
+            //srd.LookupAzs.LookupValue,
+            srd.az,
             srd.DateStartEdit.Date, srd.DateEndEdit.Date);
       end
       else
