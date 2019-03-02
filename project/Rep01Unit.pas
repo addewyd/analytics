@@ -419,6 +419,11 @@ begin
             WS.asString[colOrder + i, r + rowshift + 1] :=
                WS.asString[colOrder + i - 0, r + rowshift + 1 - 1]
           end
+          else if  (fife = 'SET0')  then
+          begin
+            clr := $EEEEEE;
+            WS.asFloat[colOrder + i, r + rowshift + 1] := 0;
+          end
           else
           begin
           end;

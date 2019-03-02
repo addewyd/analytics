@@ -43,7 +43,7 @@
             and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
             <prop title="Date" width="15" align="1" bgcolor="$0c0c01f" fontsize="10"/>
-            <prop title="Volume" width="12" align="3" bgcolor="$0f0c0ff" sum="1"/>
+            <prop title="Volume" width="12" align="3" bgcolor="$0f0c0ff" sum="1" FifE="SET0"/>
             <prop title="Density" width="10" align="3" bgcolor="$0a070ff"/>
             <prop title="Масса" width="10" align="3" bgcolor="$060c0cf" sum="1"/>
         </columns>

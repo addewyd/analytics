@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet3
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -95,7 +95,6 @@ inherited TabForm: TTabForm
           DBGrid = RealPMGrid
           OnCalculate = RealPMFooterCalculate
           OnDisplayText = RealPMFooterDisplayText
-          ExplicitTop = 434
         end
         object RealPMGrid: TJvDBUltimGrid
           Left = 1
@@ -472,8 +471,11 @@ inherited TabForm: TTabForm
               Style = psOwnerDraw
             end
             item
-              FieldName = 'FUELNAME'
+              FieldName = 'PAYMENTMODE'
               Style = psOwnerDraw
+            end
+            item
+              FieldName = 'FUELNAME'
             end>
           DataSource = DSInOut
           DBGrid = GridInOutGSM
@@ -730,18 +732,6 @@ inherited TabForm: TTabForm
           end
           item
             Expanded = False
-            FieldName = 'EI'
-            Title.Caption = #1045#1076'.'#1048#1079#1084
-            Title.Font.Charset = DEFAULT_CHARSET
-            Title.Font.Color = clWindowText
-            Title.Font.Height = -11
-            Title.Font.Name = 'Tahoma'
-            Title.Font.Style = [fsBold]
-            Width = 10
-            Visible = True
-          end
-          item
-            Expanded = False
             FieldName = 'PRICE'
             Title.Caption = #1062#1077#1085#1072
             Title.Font.Charset = DEFAULT_CHARSET
@@ -827,7 +817,6 @@ inherited TabForm: TTabForm
         DataSource = DSInOutItems
         DBGrid = GridInOutItems
         OnCalculate = GridFooterInOutItemsCalculate
-        ExplicitTop = 436
       end
     end
     object TabSheet4: TTabSheet
@@ -974,18 +963,6 @@ inherited TabForm: TTabForm
           end
           item
             Expanded = False
-            FieldName = 'EI'
-            Title.Caption = #1045#1076'.'#1048#1079#1084
-            Title.Font.Charset = DEFAULT_CHARSET
-            Title.Font.Color = clWindowText
-            Title.Font.Height = -11
-            Title.Font.Name = 'Tahoma'
-            Title.Font.Style = [fsBold]
-            Width = 10
-            Visible = True
-          end
-          item
-            Expanded = False
             FieldName = 'PRICE'
             Title.Caption = #1062#1077#1085#1072
             Title.Font.Charset = DEFAULT_CHARSET
@@ -1109,7 +1086,7 @@ inherited TabForm: TTabForm
     Left = 256
     Top = 0
     Bitmap = {
-      494C01017E018001AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001B00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13982,6 +13959,7 @@ inherited TabForm: TTabForm
     object QueryIOTHCALCIN: TFloatField
       FieldName = 'CALCIN'
       Origin = 'INVOL'
+      OnGetText = QueryIOTHCALCINGetText
     end
     object QueryIOTHCALC: TFloatField
       FieldName = 'CALC'
@@ -14034,6 +14012,7 @@ inherited TabForm: TTabForm
       FieldName = 'MASS'
       Origin = 'MASS'
       Required = True
+      OnGetText = QueryIOTHMASSGetText
     end
     object QueryIOTHWATER: TFloatField
       FieldName = 'WATER'

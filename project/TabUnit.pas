@@ -228,6 +228,10 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure GridFooterInOutItemsDrawPanel(StatusBar: TStatusBar;
       Panel: TStatusPanel; const Rect: TRect);
+    procedure QueryIOTHCALCINGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QueryIOTHMASSGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -844,7 +848,8 @@ begin
 
     m :=  d * v / 1000.0;
 
-    QueryIOTH.FieldByName('MASS').AsExtended := m;
+    QueryIOTH.FieldByName('MASS').AsExtended :=
+      StrToExtDef(FOrmat('%02f', [ m]), 0);
 
   end;
   if (fname = 'STCNT') or (fname = 'ECNT') then
@@ -864,6 +869,7 @@ begin
   if (fname = 'CALCIN')then
   begin
     v := QueryIOTH.FieldByName('CALCIN').AsExtended;
+//  QueryIOTH.FieldByName('CALCIN').AsExtended := StrToExtDEf(FOrmat('%02f', [v]), 0);
   end;
 end;
 
@@ -2665,22 +2671,29 @@ begin
       if fldn = 'CLIENTNAME' then
       begin
 
-        StatusBar.Canvas.Font.Color := clNavy;
-        txt := format('Σ Объём %.2f', [PMSumsCache.rnt_amount0]);
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
         StatusBar.Canvas.Font.Color := clPurple;
-        txt := format('Σ Наличные %.2f', [PMSumsCache.rnt_volume]);
+        txt := format('Σ Объём %.2f', [PMSumsCache.rnt_volume]);
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+        StatusBar.Canvas.Font.Color := clNavy;
+//        txt := format('Σ Наличные %.2f', [PMSumsCache.rnt_amount0]);
+        txt := format('Σ Наличные %.2f', [PMSumsCache.rnt_whole]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
-      else if fldn = 'FUELNAME' then
+//      else if fldn = 'FUELNAME' then
+      else if fldn = 'PAYMENTMODE' then
       begin
-        StatusBar.Canvas.Font.Color := clDkGray;
-        txt := format('Σ Наличные %.2f', [PMSumsCache.rbt_amount0]);;
-        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
+
         StatusBar.Canvas.Font.Color := clOlive;
         txt := format('Σ Объём %.2f', [PMSumsCache.rbt_volume]);
         StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 0, txt);
+
+        StatusBar.Canvas.Font.Color := clDkGray;
+//        txt := format('Σ Банк %.2f', [PMSumsCache.rbt_amount0]);;
+        txt := format('Σ Банк %.2f', [PMSumsCache.rbt_whole]);;
+        StatusBar.Canvas.TextOut(Rect.left, Rect.Top + 17, txt);
 
       end
       else
@@ -3351,15 +3364,27 @@ begin
     end;
 
   end;
-  if (Column.FieldName = 'CALCIN') and (not (gdFocused in State))then
+                                 {
+  if (Column.FieldName = 'CALCIN') and (not (gdFocused in State)) then
+  begin
+    ci := QueryIOTH.FieldByName(Column.fieldname).AsExtended;
+    IOTHGrid.Canvas.Font.Color := 0; //$30304f;
+    TextRect := Rect;
+    TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
+    IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2,
+        TextRect.Top + 2, Format('%.2', [ci]));
+  end;
+
+  if (Column.FieldName = 'MASS') and (not (gdFocused in State))  then
   begin
     ci := QueryIOTH.FieldByName(Column.fieldname).AsExtended;
     IOTHGrid.Canvas.Font.Color := $30304f;
     TextRect := Rect;
     TextRect.Bottom := TextRect.Top + IOTHGrid.RowsHeight;
     IOTHGrid.Canvas.TextRect(TextRect, TextRect.Left + 2,
-        TextRect.Top + 2, Format('%.3f', [ci]));
+        TextRect.Top + 2, Format('%.2', [ci]));
   end;
+  }
 end;
 
 // .............................................................................
@@ -3646,6 +3671,20 @@ procedure TTabForm.QueryIOTHBeforeInsert(DataSet: TDataSet);
 begin
   inherited;
   Abort;
+end;
+
+procedure TTabForm.QueryIOTHCALCINGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  inherited;
+  Text := Format('%.2f', [Sender.AsExtended]);
+end;
+
+procedure TTabForm.QueryIOTHMASSGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  inherited;
+  Text := Format('%.2f', [Sender.AsExtended]);
 end;
 
 procedure TTabForm.QueryIOTHSumCALCRESTChange(Sender: TField);
