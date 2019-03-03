@@ -62,7 +62,7 @@ inherited TabForm: TTabForm
     Top = 29
     Width = 735
     Height = 502
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -576,6 +576,7 @@ inherited TabForm: TTabForm
               Expanded = False
               FieldName = 'DENSITY'
               Title.Caption = #1055#1083#1086#1090#1085#1086#1089#1090#1100
+              Width = 64
               Visible = True
             end
             item
@@ -1086,7 +1087,7 @@ inherited TabForm: TTabForm
     Left = 256
     Top = 0
     Bitmap = {
-      494C01017E018001B00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001B40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13772,6 +13773,7 @@ inherited TabForm: TTabForm
     Top = 197
   end
   object QueryInOut: TFDQuery
+    OnCalcFields = QueryInOutCalcFields
     Connection = DM.FDConnection
     Transaction = TransInOut
     UpdateTransaction = TransInOut
@@ -13782,45 +13784,45 @@ inherited TabForm: TTabForm
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateTableName = 'INOUTGSM'
     SQL.Strings = (
-      'SEE DMUnit'
-      ''
-      'select '
-      '   i.id,'
-      '    iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,'
-      '   cast(s.startdatetime as date) as sdate,'
-      '    c.name as clientname,'
-      '    cn.nomer || '#39' '#39' || cn.name as contract,'
-      '    p.name as paymentmode,'
-      '    w.name as fuelname,'
-      '    w.code as fuelcode,'
-      '   i.ei,'
-      '   i.volume,'
-      '   i.price,'
-      ''
-      '   i.density,'
-      '   round(volume * density / 1000,3) as mass,'
-      '   i.nds, -- '#1089#1090#1072#1074#1082#1072
-      '    round(amount * cast(nds as double precision) / '
-      '       (100+cast(nds as double precision)), 2) as sumnds,'
-      '    amount as whole,'
-      '    round(amount - amount * '
-      '      cast(nds as double precision) / '
-      '     (100+cast(nds as double precision)), 2) as amount0'
-      ''
-      '   from inoutgsm i'
-      '   join sessions s on s.id = i.session_id'
-      '   join wares w on w.code=i.ware_code'
-      '   join contragents c on c.code=i.client_code'
-      '   join contracts cn on cn.partner_code=c.code'
-      '   join paymentmodes p on p.code=i.payment_code'
-      ''
       
-        '      where /*s.startdatetime >= cast(:start_session_t as TIMEST' +
-        'AMP)*/'
-      '      s.id = :session_id'
-      '      and i.azscode=:azscode'
-      ''
-      '   order by s.startdatetime, i.direction,paymentmode,clientname')
+        'select    i.id,      s.id as session_id,    s.azscode,    a.extc' +
+        'ode as azsextcode,    st.name as stname,    s.sessionnum,    '
+      'iif( i.direction = 0,'#39#1056#1072#1089#1093#1086#1076#39','#39#1055#1088#1080#1093#1086#1076#39') as dir,    '
+      
+        'cast(s.startdatetime as date) as sdate,    c.name as clientname,' +
+        '    c.code as clientcode,    cn.nomer as cn,    '
+      
+        'cn.nomer || '#39' '#39' || cn.name as contract,    p.name as paymentmode' +
+        ',    p.code as paymentcode,    w.name as fuelname,    '
+      
+        'w.code as fuelcode,    i.ei,    i.volume,    i.price,    i.densi' +
+        'ty,      round(volume * density / 1000,3) as mass,    '
+      
+        'i.nds,    round(amount * cast(nds as double precision) /        ' +
+        '(100+cast(nds as double precision)), 2) as sumnds,    '
+      
+        'amount as whole,    round(amount - amount *       cast(nds as do' +
+        'uble precision) /      (100+cast(nds as double precision)), 2) a' +
+        's amount0    , '
+      
+        'i.sent as sent    from inoutgsm i    join sessions s on s.id = i' +
+        '.session_id    join wares w on w.code=i.ware_code    '
+      
+        'join contragents c on c.code=i.client_code    join (select max(i' +
+        'd) as id, max(nomer) as nomer, max(name) as name, '
+      
+        'partner_code from contracts group by partner_code) cn on cn.part' +
+        'ner_code=c.code    '
+      
+        'join paymentmodes p on p.code=i.payment_code    join stations a ' +
+        'on a.code=s.azscode    '
+      'left join storages st on st.azscode=s.azscode      '
+      
+        'where /*s.startdatetime >= cast(:start_session_t as TIMESTAMP)*/' +
+        '      '
+      
+        's.id = :session_id      and i.azscode=:azscode   order by s.star' +
+        'tdatetime, i.direction,paymentmode,clientname')
     Left = 364
     Top = 197
     ParamData = <
@@ -13835,6 +13837,194 @@ inherited TabForm: TTabForm
         ParamType = ptInput
         Size = 10
       end>
+    object QueryInOutID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QueryInOutSESSION_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SESSION_ID'
+      Origin = 'ID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutAZSCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'AZSCODE'
+      Origin = 'AZSCODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 10
+    end
+    object QueryInOutAZSEXTCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'AZSEXTCODE'
+      Origin = 'EXTCODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 10
+    end
+    object QueryInOutSTNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'STNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object QueryInOutSESSIONNUM: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SESSIONNUM'
+      Origin = 'SESSIONNUM'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutDIR: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DIR'
+      Origin = 'DIR'
+      ProviderFlags = []
+      ReadOnly = True
+      FixedChar = True
+      Size = 6
+    end
+    object QueryInOutSDATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'SDATE'
+      Origin = 'SDATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutCLIENTNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLIENTNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutCLIENTCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLIENTCODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 12
+    end
+    object QueryInOutCN: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CN'
+      Origin = 'CN'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 128
+    end
+    object QueryInOutCONTRACT: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CONTRACT'
+      Origin = 'CONTRACT'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 229
+    end
+    object QueryInOutPAYMENTMODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'PAYMENTMODE'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object QueryInOutPAYMENTCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'PAYMENTCODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 10
+    end
+    object QueryInOutFUELNAME: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'FUELNAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object QueryInOutFUELCODE: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'FUELCODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 16
+    end
+    object QueryInOutEI: TWideStringField
+      FieldName = 'EI'
+      Origin = 'EI'
+      Size = 10
+    end
+    object QueryInOutVOLUME: TFloatField
+      FieldName = 'VOLUME'
+      Origin = 'VOLUME'
+      Required = True
+    end
+    object QueryInOutPRICE: TFloatField
+      FieldName = 'PRICE'
+      Origin = 'PRICE'
+      Required = True
+    end
+    object QueryInOutDENSITY: TFloatField
+      FieldName = 'DENSITY'
+      Origin = 'DENSITY'
+      Required = True
+    end
+    object QueryInOutMASS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MASS'
+      Origin = 'MASS'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QueryInOutNDS: TWideStringField
+      FieldName = 'NDS'
+      Origin = 'NDS'
+      Required = True
+      OnGetText = QueryInOutNDSGetText
+      Size = 10
+    end
+    object QueryInOutSUMNDS: TFloatField
+      AutoGenerateValue = arDefault
+      FieldKind = fkCalculated
+      FieldName = 'SUMNDS'
+      Origin = 'SUMNDS'
+      ProviderFlags = []
+      ReadOnly = True
+      OnGetText = QueryInOutSUMNDSGetText
+      Calculated = True
+    end
+    object QueryInOutWHOLE: TFloatField
+      FieldName = 'WHOLE'
+      Origin = 'AMOUNT'
+      Required = True
+    end
+    object QueryInOutAMOUNT0: TFloatField
+      AutoGenerateValue = arDefault
+      FieldKind = fkCalculated
+      FieldName = 'AMOUNT0'
+      Origin = 'AMOUNT0'
+      ProviderFlags = []
+      ReadOnly = True
+      OnGetText = QueryInOutAMOUNT0GetText
+      Calculated = True
+    end
+    object QueryInOutSENT: TSmallintField
+      FieldName = 'SENT'
+      Origin = 'SENT'
+      Required = True
+    end
   end
   object DSIOTH: TJvDataSource
     DataSet = QueryIOTH
@@ -13844,6 +14034,7 @@ inherited TabForm: TTabForm
   end
   object QueryIOTH: TFDQuery
     BeforeInsert = QueryIOTHBeforeInsert
+    OnCalcFields = QueryIOTHCalcFields
     CachedUpdates = True
     Connection = DM.FDConnection
     Transaction = TransIOTH
@@ -14055,10 +14246,13 @@ inherited TabForm: TTabForm
     end
     object QueryIOTHVDIFF: TFloatField
       AutoGenerateValue = arDefault
+      FieldKind = fkCalculated
       FieldName = 'VDIFF'
       Origin = 'VDIFF'
       ProviderFlags = []
       ReadOnly = True
+      OnGetText = QueryIOTHVDIFFGetText
+      Calculated = True
     end
   end
   object FuelPopupMenu: TPopupMenu
@@ -14312,7 +14506,6 @@ inherited TabForm: TTabForm
       Origin = 'CALCREST'
       ProviderFlags = []
       ReadOnly = True
-      OnChange = QueryIOTHSumCALCRESTChange
     end
     object QueryIOTHSumCALCRESTPREV: TFloatField
       AutoGenerateValue = arDefault

@@ -157,6 +157,32 @@ type
     setprevvolproc: TFDStoredProc;
     WLTrans: TFDTransaction;
     IOTHUpdateSQL: TFDUpdateSQL;
+    QueryInOutID: TIntegerField;
+    QueryInOutSESSION_ID: TIntegerField;
+    QueryInOutAZSCODE: TWideStringField;
+    QueryInOutAZSEXTCODE: TWideStringField;
+    QueryInOutSTNAME: TWideStringField;
+    QueryInOutSESSIONNUM: TIntegerField;
+    QueryInOutDIR: TWideStringField;
+    QueryInOutSDATE: TDateField;
+    QueryInOutCLIENTNAME: TWideStringField;
+    QueryInOutCLIENTCODE: TWideStringField;
+    QueryInOutCN: TWideStringField;
+    QueryInOutCONTRACT: TWideStringField;
+    QueryInOutPAYMENTMODE: TWideStringField;
+    QueryInOutPAYMENTCODE: TWideStringField;
+    QueryInOutFUELNAME: TWideStringField;
+    QueryInOutFUELCODE: TWideStringField;
+    QueryInOutEI: TWideStringField;
+    QueryInOutVOLUME: TFloatField;
+    QueryInOutPRICE: TFloatField;
+    QueryInOutDENSITY: TFloatField;
+    QueryInOutMASS: TFloatField;
+    QueryInOutNDS: TWideStringField;
+    QueryInOutSUMNDS: TFloatField;
+    QueryInOutWHOLE: TFloatField;
+    QueryInOutAMOUNT0: TFloatField;
+    QueryInOutSENT: TSmallintField;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure RollbackActionExecute(Sender: TObject);
@@ -217,7 +243,6 @@ type
     procedure DSOutItemsActiveChanged(Sender: TObject);
     procedure DSOutItemsFieldChanged(Sender: TObject; Field: TField);
     procedure ggg1Click(Sender: TObject);
-    procedure QueryIOTHSumCALCRESTChange(Sender: TField);
     procedure GridFooterOutItemsDrawPanel(StatusBar: TStatusBar;
       Panel: TStatusPanel; const Rect: TRect);
     procedure GridFooterOutItemsDisplayText(Sender: TJvDBGridFooter;
@@ -232,6 +257,16 @@ type
       DisplayText: Boolean);
     procedure QueryIOTHMASSGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
+    procedure QueryInOutSUMNDSGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QueryInOutCalcFields(DataSet: TDataSet);
+    procedure QueryInOutNDSGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QueryInOutAMOUNT0GetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QueryIOTHVDIFFGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure QueryIOTHCalcFields(DataSet: TDataSet);
   private
     { Private declarations }
     dirtyGSM: Boolean;
@@ -791,8 +826,8 @@ begin
     m :=  d * nds / (100 + nds);
 
 
-    QueryInOut.FieldByName('SUMNDS').AsExtended := Round(m*100)/ 100;;
-    QueryInOut.FieldByName('AMOUNT0').AsExtended := Round((v - m) * 100)/ 100;;
+//    QueryInOut.FieldByName('SUMNDS').AsExtended := Round(m*100)/ 100;;
+//    QueryInOut.FieldByName('AMOUNT0').AsExtended := Round((v - m) * 100)/ 100;;
 
   end;
 
@@ -3268,6 +3303,9 @@ begin
   QueryInOut.SQL.Text := CIOGSQL;
   QueryInOutSum.SQL.Text := CIOGSQLSum;
 
+  //AddToLog(CIOGSQL);
+  //AddToLog(CIOGSQLSum);
+
   QueryOutItems.SQL.Text := COITEMSSQL;
   QueryOutItemsSum.SQL.Text := COITEMSSQLSum;
   QueryInOutItems.SQL.Text := COITEMSSQLI;
@@ -3667,11 +3705,70 @@ end;
 
 // .............................................................................
 
+procedure TTabForm.QueryInOutAMOUNT0GetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  inherited;
+  Text := Format('%.2f',[ Sender.AsExtended]);
+
+end;
+
+// .............................................................................
+
+procedure TTabForm.QueryInOutCalcFields(DataSet: TDataSet);
+  var
+  nds: Integer;
+  sumnds: Extended;
+begin
+  inherited;
+  with
+    QueryInOut do
+  begin
+    nds := FieldByName('NDS').AsInteger;
+    sumnds := FieldByName('WHOLE').AsExtended * nds / (100 + nds);
+    FieldByName('SUMNDS').AsExtended := sumnds;
+    FieldByName('AMOUNT0').AsExtended := FieldByName('WHOLE').AsExtended - sumnds;
+  end;
+end;
+
+// .............................................................................
+
+procedure TTabForm.QueryInOutNDSGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  inherited;
+  Text := Format('%d',[ Sender.asInteger]);
+end;
+
+// .............................................................................
+
+procedure TTabForm.QueryInOutSUMNDSGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  inherited;
+  Text := Format('%.2f',[ Sender.AsExtended]);
+end;
+
+// .............................................................................
+
 procedure TTabForm.QueryIOTHBeforeInsert(DataSet: TDataSet);
 begin
   inherited;
   Abort;
 end;
+
+// .............................................................................
+
+procedure TTabForm.QueryIOTHCalcFields(DataSet: TDataSet);
+begin
+  inherited;
+  with QueryIOTH do begin
+    FieldByName('VDIFF').AsExtended :=
+      FieldByName('ENDFACTVOLUME').AsExtended - FieldByName('CALCREST').AsExtended;
+  end;
+end;
+
+// .............................................................................
 
 procedure TTabForm.QueryIOTHCALCINGetText(Sender: TField; var Text: string;
   DisplayText: Boolean);
@@ -3680,6 +3777,8 @@ begin
   Text := Format('%.2f', [Sender.AsExtended]);
 end;
 
+// .............................................................................
+
 procedure TTabForm.QueryIOTHMASSGetText(Sender: TField; var Text: string;
   DisplayText: Boolean);
 begin
@@ -3687,10 +3786,13 @@ begin
   Text := Format('%.2f', [Sender.AsExtended]);
 end;
 
-procedure TTabForm.QueryIOTHSumCALCRESTChange(Sender: TField);
+// .............................................................................
+
+procedure TTabForm.QueryIOTHVDIFFGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
 begin
   inherited;
-
+  Text := Format('%.2f',[ Sender.AsExtended]);
 end;
 
 // .............................................................................
@@ -3703,24 +3805,31 @@ procedure TTabForm.GridInOutGSMDrawColumnCell(Sender: TObject;
   fn, fv: String;
 begin
   inherited;
+  fn := Column.FieldName;
+
+  if fn = 'SUMNDS' then exit;
+  if fn = 'AMOUNT0' then exit;
+
+
   sent := QueryInOut.FieldByName('sent').asInteger;
   g := (sender as TDBGrid);
   g.Canvas.Font.Color := clBlack;
 
-  fn := Column.FieldName;
   fv := QueryInOut.FieldByName(fn).AsString;
 
   if not (gdFocused in State) then
+  begin
+   if sent > 0 then
+    begin
+      g.Canvas.Font.Color := $307918;
+      g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
+    end
+    else
+    begin
+      g.Canvas.Font.Color := clBlack;
+      g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
+    end;
 
-  if sent > 0 then
-  begin
-    g.Canvas.Font.Color := $307918;
-    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
-  end
-  else
-  begin
-    g.Canvas.Font.Color := clBlack;
-    g.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, fv);
   end;
 
 end;
