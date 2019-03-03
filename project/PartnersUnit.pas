@@ -12,7 +12,7 @@ uses
   Vcl.ActnList, JvFormPlacement, JvComponentBase, JvAppStorage,
   JvAppRegistryStorage, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ComCtrls, JvExComCtrls, JvStatusBar, Vcl.ToolWin, JvToolBar,
-  JvDBUltimGrid;
+  JvDBUltimGrid, JvExControls, JvLabel, Vcl.StdCtrls, JvExStdCtrls, JvEdit;
 
   {$I 'consts.inc'}
 
@@ -23,11 +23,17 @@ type
     N2: TMenuItem;
     FDQueryCODE: TWideStringField;
     FDQueryNAME: TWideStringField;
+    CodeEdit: TJvEdit;
+    NameEdit: TJvEdit;
+    JvLabel1: TJvLabel;
+    JvLabel2: TJvLabel;
     procedure FormCreate(Sender: TObject);
     procedure CommitActionExecute(Sender: TObject);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure RefreshActionExecute(Sender: TObject);
+    procedure CodeEditChange(Sender: TObject);
+    procedure NameEditChange(Sender: TObject);
   private
     { Private declarations }
     procedure catsupd(var Msg: TMessage); message WM_CATS_UPD;
@@ -44,6 +50,14 @@ implementation
 {$R *.dfm}
 
 uses DmUnit;
+
+procedure TPartnersForm.CodeEditChange(Sender: TObject);
+begin
+  inherited;
+///
+
+  FDQuery.Locate('CODE',CodeEdit.Text,[loPartialKey, loCaseInsensitive]);
+end;
 
 procedure TPartnersForm.CommitActionExecute(Sender: TObject);
   var
@@ -107,11 +121,18 @@ begin
     RefreshActionExecute(Sender);
     key := 0;
   end;
-  if Key = VK_DELETE then
+  if (Key = VK_DELETE) and (ssShift in Shift) then
   begin
     FDQuery.Delete;
     key := 0;
   end;
+
+end;
+
+procedure TPartnersForm.NameEditChange(Sender: TObject);
+begin
+  inherited;
+  FDQuery.Locate('NAME',NameEdit.Text,[loPartialKey, loCaseInsensitive]);
 
 end;
 

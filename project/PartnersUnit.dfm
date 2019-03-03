@@ -10,6 +10,40 @@ inherited PartnersForm: TPartnersForm
       ParentShowHint = False
       ShowHint = True
     end
+    object JvLabel1: TJvLabel
+      Left = 69
+      Top = 0
+      Width = 37
+      Height = 22
+      Caption = '  '#1050#1086#1076'   '
+      Transparent = True
+    end
+    object CodeEdit: TJvEdit
+      Left = 106
+      Top = 0
+      Width = 121
+      Height = 22
+      TabOrder = 0
+      Text = ''
+      OnChange = CodeEditChange
+    end
+    object JvLabel2: TJvLabel
+      Left = 227
+      Top = 0
+      Width = 33
+      Height = 22
+      Caption = '  '#1048#1084#1103'  '
+      Transparent = True
+    end
+    object NameEdit: TJvEdit
+      Left = 260
+      Top = 0
+      Width = 121
+      Height = 22
+      TabOrder = 1
+      Text = ''
+      OnChange = NameEditChange
+    end
   end
   inherited JvDBGrid: TJvDBUltimGrid
     Options = [dgEditing, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -52,7 +86,7 @@ inherited PartnersForm: TPartnersForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E0180015C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
