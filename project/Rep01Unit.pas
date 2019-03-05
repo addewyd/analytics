@@ -93,6 +93,7 @@ constructor TRep01Form.Create(pr: TComponent; fname, _rtemplate, _AzsCode: Strin
 begin
   inherited create(pr, fname);
   azscode := _azscode;
+  AddToLog('for ' + azscode);
   rtemplate := _rtemplate;
   sdt := _sdt;
   edt := _edt;

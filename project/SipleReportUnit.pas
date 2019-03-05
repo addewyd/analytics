@@ -33,6 +33,8 @@ type
     procedure OkButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure RepFileButtonClick(Sender: TObject);
+    procedure LookupAzsChange(Sender: TObject);
+    procedure LookupAzsExit(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,6 +52,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses DmUnit, MainUnit;
 
 function splt(s: String) : String;
 begin
@@ -86,10 +90,28 @@ begin
   FDQueryAZS.Transaction. Commit;
 end;
 
+procedure TSimpleReportDialog.LookupAzsChange(Sender: TObject);
+begin
+  addToLog('lookup ' + LookupAzs.Text + ' '
+    + FDQueryAZS.FieldByName(LookupAzs.LookupField).AsString);
+end;
+
+procedure TSimpleReportDialog.LookupAzsExit(Sender: TObject);
+begin
+  az := FDQueryAZS.FieldByName(LookupAzs.LookupField).AsString;
+  addToLog('lookup exit ' + LookupAzs.Text + ' '
+    + az);
+
+end;
+
 // .............................................................................
 
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
+  az := FDQueryAZS.FieldByName(LookupAzs.LookupField).AsString;
+  addToLog('lookup OK ' + LookupAzs.Text + ' '
+    + az);
+
   FormStorage.WriteString('azscode', az);
 end;
 

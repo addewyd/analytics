@@ -103,7 +103,7 @@ object SimpleReportDialog: TSimpleReportDialog
     TabOrder = 6
   end
   object LookupAzs: TJvDBLookupEdit
-    Left = 72
+    Left = 79
     Top = 78
     Width = 121
     Height = 21
@@ -113,6 +113,8 @@ object SimpleReportDialog: TSimpleReportDialog
     Anchors = [akLeft, akBottom]
     TabOrder = 7
     Text = ''
+    OnChange = LookupAzsChange
+    OnExit = LookupAzsExit
   end
   object RepFileButton: TButton
     Left = 16
