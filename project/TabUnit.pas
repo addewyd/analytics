@@ -878,7 +878,7 @@ begin
   f := Field.AsString;
   if fname = 'DENSITY' then
   begin
-    v := QueryIOTH.FieldByName('CALC').AsExtended;
+    v := QueryIOTH.FieldByName('ENDFACTVOLUME').AsExtended;
     d := Field.AsExtended;
 
     m :=  d * v / 1000.0;
