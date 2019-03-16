@@ -463,7 +463,7 @@ object MainForm: TMainForm
       OnExecute = StoragesActionExecute
     end
     object DeadRestAction: TAction
-      Caption = 'DeadRest'
+      Caption = #1052#1105#1088#1090#1074#1099#1077' '#1086#1089#1090#1072#1090#1082#1080
       ImageIndex = 264
       OnExecute = DeadRestActionExecute
     end

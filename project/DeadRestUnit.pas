@@ -22,6 +22,11 @@ type
     FDQueryNAME: TWideStringField;
     FDQueryTANKNUM: TWideStringField;
     FDQueryVOLUME: TFloatField;
+    FDQuery1: TFDQuery;
+    WideStringField1: TWideStringField;
+    WideStringField2: TWideStringField;
+    WideStringField3: TWideStringField;
+    FloatField1: TFloatField;
     procedure CommitActionExecute(Sender: TObject);
     procedure JvDBGridKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -31,8 +36,11 @@ type
     procedure JvDSDataChange(Sender: TObject; Field: TField);
     procedure JvDSActiveChanged(Sender: TObject);
     procedure JvDSUpdateData(Sender: TObject);
+    procedure JvDSRecordChanged(Sender: TObject);
+    procedure FDQueryBeforePost(DataSet: TDataSet);
   private
     { Private declarations }
+    function GetMaxTN(a: String) : Integer;
   public
     { Public declarations }
   end;
@@ -68,7 +76,56 @@ begin
 
 end;
 
+function TDeadRestForm.GetMaxTN(a: String): Integer;
+var
+  ret: Integer;
+begin
+  result := 1;
+  try
+    with FDQuery1 do
+    begin
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'azscode';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+      end;
+      ParamByName('azscode').AsString := a;
+      try
+        Open;
+        if RecordCount < 1 then
+          ret := 1
+        else
+        begin
+          ret := FieldByName('tn').AsInteger + 1;
+        end;
+      finally
+        Close;
+      end;
+
+      result := ret;
+    end;
+  except
+    ;
+  end;
+
+end;
+
 // .............................................................................
+
+procedure TDeadRestForm.FDQueryBeforePost(DataSet: TDataSet);
+begin
+  inherited;
+//  AddToLog('beforepost');
+  if  DataSet.FieldByName('TANKNUM').IsNull then
+  begin
+    DataSet.FieldByName('TANKNUM').asInteger := GetMaxTN(DataSet.FieldByName('AZSCODE').asString);
+  end;
+end;
 
 procedure TDeadRestForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -123,9 +180,15 @@ end;
 procedure TDeadRestForm.JvDSDataChange(Sender: TObject; Field: TField);
 begin
   inherited;
-//
+  //
 //  if Field.FieldName = 'AZSCODE'
 //   ... :=  JvDS.GetFieldValue(Field);
+end;
+
+procedure TDeadRestForm.JvDSRecordChanged(Sender: TObject);
+begin
+  inherited;
+//
 end;
 
 // .............................................................................

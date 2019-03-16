@@ -1,8 +1,13 @@
 inherited DeadRestForm: TDeadRestForm
   Caption = 'Deadrest'
+  ClientHeight = 304
+  ClientWidth = 499
+  ExplicitWidth = 515
+  ExplicitHeight = 363
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
+    Width = 499
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
@@ -11,28 +16,43 @@ inherited DeadRestForm: TDeadRestForm
       ShowHint = True
     end
   end
+  inherited JvStatusBar1: TJvStatusBar
+    Top = 266
+    Width = 499
+  end
+  inherited JvDBGridFooter: TJvDBGridFooter
+    Top = 285
+    Width = 499
+  end
   inherited JvDBGrid: TJvDBUltimGrid
+    Width = 499
+    Height = 237
     OnKeyDown = JvDBGridKeyDown
     AutoAppend = True
     Columns = <
       item
         Expanded = False
         FieldName = 'AZSCODE'
+        Title.Caption = #1050#1086#1076' '#1040#1047#1057
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'NAME'
+        Title.Caption = #1040#1047#1057
+        Width = 175
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'TANKNUM'
+        Title.Caption = #1056#1077#1079#1077#1088#1074#1091#1072#1088
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'VOLUME'
+        Title.Caption = #1054#1073#1098#1105#1084
         Visible = True
       end>
   end
@@ -51,7 +71,7 @@ inherited DeadRestForm: TDeadRestForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180014C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12734,8 +12754,10 @@ inherited DeadRestForm: TDeadRestForm
     OnDataChange = JvDSDataChange
     OnUpdateData = JvDSUpdateData
     OnActiveChanged = JvDSActiveChanged
+    OnRecordChanged = JvDSRecordChanged
   end
   inherited FDQuery: TFDQuery
+    BeforePost = FDQueryBeforePost
     CachedUpdates = True
     Connection = DM.FDConnection
     UpdateTransaction = Trans
@@ -12768,6 +12790,56 @@ inherited DeadRestForm: TDeadRestForm
       Size = 10
     end
     object FDQueryVOLUME: TFloatField
+      FieldName = 'VOLUME'
+      Origin = 'VOLUME'
+    end
+  end
+  inherited TransUPD: TFDTransaction
+    Left = 344
+  end
+  object FDQuery1: TFDQuery
+    CachedUpdates = True
+    Connection = DM.FDConnection
+    Transaction = Trans
+    UpdateTransaction = Trans
+    FetchOptions.AssignedValues = [evAutoClose, evUnidirectional]
+    FetchOptions.AutoClose = False
+    SQL.Strings = (
+      'select max(d.tanknum) as tn'
+      '    from deadrest d '
+      'where d.azscode=:azscode'
+      ''
+      '')
+    Left = 272
+    Top = 200
+    ParamData = <
+      item
+        Name = 'AZSCODE'
+        ParamType = ptInput
+      end>
+    object WideStringField1: TWideStringField
+      FieldName = 'AZSCODE'
+      Origin = 'AZSCODE'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 10
+    end
+    object WideStringField2: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+    object WideStringField3: TWideStringField
+      FieldName = 'TANKNUM'
+      Origin = 'TANKNUM'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 10
+    end
+    object FloatField1: TFloatField
       FieldName = 'VOLUME'
       Origin = 'VOLUME'
     end
