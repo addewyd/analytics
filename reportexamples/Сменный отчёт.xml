@@ -19,8 +19,6 @@
     <!-- columnparam type always is string -->
 
     <sheets sql="select name as sheetname, code as columnparam from  wares where incl &gt; 0">
-        <column name="№">
-        </column>
     <columngroup title="Приход">
         <columns sql="select s1.d, volume, density, mass from
             (select s.id as session_id,
@@ -60,22 +58,22 @@
                     from sessions s
                 ) s1
          left join
-(select
-    session_id,
-    min(startcounter) as sc, max(endcounter) as ec
-    from sessions s
-    join iotankshoses i on s.id=i.session_id
-            where s.azscode=:azscode
-            and s.startdatetime >= :startdatetime
-            and s.startdatetime &lt;= :enddatetime  + 1
-            and hosenum=cast(:groupparam as integer)
-            and warecode = :columnparam
-            group by session_id
-            ) as s2
-     on s1.session_id = s2.session_id
-        where s1.azscode=:azscode
-        and s1.d >= cast(:startdatetime as date)
-        and s1.d &lt;= cast(:enddatetime as date)">
+            (select
+                session_id,
+                min(startcounter) as sc, max(endcounter) as ec
+              from sessions s
+                join iotankshoses i on s.id=i.session_id
+              where s.azscode=:azscode
+                and s.startdatetime >= :startdatetime
+                and s.startdatetime &lt;= :enddatetime  + 1
+                and hosenum=cast(:groupparam as integer)
+                and warecode = :columnparam
+                group by session_id
+                ) as s2
+         on s1.session_id = s2.session_id
+         where s1.azscode=:azscode
+            and s1.d >= cast(:startdatetime as date)
+            and s1.d &lt;= cast(:enddatetime as date)">
                 <prop title="Start" FifE='PRR' />
                 <prop title="End"  FifE='PRC'/>
             </columns>
@@ -134,12 +132,12 @@
         where s1.azscode=:azscode
         and s1.d >= cast(:startdatetime as date)
         and s1.d &lt;= cast(:enddatetime as date)">
-            <prop title="Bablo" width="13" align="3" bgcolor="$0c0c0af" fontsize="11" fontname="Tahoma" sum="1"/>
+            <prop title="В т.ч. НДС" width="13" align="3" bgcolor="$0c0c0af" fontsize="11" fontname="Tahoma" sum="1"/>
             <prop title="Без НДС" width="13" align="3" bgcolor="$c0a0cf" fontsize="11" fontname="Times New Roman"/>
 <!--            <prop title="nds" width="5"  bgcolor="$ffa090"  fontname="Arial"/> -->
         </columns>
 
-        <columngroup title="hg1">
+        <columngroup title="Расшифровка">
             <columns sql="select volume
                     from
                         (select s.id as session_id,
@@ -156,15 +154,19 @@
             and s.startdatetime >= :startdatetime
             and s.startdatetime &lt;= :enddatetime + 1
             and ware_code=:columnparam
-            and payment_code='01ВД00'
+            and payment_code='02БС00'
     group by session_id) s2
     on s1.session_id = s2.session_id
         where s1.azscode=:azscode
         and s1.d >= cast(:startdatetime as date)
         and s1.d &lt;= cast(:enddatetime as date)">
 
-                <prop title="01ВД00" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
+                <prop title="Розн нал" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
             </columns>
+
+        </columngroup>
+        <columngroup title="1_">
+
             <columns sql="select volume
                 from
                         (select s.id as session_id,
@@ -181,40 +183,171 @@
             and s.startdatetime >= :startdatetime
             and s.startdatetime &lt;= :enddatetime + 1
             and ware_code=:columnparam
-            and payment_code='02СК00'
+            and payment_code='02БС00'
     group by session_id) s2
     on s1.session_id = s2.session_id
         where s1.azscode=:azscode
         and s1.d >= cast(:startdatetime as date)
         and s1.d &lt;= cast(:enddatetime as date)">
-                <prop title="02СК00" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
-            </columns>
-
-            <columns sql="select volume
-    from
-(select s.id as session_id,
-    cast(s.startdatetime as date) as d, azscode
-    from sessions s
-    ) s1
- left join
-(select
-    session_id,
-    sum(volume) as volume
-            from sessions s
-    join inoutgsm i on s.id=i.session_id
-            where s.azscode=:azscode
-            and s.startdatetime >= :startdatetime
-            and s.startdatetime &lt;= :enddatetime + 1
-            and ware_code=:columnparam
-            and payment_code='01БС00'
-    group by session_id) s2
-    on s1.session_id = s2.session_id
-        where s1.azscode=:azscode
-        and s1.d >= cast(:startdatetime as date)
-        and s1.d &lt;= cast(:enddatetime as date)">
-            <prop title="01БС00" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
+                <prop title="Розн банк" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
             </columns>
         </columngroup>
+        <columngroup title="2_">
+
+            <columns sql="select volume
+                from
+                    (select s.id as session_id,
+                        cast(s.startdatetime as date) as d, azscode
+                    from sessions s
+                    ) s1
+                 left join
+                    (select
+                        session_id,
+                        sum(volume) as volume
+                    from sessions s
+                    join inoutgsm i on s.id=i.session_id
+                        where s.azscode=:azscode
+                        and s.startdatetime >= :startdatetime
+                        and s.startdatetime &lt;= :enddatetime + 1
+                        and ware_code=:columnparam
+                    and (payment_code='01ВД00' or payment_code='01КК00' or payment_code='01ОК00'  or payment_code='01ТК00')
+                group by session_id) s2
+                on s1.session_id = s2.session_id
+                    where s1.azscode=:azscode
+                    and s1.d >= cast(:startdatetime as date)
+                    and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Контр топл" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
+            </columns>
+        </columngroup>
+        <columngroup title="3_">
+
+            <columns sql="select volume
+                from
+                    (select s.id as session_id,
+                        cast(s.startdatetime as date) as d, azscode
+                    from sessions s
+                    ) s1
+                 left join
+                    (select
+                        session_id,
+                        sum(volume) as volume
+                    from sessions s
+                    join inoutgsm i on s.id=i.session_id
+                        where s.azscode=:azscode
+                        and s.startdatetime >= :startdatetime
+                        and s.startdatetime &lt;= :enddatetime + 1
+                        and ware_code=:columnparam
+                    and payment_code='01ТЛ00'
+                group by session_id) s2
+                on s1.session_id = s2.session_id
+                    where s1.azscode=:azscode
+                    and s1.d >= cast(:startdatetime as date)
+                    and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Талоны" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
+            </columns>
+        </columngroup>
+
+<!--  -->
+        <columngroup title="4_">
+            <columns sql="select volume
+                from
+                    (select s.id as session_id,
+                        cast(s.startdatetime as date) as d, azscode
+                    from sessions s
+                    ) s1
+                 left join
+                    (select
+                        session_id,
+                        sum(volume) as volume
+                    from sessions s
+                    join inoutgsm i on s.id=i.session_id
+                        where s.azscode=:azscode
+                        and s.startdatetime >= :startdatetime
+                        and s.startdatetime &lt;= :enddatetime + 1
+                        and ware_code=:columnparam
+                    and payment_code='99PL99'
+                group by session_id) s2
+                on s1.session_id = s2.session_id
+                    where s1.azscode=:azscode
+                    and s1.d >= cast(:startdatetime as date)
+                    and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Переливы" width="12" align="3" bgcolor="$0c0c0af" fontsize="10" fontname="Tahoma" sum="1"/>
+            </columns>
+        </columngroup>
+
+<!--                      -->
+
+        <columngroup title="Расчётный остаток">
+            <columns sql="select calcrest, mass from
+                (select s.id as session_id,
+                    cast(s.startdatetime as date) as d, azscode
+                    from sessions s
+                ) s1
+         left join
+(select
+    session_id,
+    sum(
+    (select volume from 
+       calcrest(s.id, i.tanknum))) as calcrest,
+        round (sum(
+            (select volume from 
+       calcrest(s.id, i.tanknum)) * density / 1000
+        ), 2) as mass
+    from sessions s
+    join iotankshoses i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime >= :startdatetime
+            and s.startdatetime &lt;= :enddatetime  + 1
+            -- and hosenum=cast(:groupparam as integer)
+            and warecode = :columnparam
+            group by session_id
+            ) as s2
+     on s1.session_id = s2.session_id
+        where s1.azscode=:azscode
+        and s1.d >= cast(:startdatetime as date)
+        and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Объём" bgcolor="$e0fff0" sum="1" align="3"/>
+                <prop title="Масса" bgcolor="$e0e0e0" sum="1" align="3"/>
+            </columns>
+
+        </columngroup>
+
+        <columngroup title="Фактический остаток">
+            <columns sql="select frest, mass, vdiff from
+                (select s.id as session_id,
+                    cast(s.startdatetime as date) as d, azscode
+                    from sessions s
+                ) s1
+         left join
+(select
+    session_id,
+    sum(endfactvolume) as frest,
+        sum(mass) as mass,
+
+        sum(round(i.endfactvolume - (select volume from 
+        calcrest(s.id, i.tanknum)), 3)) as vdiff
+
+    from sessions s
+    join iotankshoses i on s.id=i.session_id
+            where s.azscode=:azscode
+            and s.startdatetime >= :startdatetime
+            and s.startdatetime &lt;= :enddatetime  + 1
+            -- and hosenum=cast(:groupparam as integer)
+            and warecode = :columnparam
+            group by session_id
+            ) as s2
+     on s1.session_id = s2.session_id
+        where s1.azscode=:azscode
+        and s1.d >= cast(:startdatetime as date)
+        and s1.d &lt;= cast(:enddatetime as date)">
+                <prop title="Объём" bgcolor="$0e0fff0" sum="1" align="3"/>
+                <prop title="Масса" bgcolor="$0e0e0e0" sum="1" align="3"/>
+                <prop title="Рез" bgcolor="$ffb8af" sum="1" align="3"/>
+            </columns>
+
+        </columngroup>
+
+
     </sheets>
 <!--
     <sheet name="Сводная ведомость">

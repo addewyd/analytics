@@ -1178,7 +1178,7 @@ end;
 
 procedure TMainForm.RepWActionExecute(Sender: TObject);
 begin
-  ReportNAActionExecute(Sender, 'Отчёт по продажам товара.xml');
+  ReportNAActionExecute(Sender, 'Отчёт по топливу.xml');
 end;
 
 // .............................................................................

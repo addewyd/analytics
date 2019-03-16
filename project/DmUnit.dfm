@@ -44,6 +44,7 @@ object DM: TDM
     TxOptions.AutoStart = False
     TxOptions.AutoStop = False
     ConnectedStoredUsage = [auDesignTime]
+    Connected = True
     LoginPrompt = False
     Transaction = FDTransaction
     UpdateTransaction = FDTransactionUpd
@@ -51,8 +52,6 @@ object DM: TDM
     Top = 16
   end
   object FDTransaction: TFDTransaction
-    Options.AutoStart = False
-    Options.AutoStop = False
     Connection = FDConnection
     Left = 220
     Top = 56

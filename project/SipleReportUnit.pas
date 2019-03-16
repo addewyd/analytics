@@ -109,7 +109,7 @@ end;
 procedure TSimpleReportDialog.OkButtonClick(Sender: TObject);
 begin
   az := FDQueryAZS.FieldByName(LookupAzs.LookupField).AsString;
-  addToLog('lookup OK ' + LookupAzs.Text + ' '
+  addToLog('lookup OK+ ' + LookupAzs.Text + ' '
     + az);
 
   FormStorage.WriteString('azscode', az);

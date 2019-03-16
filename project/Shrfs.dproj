@@ -80,6 +80,9 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Debugger_DebugSourcePath>C:\Users\user\Documents\topaz\analytics\XLSRWII\SrcXLS\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <DCC_UnitSearchPath>C:\Program Files (x86)\XLSSuit6\Package\DDX102;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <Icon_MainIcon>Shrfs_Icon3.ico</Icon_MainIcon>
+        <UWP_DelphiLogo44>..\..\..\..\Desktop\Снимок_cr2.png</UWP_DelphiLogo44>
+        <UWP_DelphiLogo150>..\..\..\..\Desktop\Снимок_cr1.png</UWP_DelphiLogo150>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -234,8 +237,6 @@
                     <Source Name="MainSource">Shrfs.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\zcolor.bpl">ZColorStringGrid component</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\zexmlsslibe.bpl">ZEXMLSS component</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
@@ -256,6 +257,20 @@
                 <DeployFile LocalName="sqls.inc" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\..\Desktop\Снимок_cr2.png" Configuration="Debug" Class="UWP_DelphiLogo44">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo44x44.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\..\Desktop\Снимок_cr1.png" Configuration="Debug" Class="UWP_DelphiLogo150">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo150x150.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

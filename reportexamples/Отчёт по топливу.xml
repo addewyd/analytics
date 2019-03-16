@@ -39,7 +39,12 @@
                 cast(s.startdatetime as date) as d, azscode
                 from sessions s order by d) s1
              left join (select
-                i.session_id, sum(whole) as whole, sum(summ) as summ
+                i.session_id, 
+   sum(amount) as whole,
+   sum(amount - amount * 
+      cast(nds as double precision) /
+     (100+cast(nds as double precision))) as summ
+
                 from sessions s
                     join inoutgsm i  on s.id = i.session_id                    
                 where  s.azscode = :azscode and s.startdatetime >= :startdatetime
@@ -49,7 +54,7 @@
             on s1.session_id = s2.session_id            
             where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
-                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="В т.ч  НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
                 <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
 
             </columns>
@@ -60,7 +65,11 @@
                 cast(s.startdatetime as date) as d, azscode
                 from sessions s order by d) s1
              left join (select
-                i.session_id, sum(whole) as whole, sum(summ) as summ
+                i.session_id, 
+   sum(amount) as whole,
+   sum(amount - amount * 
+      cast(nds as double precision) /
+     (100+cast(nds as double precision))) as summ
                 from sessions s
                     join inoutgsm i  on s.id = i.session_id                    
                 where  s.azscode = :azscode and s.startdatetime >= :startdatetime
@@ -70,7 +79,7 @@
             on s1.session_id = s2.session_id            
             where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
-                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="В т.ч  НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
                 <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
 
             </columns>
@@ -81,7 +90,11 @@
                 cast(s.startdatetime as date) as d, azscode
                 from sessions s order by d) s1
              left join (select
-                i.session_id, sum(whole) as whole, sum(summ) as summ
+                i.session_id, 
+   sum(amount) as whole,
+   sum(amount - amount * 
+      cast(nds as double precision) /
+     (100+cast(nds as double precision))) as summ
                 from sessions s
                     join inoutgsm i  on s.id = i.session_id                    
                 where  s.azscode = :azscode and s.startdatetime >= :startdatetime
@@ -91,7 +104,7 @@
             on s1.session_id = s2.session_id            
             where s1.azscode = :azscode and s1.d >= cast(:startdatetime as date)
             and s1.d &lt;= cast(:enddatetime as date)">
-                <prop title="С НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
+                <prop title="В т.ч  НДС" width="15" align="3" bgcolor="$f0c07f" fontsize="8" sum="1"/>
                 <prop title="Без НДС" width="15" align="3" bgcolor="$e0c0ff" fontsize="8" sum="1"/>
 
             </columns>
