@@ -36,7 +36,8 @@ uses
   StoragesUnit in 'StoragesUnit.pas' {StoragesForm},
   DeadRestUnit in 'DeadRestUnit.pas' {DeadRestForm},
   ContractUnit in 'ContractUnit.pas' {ContractsForm},
-  Rep01Unit in 'Rep01Unit.pas' {Rep01Form};
+  Rep01Unit in 'Rep01Unit.pas' {Rep01Form},
+  GsmCodesUnit in 'GsmCodesUnit.pas' {gsmcodesform};
 
 {$R *.res}
 

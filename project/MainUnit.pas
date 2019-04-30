@@ -20,7 +20,8 @@ uses
   SessionListUnit, Vcl.StdActns, IdContext, IdCustomHTTPServer, IdBaseComponent,
   IdComponent, IdCustomTCPServer, IdHTTPServer, IdCookieManager, IdIntercept,
   IdServerInterceptLogBase, IdServerInterceptLogFile, IdLogEvent, IdLogBase,
-  IdLogFile, Xml.omnixmldom, Xml.adomxmldom;
+  IdLogFile, Xml.omnixmldom, Xml.adomxmldom, FireDAC.DatS, FireDAC.DApt.Intf,
+  FireDAC.DApt, FireDAC.Comp.DataSet;
 
 {$Include 'consts.inc'}
 
@@ -127,6 +128,13 @@ type
     N14: TMenuItem;
     N15: TMenuItem;
     N16: TMenuItem;
+    ScriptAct: TAction;
+    N17: TMenuItem;
+    OpenScriptDialog: TJvOpenDialog;
+    ScrQuery: TFDQuery;
+    ScrTrans: TFDTransaction;
+    GsmCodesAct: TAction;
+    N18: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -164,6 +172,8 @@ type
     procedure RepTLActionExecute(Sender: TObject);
     procedure RepWActionExecute(Sender: TObject);
     procedure RepCnActionExecute(Sender: TObject);
+    procedure ScriptActExecute(Sender: TObject);
+    procedure GsmCodesActExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -217,7 +227,7 @@ uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
   WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit,
-  DeadRestUnit, ContractUnit, Rep01Unit;
+  DeadRestUnit, ContractUnit, Rep01Unit, GsmCodesUnit;
 
 
 // .............................................................................
@@ -250,6 +260,16 @@ begin
       break;
     end;
   end;
+
+end;
+
+procedure TMainForm.GsmCodesActExecute(Sender: TObject);
+begin
+  if not isWinOpen('gsmcodes') then
+  begin
+    Tgsmcodesform.Create(self, 'gsmcodes');
+  end
+  else GetMDIForm('gsmcodes').Show;
 
 end;
 
@@ -1325,6 +1345,47 @@ begin
 end;
 
 // .............................................................................
+
+procedure TMainForm.ScriptActExecute(Sender: TObject);
+  var
+    fn: String;
+    fs : TFileStream;
+    St: Utf8String;
+    scr: String;
+    ra: Integer ;
+begin
+  if OpenScriptDialog.Execute then
+  begin
+    fn := OpenScriptDialog.FileName;
+    try
+      fs := TFileStream.Create(fn, fmShareDenyNone);
+      fs.Position := 0;
+      SetLength(St, fs.Size);
+      fs.Read(St[1], fs.Size);
+//      ErrorMessageBox(self, Utf8Decode(st));
+      scr := Utf8Decode(st);
+      AddToLog('Executing ' + scr);
+      ScrQuery.SQL.Text := scr;
+      try
+        ScrQuery.ExecSQL;
+        ra := ScrQuery.RowsAffected;
+        ScrQuery.Close;
+
+        AddToLog('Success ' + IntToStr(ra));
+      Except
+      on e: Exception do
+        begin
+          ErrorMessageBox(self, e.Message);
+        end;
+
+      end;
+    finally
+      fs.Free;
+
+    end;
+
+  end;
+end;
 
 procedure TMainForm.SendMsgs(Msg: TMessage);
   var i: Integer;
