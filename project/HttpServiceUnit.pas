@@ -63,6 +63,7 @@ type RespRec =
 
 var
   query: TFDQuery;
+  queryRCC: TFDQuery;
   conn: TFDConnection;
   tran: TFDTransaction;
 
@@ -407,6 +408,36 @@ end;
 
 // .............................................................................
 
+function ReplaceCode(code: String): String;
+begin
+  Result := code;
+
+  with QueryRCC do
+  begin
+    try
+      ParamByName('code').AsString := code;
+      prepare;
+      open;
+      first;
+      if not Eof  then
+      begin
+        Result := FieldByName('code1c').AsString;
+      end;
+      Close;
+    except
+      on e: Exception do
+      begin
+        AddToLogT('Error repalacing gsm code ' + e.Message);
+        if Active then Close;
+        
+      end;
+    end;
+  end;
+
+end;
+
+// .............................................................................
+
 procedure LoadDocs(Response: TIdHTTPResponseInfo);
 var
   rc, k: Integer;
@@ -415,9 +446,29 @@ var
 begin
   AddToLogT('received LoadDocs');
   query := TFDQuery.Create(nil);
+  queryRCC := TFDQuery.Create(nil);
   Response.CharSet := 'utf-8';
   Response.ContentType := 'application/json; charset=utf-8';
   try
+    with queryRCC do
+    begin
+      Connection := conn;
+      Transaction := tran;
+      FetchOptions.AutoFetchAll := afAll;
+      SQL.Text := 'select code1c from warecodes where code=:code';
+      Params := TFDParams.Create;
+      with Params do
+      begin
+        Clear;
+        with Add do
+        begin
+          Name := 'code';
+          DataType := ftString;
+          ParamType := ptInput;
+        end;
+
+      end;
+    end;
     with query do
     begin
 
@@ -454,7 +505,9 @@ begin
             recs[k].clientname := FieldByName('clientname').AsString;
             recs[k].paymentcode := FieldByName('paymentcode').AsString;
             recs[k].paymentname := FieldByName('paymentmode').AsString;
-            recs[k].fuelcode := FieldByName('fuelcode').AsString;
+
+            recs[k].fuelcode := ReplaceCode(FieldByName('fuelcode').AsString);
+
             recs[k].fuelname := FieldByName('fuelname').AsString;
             recs[k].volume := FieldByName('volume').AsExtended;
             recs[k].price := FieldByName('price').AsExtended;
@@ -501,6 +554,7 @@ begin
     end;
   finally
     query.Free;
+    queryRCC.Free;
   end;
 
 end;
