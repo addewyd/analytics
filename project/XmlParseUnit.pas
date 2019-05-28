@@ -465,8 +465,15 @@ begin
     end;
     ParamByName('session_id').AsInteger := session_id;
     ParamByName('azscode').AsWideString := azs;
-    Prepare;
-    ExecProc;
+    try
+      Prepare;
+      ExecProc;
+    except
+      on e:exception do
+      begin
+        addToLog('addaltanks: ' + e.message);
+      end;
+    end;
   end;
 
 end;

@@ -1,14 +1,52 @@
 inherited PredictForm: TPredictForm
   Caption = #1055#1088#1086#1075#1085#1086#1079
+  ClientHeight = 535
+  ClientWidth = 660
+  ExplicitWidth = 676
+  ExplicitHeight = 594
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
+    Width = 660
     inherited ToolButton2: TToolButton
       Visible = False
     end
   end
+  inherited JvStatusBar1: TJvStatusBar
+    Top = 497
+    Width = 660
+  end
+  inherited JvDBGridFooter: TJvDBGridFooter
+    Top = 516
+    Width = 660
+  end
   inherited JvDBGrid: TJvDBUltimGrid
+    Left = 407
+    Top = 373
+    Width = 225
+    Height = 68
+    TabStop = False
+    Align = alNone
+    ReadOnly = True
     Visible = False
+  end
+  object XLSSp: TXLSSpreadSheet [4]
+    Left = 0
+    Top = 29
+    Width = 660
+    Height = 468
+    Cursor = crCross
+    ComponentVersion = '3.00.09'
+    ReadOnly = False
+    SkinStyle = xssExcel2013
+    Align = alClient
+    UseDockManager = False
+    TabOrder = 4
+    TabStop = True
+    ExplicitLeft = 40
+    ExplicitTop = 251
+    ExplicitWidth = 400
+    ExplicitHeight = 200
   end
   inherited MainMenu: TMainMenu
     inherited File1: TMenuItem
