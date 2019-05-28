@@ -274,6 +274,9 @@ object MainForm: TMainForm
       object N16: TMenuItem
         Action = RepCnAction
       end
+      object N19: TMenuItem
+        Action = PredictAct
+      end
     end
     object Service1: TMenuItem
       Caption = 'Service'
@@ -507,6 +510,10 @@ object MainForm: TMainForm
       Caption = #1050#1086#1076#1099' '#1043#1057#1052
       OnExecute = GsmCodesActExecute
     end
+    object PredictAct: TAction
+      Caption = #1055#1088#1086#1075#1085#1086#1079
+      OnExecute = PredictActExecute
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnException = ApplicationEventsException
@@ -567,7 +574,7 @@ object MainForm: TMainForm
     Left = 472
     Top = 72
     Bitmap = {
-      494C01017E0180016C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001740010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000

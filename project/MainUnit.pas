@@ -135,6 +135,8 @@ type
     ScrTrans: TFDTransaction;
     GsmCodesAct: TAction;
     N18: TMenuItem;
+    PredictAct: TAction;
+    N19: TMenuItem;
     procedure FormActivate(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -174,6 +176,7 @@ type
     procedure RepCnActionExecute(Sender: TObject);
     procedure ScriptActExecute(Sender: TObject);
     procedure GsmCodesActExecute(Sender: TObject);
+    procedure PredictActExecute(Sender: TObject);
   private
     { Private declarations }
 //    gdbname: String;
@@ -227,7 +230,7 @@ uses BaseFormUnit1, MlogUnit, StationsUnit, TablesListUnit, CatGSMUnit,
   PartnersUnit, CatItemsUnit, SipleReportUnit, SimpleReportUnit,
   PaymentModesUnit, HttpServiceUnit, OptionsDialogUnit, TabUnit, SelectUserUnit,
   WindowListUnit, UsersUnit, ViewLogUnit, TanksHosesUnit, StoragesUnit,
-  DeadRestUnit, ContractUnit, Rep01Unit, GsmCodesUnit;
+  DeadRestUnit, ContractUnit, Rep01Unit, GsmCodesUnit, PrdictUnit;
 
 
 // .............................................................................
@@ -1122,6 +1125,17 @@ begin
     TPaymentModesForm.Create(self, 'paymentmodes');
   end
   else GetMDIForm('paymentmodes').Show;
+end;
+
+// .............................................................................
+
+procedure TMainForm.PredictActExecute(Sender: TObject);
+begin
+  if not isWinOpen('predict') then
+  begin
+    TPredictForm.Create(self, 'predict');
+  end
+  else GetMDIForm('predict').Show;
 end;
 
 // .............................................................................
