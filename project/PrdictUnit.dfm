@@ -1,40 +1,35 @@
 inherited PredictForm: TPredictForm
   Caption = #1055#1088#1086#1075#1085#1086#1079
-  ClientHeight = 535
-  ClientWidth = 660
-  ExplicitWidth = 676
-  ExplicitHeight = 594
+  ClientHeight = 456
+  ClientWidth = 588
+  ExplicitWidth = 604
+  ExplicitHeight = 515
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
-    Width = 660
+    Width = 588
     inherited ToolButton2: TToolButton
       Visible = False
     end
   end
   inherited JvStatusBar1: TJvStatusBar
-    Top = 497
-    Width = 660
+    Top = 418
+    Width = 588
   end
   inherited JvDBGridFooter: TJvDBGridFooter
-    Top = 516
-    Width = 660
+    Top = 437
+    Width = 588
   end
   inherited JvDBGrid: TJvDBUltimGrid
-    Left = 407
-    Top = 373
-    Width = 225
-    Height = 68
-    TabStop = False
-    Align = alNone
-    ReadOnly = True
+    Width = 588
+    Height = 389
     Visible = False
   end
-  object XLSSp: TXLSSpreadSheet [4]
+  object XLSSS: TXLSSpreadSheet [4]
     Left = 0
     Top = 29
-    Width = 660
-    Height = 468
+    Width = 588
+    Height = 389
     Cursor = crCross
     ComponentVersion = '3.00.09'
     ReadOnly = False
@@ -43,8 +38,8 @@ inherited PredictForm: TPredictForm
     UseDockManager = False
     TabOrder = 4
     TabStop = True
-    ExplicitLeft = 40
-    ExplicitTop = 251
+    ExplicitLeft = 144
+    ExplicitTop = 216
     ExplicitWidth = 400
     ExplicitHeight = 200
   end
@@ -55,7 +50,7 @@ inherited PredictForm: TPredictForm
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E0180015C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
