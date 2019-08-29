@@ -63,6 +63,7 @@ type RespRec =
 
 var
   query: TFDQuery;
+  queryaux: TFDQuery;
   queryRCC: TFDQuery;
   conn: TFDConnection;
   tran: TFDTransaction;
@@ -659,11 +660,15 @@ end;
 
 // .............................................................................
 
-function ExecInsSQL(query: TFDQuery): Integer;
+function ExecInsSQL(query: TFDQuery; queryaux:TFDQuery=nil; s1:String=''; s2: String=''): Integer;
 begin
   result := 0;
   query.Transaction.StartTransaction;
   try
+    if queryaux <> nil then
+    begin
+    end;
+
     query.ExecSQL;
     query.Transaction.Commit;
     result := 1;
@@ -691,6 +696,7 @@ var
   flist, vlist: TstringList;
   ii: IXMLDocument;
   msg: TMessage;
+  code, pname, s1, s2: String;
 begin
 
   res := '';
@@ -714,6 +720,8 @@ begin
       tablename := el.NodeName;
       nL := el.ChildNodes;
       len := nL.Count;
+      code := '';
+      pname := '';
 
       cnt := 0;
       for i := 0 to len - 1 do
@@ -725,6 +733,8 @@ begin
         begin
           cname := nL[i].ChildNodes[j].NodeName;
           Text := nL[i].ChildNodes[j].Text;
+          if(cname = 'code') then code := Text;
+          if(cname = 'name') then pname := Text;
           flist.Add(cname);
           vlist.Add(':' + cname);
           with query.Params.Add do
@@ -735,11 +745,30 @@ begin
           end;
           query.ParamByName(cname).AsString := Text;
         end;
+
         SQL := 'insert into ' + tablename + ' (' + flist.CommaText +
           ') values (' + vlist.CommaText + ')'#13#10;
         query.SQL.Text := SQL;
         res := SQL;
-        cnt := cnt + ExecInsSQL(query);
+
+        if tablename  = 'contragents' then
+        begin
+          queryaux := TFDQuery.Create(nil);
+          with queryaux do
+          begin
+            Connection := conn;
+            Transaction := tran;
+          end;
+        end else queryaux := nil;
+
+        s1 := 'select * from ' + tablename + ' where code=:code';
+        s2 := 'update ' + tablename + ' set name = :name where code=:code';
+
+        cnt := cnt + ExecInsSQL(query, queryaux, s1, s2);
+
+
+
+
       end;
 
       msg.Msg := WM_CATS_UPD;
@@ -757,6 +786,8 @@ begin
       end;
     end;
   finally
+    if queryaux <> nil then queryaux.Free;
+
     query.Free;
     vlist.Free;
     flist.Free;

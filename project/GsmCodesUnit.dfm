@@ -1,18 +1,39 @@
 inherited gsmcodesform: Tgsmcodesform
   Caption = #1050#1086#1076#1099' '#1043#1057#1052
+  ClientHeight = 331
+  ClientWidth = 428
+  ExplicitWidth = 444
+  ExplicitHeight = 390
   PixelsPerInch = 96
   TextHeight = 13
   inherited JvToolBar1: TJvToolBar
+    Width = 428
     object ToolButton3: TToolButton
       Left = 46
       Top = 0
       Action = CommitAction
     end
   end
+  inherited JvStatusBar1: TJvStatusBar
+    Top = 293
+    Width = 428
+  end
+  inherited JvDBGridFooter: TJvDBGridFooter
+    Top = 312
+    Width = 428
+  end
   inherited JvDBGrid: TJvDBUltimGrid
+    Width = 428
+    Height = 264
     OnKeyDown = JvDBGridKeyDown
     AutoAppend = True
     Columns = <
+      item
+        Expanded = False
+        FieldName = 'AZSCODE'
+        Title.Caption = #1050#1086#1076' '#1040#1047#1057
+        Visible = True
+      end
       item
         Expanded = False
         FieldName = 'CODE'
@@ -44,7 +65,7 @@ inherited gsmcodesform: Tgsmcodesform
   end
   inherited ImageList: TImageList
     Bitmap = {
-      494C01017E018001600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01017E018001640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000006000001002000000000000000
       060000000000000000000000000000000000B5B5B5007B736B00ADADA5000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12728,6 +12749,6 @@ inherited gsmcodesform: Tgsmcodesform
     Connection = DM.FDConnection
     UpdateTransaction = Trans
     SQL.Strings = (
-      'select code, code1c from warecodes order by code')
+      'select azscode, code, code1c from warecodes order by code')
   end
 end
