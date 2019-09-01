@@ -327,7 +327,7 @@ endProcedure
 		// data = data + "<partner_code>"+Выборка.Партнер.Код+"</partner_code>";
 		data = data + "</record>";
 
-        Сообщить(Выборка.Наименование + " " + Выборка.Номер + " " + Выборка.Партнер.Код);
+        Сообщить(Выборка.Наименование + " " + Выборка.Номер);
     КонецЦикла;
 	
 	data = data + "</contracts>";
@@ -584,9 +584,10 @@ EndFunction
 	r = Response.GetBodyAsString();
 	//Message(r);
 	Conn.Удалить(Request);
-	
+Message(r);	
 	ЧтениеJSON = Новый ЧтениеJSON;
 	ЧтениеJSON.УстановитьСтроку(r);
+	
 	jr = ПрочитатьJSON(ЧтениеJSON);
 	ЧтениеJSON.Закрыть();
 	Message(jr);
